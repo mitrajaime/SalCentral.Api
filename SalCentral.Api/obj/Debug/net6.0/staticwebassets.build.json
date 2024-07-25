@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "dcNYhftDvc18odQ1i12lMKWA+7N3cOb5Bg09sozId8U=",
+  "Source": "SalCentral.Api",
+  "BasePath": "_content/SalCentral.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
