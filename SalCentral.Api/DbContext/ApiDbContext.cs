@@ -9,6 +9,7 @@ namespace SalCentral.Api.DbContext
         public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options) { }
 
         public virtual DbSet<Role>? Role { get; set; }
+        public virtual DbSet<User>? User { get; set; }
         
     }
 }

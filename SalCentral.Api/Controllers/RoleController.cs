@@ -22,7 +22,13 @@ namespace SalCentral.Api.Controllers
         {
             try
             {
-                var role = _context.Role;
+                var role = from r in _context.Role
+                           select new RoleDTO
+                           {
+                               RoleId = r.RoleId,
+                               RoleName = r.RoleName,
+                           };
+
                 return Ok(role);
             }
             catch (Exception ex) {

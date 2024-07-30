@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SalCentral.Api.DbContext;
+using SalCentral.Api.Logics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<UserLogic>();
+builder.Services.AddScoped<PaginationLogic>();
+
 var app = builder.Build();                                                                                                                                                                               
 
 // Configure the HTTP request pipeline.
@@ -21,6 +25,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+
 
 app.UseHttpsRedirection();
 
