@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj": {}
+    "C:\\Users\\User\\Downloads\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj": {}
   },
   "projects": {
-    "D:\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj": {
+    "C:\\Users\\User\\Downloads\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Downloads\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
         "projectName": "SalCentral.Api",
-        "projectPath": "D:\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
+        "projectPath": "C:\\Users\\User\\Downloads\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "D:\\SalCentral.Api\\SalCentral.Api\\obj\\",
+        "outputPath": "C:\\Users\\User\\Downloads\\SalCentral.Api\\SalCentral.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

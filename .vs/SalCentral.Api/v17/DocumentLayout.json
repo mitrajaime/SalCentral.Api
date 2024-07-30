@@ -1,49 +1,57 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\SalCentral.Api\\",
+  "WorkspaceRootPath": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|d:\\salcentral.api\\salcentral.api\\logics\\paginationlogic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\logics\\paginationlogic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|d:\\salcentral.api\\salcentral.api\\pagination\\paginationrequestquery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\pagination\\paginationrequestquery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|d:\\salcentral.api\\salcentral.api\\pagination\\paginationresponsewrapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\pagination\\paginationresponsewrapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|d:\\salcentral.api\\salcentral.api\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|c:\\users\\act-student\\source\\repos\\salcentral.api\\salcentral.api\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|d:\\salcentral.api\\salcentral.api\\logics\\userlogic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\logics\\userlogic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|c:\\users\\act-student\\source\\repos\\salcentral.api\\salcentral.api\\controllers\\rolecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\controllers\\rolecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|d:\\salcentral.api\\salcentral.api\\controllers\\weatherforecastcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\controllers\\weatherforecastcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|c:\\users\\act-student\\source\\repos\\salcentral.api\\salcentral.api\\dtos\\roledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\dtos\\roledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|d:\\salcentral.api\\salcentral.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|d:\\salcentral.api\\salcentral.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|d:\\salcentral.api\\salcentral.api\\models\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|c:\\users\\act-student\\source\\repos\\salcentral.api\\salcentral.api\\models\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\models\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|d:\\salcentral.api\\salcentral.api\\dbcontext\\apidbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|c:\\users\\act-student\\source\\repos\\salcentral.api\\salcentral.api\\logics\\paginationlogic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\logics\\paginationlogic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|c:\\users\\act-student\\source\\repos\\salcentral.api\\salcentral.api\\pagination\\paginationrequestquery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\pagination\\paginationrequestquery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|c:\\users\\act-student\\source\\repos\\salcentral.api\\salcentral.api\\pagination\\paginationresponsewrapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\pagination\\paginationresponsewrapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|c:\\users\\act-student\\source\\repos\\salcentral.api\\salcentral.api\\logics\\userlogic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\logics\\userlogic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|c:\\users\\act-student\\source\\repos\\salcentral.api\\salcentral.api\\controllers\\weatherforecastcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\controllers\\weatherforecastcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|c:\\users\\act-student\\source\\repos\\salcentral.api\\salcentral.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|c:\\users\\act-student\\source\\repos\\salcentral.api\\salcentral.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|c:\\users\\act-student\\source\\repos\\salcentral.api\\salcentral.api\\dbcontext\\apidbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\dbcontext\\apidbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|d:\\salcentral.api\\salcentral.api\\migrations\\20240725155019_initialcreatea.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|c:\\users\\act-student\\source\\repos\\salcentral.api\\salcentral.api\\migrations\\20240725155019_initialcreatea.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E7D2D2C6-9F73-488E-92D6-5B7926C67C86}|SalCentral.Api\\SalCentral.Api.csproj|solutionrelative:salcentral.api\\migrations\\20240725155019_initialcreatea.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -54,28 +62,58 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 6,
           "Children": [
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            },
+            {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
+              "Title": "RoleController.cs",
+              "DocumentMoniker": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Controllers\\RoleController.cs",
+              "RelativeDocumentMoniker": "SalCentral.Api\\Controllers\\RoleController.cs",
+              "ToolTip": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Controllers\\RoleController.cs",
+              "RelativeToolTip": "SalCentral.Api\\Controllers\\RoleController.cs",
+              "ViewState": "AQIAABYAAAAAAAAAAAAowDIAAAAgAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-30T01:41:01.564Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "RoleDTO.cs",
+              "DocumentMoniker": "C:\\Users\\ACT-STUDENT\\Source\\Repos\\SalCentral.Api\\SalCentral.Api\\DTOs\\RoleDTO.cs",
+              "RelativeDocumentMoniker": "SalCentral.Api\\DTOs\\RoleDTO.cs",
+              "ToolTip": "C:\\Users\\ACT-STUDENT\\Source\\Repos\\SalCentral.Api\\SalCentral.Api\\DTOs\\RoleDTO.cs",
+              "RelativeToolTip": "SalCentral.Api\\DTOs\\RoleDTO.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAaAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-30T01:39:41.687Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "PaginationLogic.cs",
-              "DocumentMoniker": "D:\\SalCentral.Api\\SalCentral.Api\\Logics\\PaginationLogic.cs",
+              "DocumentMoniker": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Logics\\PaginationLogic.cs",
               "RelativeDocumentMoniker": "SalCentral.Api\\Logics\\PaginationLogic.cs",
-              "ToolTip": "D:\\SalCentral.Api\\SalCentral.Api\\Logics\\PaginationLogic.cs",
+              "ToolTip": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Logics\\PaginationLogic.cs",
               "RelativeToolTip": "SalCentral.Api\\Logics\\PaginationLogic.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAMAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAsAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-07-26T14:33:04.565Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 5,
               "Title": "PaginationRequestQuery.cs",
-              "DocumentMoniker": "D:\\SalCentral.Api\\SalCentral.Api\\Pagination\\PaginationRequestQuery.cs",
+              "DocumentMoniker": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Pagination\\PaginationRequestQuery.cs",
               "RelativeDocumentMoniker": "SalCentral.Api\\Pagination\\PaginationRequestQuery.cs",
-              "ToolTip": "D:\\SalCentral.Api\\SalCentral.Api\\Pagination\\PaginationRequestQuery.cs",
+              "ToolTip": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Pagination\\PaginationRequestQuery.cs",
               "RelativeToolTip": "SalCentral.Api\\Pagination\\PaginationRequestQuery.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -83,11 +121,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 6,
               "Title": "PaginationResponseWrapper.cs",
-              "DocumentMoniker": "D:\\SalCentral.Api\\SalCentral.Api\\Pagination\\PaginationResponseWrapper.cs",
+              "DocumentMoniker": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Pagination\\PaginationResponseWrapper.cs",
               "RelativeDocumentMoniker": "SalCentral.Api\\Pagination\\PaginationResponseWrapper.cs",
-              "ToolTip": "D:\\SalCentral.Api\\SalCentral.Api\\Pagination\\PaginationResponseWrapper.cs",
+              "ToolTip": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Pagination\\PaginationResponseWrapper.cs",
               "RelativeToolTip": "SalCentral.Api\\Pagination\\PaginationResponseWrapper.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAFAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -95,23 +133,24 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "UserController.cs",
-              "DocumentMoniker": "D:\\SalCentral.Api\\SalCentral.Api\\Controllers\\UserController.cs",
+              "DocumentMoniker": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Controllers\\UserController.cs",
               "RelativeDocumentMoniker": "SalCentral.Api\\Controllers\\UserController.cs",
-              "ToolTip": "D:\\SalCentral.Api\\SalCentral.Api\\Controllers\\UserController.cs",
+              "ToolTip": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Controllers\\UserController.cs",
               "RelativeToolTip": "SalCentral.Api\\Controllers\\UserController.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABEAAABPAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-07-26T14:30:09.035Z"
+              "WhenOpened": "2024-07-26T14:30:09.035Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 7,
               "Title": "UserLogic.cs",
-              "DocumentMoniker": "D:\\SalCentral.Api\\SalCentral.Api\\Logics\\UserLogic.cs",
+              "DocumentMoniker": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Logics\\UserLogic.cs",
               "RelativeDocumentMoniker": "SalCentral.Api\\Logics\\UserLogic.cs",
-              "ToolTip": "D:\\SalCentral.Api\\SalCentral.Api\\Logics\\UserLogic.cs",
+              "ToolTip": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Logics\\UserLogic.cs",
               "RelativeToolTip": "SalCentral.Api\\Logics\\UserLogic.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAAFAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -119,11 +158,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 8,
               "Title": "WeatherForecastController.cs",
-              "DocumentMoniker": "D:\\SalCentral.Api\\SalCentral.Api\\Controllers\\WeatherForecastController.cs",
+              "DocumentMoniker": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Controllers\\WeatherForecastController.cs",
               "RelativeDocumentMoniker": "SalCentral.Api\\Controllers\\WeatherForecastController.cs",
-              "ToolTip": "D:\\SalCentral.Api\\SalCentral.Api\\Controllers\\WeatherForecastController.cs",
+              "ToolTip": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Controllers\\WeatherForecastController.cs",
               "RelativeToolTip": "SalCentral.Api\\Controllers\\WeatherForecastController.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -131,11 +170,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 9,
               "Title": "Program.cs",
-              "DocumentMoniker": "D:\\SalCentral.Api\\SalCentral.Api\\Program.cs",
+              "DocumentMoniker": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Program.cs",
               "RelativeDocumentMoniker": "SalCentral.Api\\Program.cs",
-              "ToolTip": "D:\\SalCentral.Api\\SalCentral.Api\\Program.cs",
+              "ToolTip": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Program.cs",
               "RelativeToolTip": "SalCentral.Api\\Program.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAB8AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -143,11 +182,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 10,
               "Title": "appsettings.json",
-              "DocumentMoniker": "D:\\SalCentral.Api\\SalCentral.Api\\appsettings.json",
+              "DocumentMoniker": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\appsettings.json",
               "RelativeDocumentMoniker": "SalCentral.Api\\appsettings.json",
-              "ToolTip": "D:\\SalCentral.Api\\SalCentral.Api\\appsettings.json",
+              "ToolTip": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\appsettings.json",
               "RelativeToolTip": "SalCentral.Api\\appsettings.json",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
@@ -155,23 +194,24 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 3,
               "Title": "Role.cs",
-              "DocumentMoniker": "D:\\SalCentral.Api\\SalCentral.Api\\Models\\Role.cs",
+              "DocumentMoniker": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Models\\Role.cs",
               "RelativeDocumentMoniker": "SalCentral.Api\\Models\\Role.cs",
-              "ToolTip": "D:\\SalCentral.Api\\SalCentral.Api\\Models\\Role.cs",
+              "ToolTip": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Models\\Role.cs",
               "RelativeToolTip": "SalCentral.Api\\Models\\Role.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAAAAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAcAAAATAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-07-25T15:20:39.132Z"
+              "WhenOpened": "2024-07-25T15:20:39.132Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 11,
               "Title": "ApiDbContext.cs",
-              "DocumentMoniker": "D:\\SalCentral.Api\\SalCentral.Api\\DbContext\\ApiDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\DbContext\\ApiDbContext.cs",
               "RelativeDocumentMoniker": "SalCentral.Api\\DbContext\\ApiDbContext.cs",
-              "ToolTip": "D:\\SalCentral.Api\\SalCentral.Api\\DbContext\\ApiDbContext.cs",
+              "ToolTip": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\DbContext\\ApiDbContext.cs",
               "RelativeToolTip": "SalCentral.Api\\DbContext\\ApiDbContext.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAA4AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -179,11 +219,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 12,
               "Title": "20240725155019_initialcreatea.cs",
-              "DocumentMoniker": "D:\\SalCentral.Api\\SalCentral.Api\\Migrations\\20240725155019_initialcreatea.cs",
+              "DocumentMoniker": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Migrations\\20240725155019_initialcreatea.cs",
               "RelativeDocumentMoniker": "SalCentral.Api\\Migrations\\20240725155019_initialcreatea.cs",
-              "ToolTip": "D:\\SalCentral.Api\\SalCentral.Api\\Migrations\\20240725155019_initialcreatea.cs",
+              "ToolTip": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\Migrations\\20240725155019_initialcreatea.cs",
               "RelativeToolTip": "SalCentral.Api\\Migrations\\20240725155019_initialcreatea.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",

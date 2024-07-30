@@ -14,7 +14,7 @@ namespace SalCentral.Api.Controllers
         {
             _context = context;
         }
-        [HttpGet]
-        public async Task<IActionResult> GetUsers([FromQuery] PaginationRequest userId)
+        //[HttpGet]
+        //public async Task<IActionResult> GetUsers([FromQuery] PaginationRequest userId)
     }
 }
