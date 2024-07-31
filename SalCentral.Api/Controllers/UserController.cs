@@ -41,13 +41,13 @@ namespace SalCentral.Api.Controllers
         {
             try
             {
-                var result = _userLogic.PostUsers(payload);
+                var result = await _userLogic.PostUsers(payload);
                 if (result == null)
                 {
                     return NotFound();
                 }
 
-                var branchResult = _branchLogic.PostUserBranch(payload);
+                var branchResult = await _branchLogic.PostUsersBranch(payload,result.UserId);
                 if (branchResult == null)
                 {
                     return NotFound();

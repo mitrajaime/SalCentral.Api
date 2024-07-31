@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SalCentral.Api.DbContext;
+using SalCentral.Api.DTOs;
 using SalCentral.Api.DTOs.UserDTO;
 using SalCentral.Api.Models;
 using System.Linq.Expressions;
@@ -15,7 +16,33 @@ namespace SalCentral.Api.Logics
         {
             _context = context;
         }
-        public async Task<object> PostUserBranch([FromBody] UserDTO payload)
+
+        public async Task<object> CreateBranch([FromBody] BranchDTO payload)
+        {
+            try
+            {
+                var branch = new Branch()
+                {
+                    BranchName = payload.BranchName,
+                };
+
+                var exists = _context.Branch.Where(b => b.BranchName == payload.BranchName).Any();
+                if(exists)
+                {
+                    throw new Exception("This branch already exists.");
+                }
+
+                await _context.Branch.AddAsync(branch);
+                await _context.SaveChangesAsync();
+                return branch;
+
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<object> PostUsersBranch([FromBody] UserDTO payload, Guid UserId)
         {
             try
             {
@@ -35,7 +62,7 @@ namespace SalCentral.Api.Logics
 
                     var assignment = new BranchAssignment()
                     {
-                        UserId = a.UserId,
+                        UserId = UserId,
                         BranchId = a.BranchId,
                     };
                     _context.BranchAssignment.Add(assignment);

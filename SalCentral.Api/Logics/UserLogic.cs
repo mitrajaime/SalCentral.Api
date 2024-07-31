@@ -65,6 +65,7 @@ namespace SalCentral.Api.Logics
         {
             var user = new User()
             {
+                UserId = new Guid(),
                 FirstName = payload.FirstName,
                 LastName = payload.LastName,
                 Email = payload.Email,

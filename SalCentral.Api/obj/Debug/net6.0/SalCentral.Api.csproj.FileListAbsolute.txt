@@ -74,7 +74,6 @@ C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0
 C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.csproj.CoreCompileInputs.cache
 C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.MvcApplicationPartsAssemblyInfo.cache
-C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.sourcelink.json
 C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.dll
 C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\refint\SalCentral.Api.dll
 C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.pdb
@@ -133,7 +132,6 @@ C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0
 C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\staticwebassets\msbuild.buildTransitive.SalCentral.Api.props
 C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\staticwebassets.pack.json
 C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\scopedcss\bundle\SalCentral.Api.styles.css
-C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\SalCentr.16624AA1.Up2Date
 C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.genruntimeconfig.cache
 C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\ref\SalCentral.Api.dll
 C:\Users\User\Downloads\SalCentral.Api\SalCentral.Api\bin\Debug\net6.0\appsettings.Development.json
@@ -205,3 +203,4 @@ C:\Users\User\Downloads\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\refint\Sa
 C:\Users\User\Downloads\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.pdb
 C:\Users\User\Downloads\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.genruntimeconfig.cache
 C:\Users\User\Downloads\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\ref\SalCentral.Api.dll
+C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.csproj.CopyComplete

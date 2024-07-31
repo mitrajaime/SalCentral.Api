@@ -12,8 +12,8 @@ using SalCentral.Api.DbContext;
 namespace SalCentral.Api.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20240730150212_new")]
-    partial class @new
+    [Migration("20240731233509_Branches")]
+    partial class Branches
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,6 +23,64 @@ namespace SalCentral.Api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("SalCentral.Api.Models.Attendance", b =>
+                {
+                    b.Property<Guid>("AttendanceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BranchId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("TimeIn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("TimeOut")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("AttendanceId");
+
+                    b.ToTable("Attendance");
+                });
+
+            modelBuilder.Entity("SalCentral.Api.Models.Branch", b =>
+                {
+                    b.Property<Guid>("BranchId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BranchName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("BranchId");
+
+                    b.ToTable("Branch");
+                });
+
+            modelBuilder.Entity("SalCentral.Api.Models.BranchAssignment", b =>
+                {
+                    b.Property<Guid>("BranchAssignmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BranchId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("BranchAssignmentId");
+
+                    b.ToTable("BranchAssignment");
+                });
 
             modelBuilder.Entity("SalCentral.Api.Models.Role", b =>
                 {
