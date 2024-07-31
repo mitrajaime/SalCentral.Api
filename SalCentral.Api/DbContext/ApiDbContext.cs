@@ -10,6 +10,7 @@ namespace SalCentral.Api.DbContext
 
         public virtual DbSet<Role>? Role { get; set; }
         public virtual DbSet<User>? User { get; set; }
+        public virtual DbSet<BranchAssignment>? BranchAssignment { get; set; }
         
     }
 }

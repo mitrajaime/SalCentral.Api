@@ -14,11 +14,13 @@ namespace SalCentral.Api.Controllers
     {
         private readonly ApiDbContext _context;
         private readonly UserLogic _userLogic;
+        private readonly BranchLogic _branchLogic;
 
-        public UserController(ApiDbContext context, UserLogic userLogic)
+        public UserController(ApiDbContext context, UserLogic userLogic, BranchLogic branchLogic)
         {
             _userLogic = userLogic;
             _context = context;
+            _branchLogic = branchLogic;
         }
         [HttpGet]
         public async Task<IActionResult> GetUsers([FromQuery] PaginationRequest paginationRequest, [FromQuery] UserFilter userFilter)
@@ -40,6 +42,16 @@ namespace SalCentral.Api.Controllers
             try
             {
                 var result = _userLogic.PostUsers(payload);
+                if (result == null)
+                {
+                    return NotFound();
+                }
+
+                var branchResult = _branchLogic.PostUserBranch(payload);
+                if (branchResult == null)
+                {
+                    return NotFound();
+                }
 
                 return Ok(result);
 

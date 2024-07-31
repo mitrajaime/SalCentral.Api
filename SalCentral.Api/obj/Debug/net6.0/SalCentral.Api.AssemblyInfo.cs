@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SalCentral.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5cf5af754fff7deada6bc5cea646bae1c9d3d54b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c5331b1442e97f04e9aa868d75b830a35dcf161c")]
 [assembly: System.Reflection.AssemblyProductAttribute("SalCentral.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SalCentral.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

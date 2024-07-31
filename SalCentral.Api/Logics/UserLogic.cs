@@ -76,6 +76,7 @@ namespace SalCentral.Api.Logics
             };
 
             var exists = _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID).Any();
+
             if (exists)
             {
                 throw new Exception("The user provided already exists.");
@@ -86,7 +87,5 @@ namespace SalCentral.Api.Logics
 
             return user;
         }
-
-
     }
 }
