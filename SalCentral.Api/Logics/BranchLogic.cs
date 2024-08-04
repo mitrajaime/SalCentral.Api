@@ -68,7 +68,7 @@ namespace SalCentral.Api.Logics
                     _context.BranchAssignment.Add(assignment);
                 }
 
-                _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
                 return payload;
             }

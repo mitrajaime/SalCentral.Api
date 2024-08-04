@@ -12,8 +12,8 @@ using SalCentral.Api.DbContext;
 namespace SalCentral.Api.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20240731233509_Branches")]
-    partial class Branches
+    [Migration("20240804235247_test")]
+    partial class test
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

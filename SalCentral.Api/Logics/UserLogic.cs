@@ -61,7 +61,7 @@ namespace SalCentral.Api.Logics
             return null;
         }
 
-        public async Task<object> PostUsers([FromBody] UserDTO payload)
+        public async Task<User> PostUsers([FromBody] UserDTO payload)
         {
             var user = new User()
             {
@@ -83,8 +83,8 @@ namespace SalCentral.Api.Logics
                 throw new Exception("The user provided already exists.");
             }
 
-            _context.User.AddAsync(user);
-            _context.SaveChangesAsync();
+            await _context.User.AddAsync(user);
+            await _context.SaveChangesAsync();
 
             return user;
         }

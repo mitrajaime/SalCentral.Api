@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SalCentral.Api.Migrations
 {
-    public partial class Branches : Migration
+    public partial class Branch : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
