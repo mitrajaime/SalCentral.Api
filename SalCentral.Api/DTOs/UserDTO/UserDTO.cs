@@ -15,8 +15,7 @@ namespace SalCentral.Api.DTOs.UserDTO
         //public smth smth Photo { get; set; }
         public string? Password { get; set; }
         public Guid? RoleId { get; set; }
-
-        public List<BranchAssignment>? assignmentList { get; set; }
         public string? RoleName { get; set;}
+        public List<BranchAssignment>? assignmentList { get; set; }
     }
 }

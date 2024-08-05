@@ -20,6 +20,7 @@ namespace SalCentral.Api.Logics
             IQueryable<BranchAssignmentDTO> query = from u in _context.BranchAssignment
                                                     select new BranchAssignmentDTO()
                                                     {
+                                                        BranchAssignmentId = u.BranchAssignmentId,
                                                         UserId = u.UserId,
                                                         FirstName = _context.User
                                                                     .Where(y => y.UserId == u.UserId)

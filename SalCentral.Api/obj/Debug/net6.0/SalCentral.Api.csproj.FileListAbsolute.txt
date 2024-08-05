@@ -203,7 +203,6 @@ C:\Users\User\Downloads\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\refint\Sa
 C:\Users\User\Downloads\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.pdb
 C:\Users\User\Downloads\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.genruntimeconfig.cache
 C:\Users\User\Downloads\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\ref\SalCentral.Api.dll
-C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.csproj.CopyComplete
 C:\Users\ACT-STUDENT\Downloads\New folder\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.csproj.AssemblyReference.cache
 C:\Users\ACT-STUDENT\Downloads\New folder\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\ACT-STUDENT\Downloads\New folder\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.AssemblyInfoInputs.cache
@@ -273,3 +272,5 @@ C:\Users\ACT-STUDENT\Downloads\New folder\SalCentral.Api\obj\Debug\net6.0\scoped
 C:\Users\ACT-STUDENT\Downloads\New folder\SalCentral.Api\obj\Debug\net6.0\SalCentr.16624AA1.Up2Date
 C:\Users\ACT-STUDENT\Downloads\New folder\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.genruntimeconfig.cache
 C:\Users\ACT-STUDENT\Downloads\New folder\SalCentral.Api\obj\Debug\net6.0\ref\SalCentral.Api.dll
+C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\SalCentral.Api.sourcelink.json
+C:\Users\ACT-STUDENT\Source\Repos\SalCentral.Api\SalCentral.Api\obj\Debug\net6.0\SalCentr.16624AA1.Up2Date

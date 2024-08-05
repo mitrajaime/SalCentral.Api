@@ -41,11 +41,11 @@ namespace SalCentral.Api.Controllers
         }
 
         [HttpPost]
-        public ActionResult PostBranch([FromBody] BranchDTO payload)
+        public async Task<IActionResult> PostBranch([FromBody] BranchDTO payload)
         {
             try
             {
-                var result = _branchLogic.CreateBranch(payload);
+                var result = await _branchLogic.CreateBranch(payload);
 
                 return Ok(result);
 

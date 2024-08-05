@@ -35,6 +35,8 @@ namespace SalCentral.Api.Logics
                                                            .Where(r => r.RoleId == u.RoleId)
                                                            .Select(r => r.RoleName)
                                                            .FirstOrDefault(),
+                                            assignmentList = _context.BranchAssignment.Where(b => b.UserId == u.UserId)
+                                                           .ToList(),
                                         };
 
            if (query == null) throw new Exception("No users found.");
