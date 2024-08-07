@@ -34,6 +34,12 @@ namespace SalCentral.Api.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("HoursRendered")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OverTimeHours")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("TimeIn")
                         .HasColumnType("datetime2");
 

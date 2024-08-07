@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SalCentral.Api.Migrations
 {
-    public partial class Branch : Migration
+    public partial class withHoursRendered : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -18,7 +18,9 @@ namespace SalCentral.Api.Migrations
                     TimeIn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TimeOut = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BranchId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    HoursRendered = table.Column<int>(type: "int", nullable: false),
+                    OverTimeHours = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

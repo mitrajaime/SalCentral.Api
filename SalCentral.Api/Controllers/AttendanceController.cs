@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SalCentral.Api.DbContext;
+using SalCentral.Api.DTOs;
 using SalCentral.Api.Logics;
+using static SalCentral.Api.Pagination.PaginationRequestQuery;
 
 namespace SalCentral.Api.Controllers
 {
@@ -25,6 +27,50 @@ namespace SalCentral.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAttendanceRecords() { }
+        public IActionResult GetAttendanceRecords([FromQuery] PaginationRequest paginationRequest) 
+        { 
+            try
+            {
+                var results = _attendanceLogic.GetAttendance(paginationRequest);
+
+                return Ok(results);
+
+            } catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("TimeIn")]
+        public IActionResult TimeIn([FromBody] AttendanceDTO payload)
+        {
+            try
+            {
+                var results = _attendanceLogic.TimeIn(payload);
+
+                return Ok(results);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("TimeOut")]
+        public IActionResult TimeOut([FromBody] AttendanceDTO payload)
+        {
+            try
+            {
+                var results = _attendanceLogic.TimeOut(payload);
+
+                return Ok(results);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

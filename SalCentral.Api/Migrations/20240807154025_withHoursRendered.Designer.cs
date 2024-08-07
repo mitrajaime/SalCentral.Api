@@ -12,8 +12,8 @@ using SalCentral.Api.DbContext;
 namespace SalCentral.Api.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20240804235247_test")]
-    partial class test
+    [Migration("20240807154025_withHoursRendered")]
+    partial class withHoursRendered
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -35,6 +35,12 @@ namespace SalCentral.Api.Migrations
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("HoursRendered")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OverTimeHours")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("TimeIn")
                         .HasColumnType("datetime2");
