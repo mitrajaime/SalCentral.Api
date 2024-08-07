@@ -59,10 +59,18 @@ namespace SalCentral.Api.Logics
         {
             try
             {
+                //var timeIn = new Attendance()
+                //{
+                //    Date = DateTime.Now,
+                //    TimeIn = DateTime.Now,
+                //    BranchId = (Guid)payload.BranchId,
+                //    UserId = (Guid)payload.UserId,
+                //};
+
                 var timeIn = new Attendance()
                 {
-                    Date = DateTime.UtcNow,
-                    TimeIn = DateTime.UtcNow,
+                    Date = DateTime.Now,
+                    TimeIn = DateTime.Now,
                     BranchId = (Guid)payload.BranchId,
                     UserId = (Guid)payload.UserId,
                 };
@@ -86,7 +94,11 @@ namespace SalCentral.Api.Logics
                                                           .OrderByDescending(u => u.Date)
                                                           .FirstOrDefaultAsync();
 
-                attendance.TimeOut = DateTime.UtcNow;
+                //attendance.TimeOut = DateTime.Now;
+
+                TimeSpan twoAndAHalfHours = new TimeSpan(2, 0, 0);
+                attendance.TimeOut = DateTime.Now.Add(twoAndAHalfHours);
+
 
                 TimeSpan timeRendered = attendance.TimeOut - attendance.TimeIn;
 

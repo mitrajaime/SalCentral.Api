@@ -27,11 +27,11 @@ namespace SalCentral.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAttendanceRecords([FromQuery] PaginationRequest paginationRequest) 
+        public async Task<IActionResult> GetAttendanceRecords([FromQuery] PaginationRequest paginationRequest) 
         { 
             try
             {
-                var results = _attendanceLogic.GetAttendance(paginationRequest);
+                var results = await _attendanceLogic.GetAttendance(paginationRequest);
 
                 return Ok(results);
 
@@ -42,7 +42,7 @@ namespace SalCentral.Api.Controllers
         }
 
         [HttpPost("TimeIn")]
-        public IActionResult TimeIn([FromBody] AttendanceDTO payload)
+        public async Task<IActionResult> TimeIn([FromBody] AttendanceDTO payload)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace SalCentral.Api.Controllers
         }
 
         [HttpPut("TimeOut")]
-        public IActionResult TimeOut([FromBody] AttendanceDTO payload)
+        public async Task<IActionResult> TimeOut([FromBody] AttendanceDTO payload)
         {
             try
             {
