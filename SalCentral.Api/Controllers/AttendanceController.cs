@@ -27,14 +27,19 @@ namespace SalCentral.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAttendanceRecords([FromQuery] PaginationRequest paginationRequest) 
+        public async Task<IActionResult> GetAttendanceRecords([FromQuery] PaginationRequest paginationRequest, string? SMEmployeeId, string? password, Guid? BranchId) 
         { 
             try
             {
+                if (SMEmployeeId != null || password != null || BranchId != null) 
+                {
+                    var result = await _attendanceLogic.GetAttendanceOfEmployee(paginationRequest, SMEmployeeId, password, BranchId);
+                    return Ok(result);
+                }
+
                 var results = await _attendanceLogic.GetAttendance(paginationRequest);
 
                 return Ok(results);
-
             } catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -46,7 +51,7 @@ namespace SalCentral.Api.Controllers
         {
             try
             {
-                var results = _attendanceLogic.TimeIn(payload);
+                var results = await _attendanceLogic.TimeIn(payload);
 
                 return Ok(results);
 
@@ -62,7 +67,7 @@ namespace SalCentral.Api.Controllers
         {
             try
             {
-                var results = _attendanceLogic.TimeOut(payload);
+                var results = await _attendanceLogic.TimeOut(payload);
 
                 return Ok(results);
 
