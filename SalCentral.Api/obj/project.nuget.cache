@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "AR8SazL/jHsVgqiwc1dQa4u37FxSvgWfrgSLt2Oj8xifh3GmQVDGzqPROmtNPTxPFFhH5fMdqhyZOVvFbbVigg==",
+  "dgSpecHash": "XsSKO8Nbtg2NSXXxN2uJeB4BENIVMozfa63Y6f6xdc6LIA5mB/zO1/kHpBP+zkUbJKYvl4HMECij/nP+DjbJXA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\ACT-STUDENT\\Source\\Repos\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
+  "projectFilePath": "C:\\Users\\ACT-STUDENT\\source\\repos\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ACT-STUDENT\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\ACT-STUDENT\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",

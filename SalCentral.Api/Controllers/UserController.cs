@@ -36,12 +36,26 @@ namespace SalCentral.Api.Controllers
             }
             
         }
+
+        [HttpGet("{UserId}")]
+        public async Task<IActionResult> GetUserById([FromQuery] PaginationRequest paginationRequest, Guid UserId)
+        {
+            try
+            {
+                var result = await _userLogic.GetUserById(paginationRequest, UserId);
+                return Ok(result);
+            } catch (Exception ex) 
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<ActionResult> PostUsers([FromBody] UserDTO payload)
         {
             try
             {
-                var result = await _userLogic.PostUsers(payload);
+                var result = await _userLogic.PostUser(payload);
                 if (result == null)
                 {
                     return NotFound();
@@ -76,6 +90,20 @@ namespace SalCentral.Api.Controllers
                 return Ok();
             }
             catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> EditUser([FromBody] UserDTO payload)
+        {
+            try
+            {
+                var result = await _userLogic.EditUser(payload);
+                return Ok(result);
+
+            } catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
