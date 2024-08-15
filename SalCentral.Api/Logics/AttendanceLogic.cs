@@ -74,7 +74,7 @@ namespace SalCentral.Api.Logics
                                                       TimeOut = q.TimeOut,
                                                   };
 
-                if (query == null) throw new Exception("No attendnance found for user.");
+                if (query == null) throw new Exception("No attendance found for user.");
 
                 var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
                 var attendance = responsewrapper.Results;

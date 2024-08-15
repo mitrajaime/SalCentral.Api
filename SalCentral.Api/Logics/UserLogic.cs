@@ -16,7 +16,7 @@ namespace SalCentral.Api.Logics
             _context = context;
         }
 
-        public async Task<object> AuthenticateUser(UserDTO payload)
+        public async Task<User> AuthenticateUser([FromQuery] UserDTO payload)
         {
             try
             {

@@ -31,6 +31,10 @@ namespace SalCentral.Api.Logics
                                                                     .Select(f => f.LastName)
                                                                     .FirstOrDefault(),
                                                         BranchId = u.BranchId,
+                                                        BranchName = _context.Branch
+                                                                     .Where(b => b.BranchId == u.BranchId)
+                                                                     .Select(b => b.BranchName)
+                                                                     .FirstOrDefault(),
                                                     };
 
             if (query == null) throw new Exception("No assignments found for user.");

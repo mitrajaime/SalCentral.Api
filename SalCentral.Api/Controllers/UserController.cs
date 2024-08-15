@@ -108,5 +108,19 @@ namespace SalCentral.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("Login")]
+        public async Task<IActionResult> AuthenticateUser([FromQuery] UserDTO payload)
+        {
+            try
+            {
+                var result = await _userLogic.AuthenticateUser(payload);
+                return Ok(result);
+
+            } catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
