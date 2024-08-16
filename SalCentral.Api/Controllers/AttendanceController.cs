@@ -60,7 +60,7 @@ namespace SalCentral.Api.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
+        }  
 
         [HttpPut("TimeOut")]
         public async Task<IActionResult> TimeOut([FromBody] AttendanceDTO payload)

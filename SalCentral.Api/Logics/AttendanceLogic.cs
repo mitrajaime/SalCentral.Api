@@ -74,8 +74,6 @@ namespace SalCentral.Api.Logics
                                                       TimeOut = q.TimeOut,
                                                   };
 
-                if (query == null) throw new Exception("No attendance found for user.");
-
                 var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
                 var attendance = responsewrapper.Results;
 
@@ -84,7 +82,7 @@ namespace SalCentral.Api.Logics
                     return responsewrapper;
                 }
 
-                return null;
+                throw new Exception("No attendance found for user.");
 
             }
             catch (Exception ex)
@@ -105,6 +103,7 @@ namespace SalCentral.Api.Logics
                 //    UserId = (Guid)payload.UserId,
                 //};
 
+                // for debugging
                 var timeIn = new Attendance()
                 {
                     Date = DateTime.UtcNow,

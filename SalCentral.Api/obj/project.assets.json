@@ -2445,11 +2445,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\mitrajaime\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
+      "projectUniqueName": "D:\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
       "projectName": "SalCentral.Api",
-      "projectPath": "D:\\mitrajaime\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
+      "projectPath": "D:\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
       "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-      "outputPath": "D:\\mitrajaime\\SalCentral.Api\\SalCentral.Api\\obj\\",
+      "outputPath": "D:\\SalCentral.Api\\SalCentral.Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
