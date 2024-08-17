@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SalCentral.Api.DbContext;
-using SalCentral.Api.DTOs;
+using SalCentral.Api.DTOs.AttendanceDTO;
 using SalCentral.Api.Logics;
 using static SalCentral.Api.Pagination.PaginationRequestQuery;
 
@@ -27,13 +27,19 @@ namespace SalCentral.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAttendanceRecords([FromQuery] PaginationRequest paginationRequest, string? SMEmployeeId, string? password, Guid? BranchId) 
+        public async Task<IActionResult> GetAttendanceRecords([FromQuery] PaginationRequest paginationRequest, [FromQuery] AttendanceFilter attendanceFilter) 
         { 
             try
             {
-                if (SMEmployeeId != null || password != null || BranchId != null) 
+                if (attendanceFilter.SMEmployeeId != null || attendanceFilter.password != null || attendanceFilter.BranchId != null)
                 {
-                    var result = await _attendanceLogic.GetAttendanceOfEmployee(paginationRequest, SMEmployeeId, password, BranchId);
+                    if (attendanceFilter.Today == true)
+                    {
+                        var attendanceToday = await _attendanceLogic.GetEmployeeAttendanceToday(paginationRequest, attendanceFilter);
+                        return Ok(attendanceToday);
+                    }
+
+                    var result = await _attendanceLogic.GetAttendanceOfEmployee(paginationRequest, attendanceFilter);
                     return Ok(result);
                 }
 

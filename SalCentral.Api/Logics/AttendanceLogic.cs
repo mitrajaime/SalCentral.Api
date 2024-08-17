@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SalCentral.Api.DbContext;
-using SalCentral.Api.DTOs;
+using SalCentral.Api.DTOs.AttendanceDTO;
 using SalCentral.Api.Models;
 using static SalCentral.Api.Pagination.PaginationRequestQuery;
 
@@ -32,6 +32,8 @@ namespace SalCentral.Api.Logics
                                                       AttendanceId = q.AttendanceId,
                                                       BranchId = q.BranchId,
                                                       UserId = q.UserId,
+                                                      User = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.FirstName).FirstOrDefault() + ' ' + _context.User.Where(u => u.UserId == q.UserId).Select(u => u.LastName).FirstOrDefault(),
+                                                      SMEmployeeId = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.SMEmployeeID).FirstOrDefault(),
                                                       Date = q.Date,
                                                       TimeIn = q.TimeIn,
                                                       TimeOut = q.TimeOut,
@@ -55,20 +57,23 @@ namespace SalCentral.Api.Logics
             }
         }
 
-        public async Task<object> GetAttendanceOfEmployee([FromQuery] PaginationRequest paginationRequest, string? SMEmployeeId, string? password, Guid? BranchId)
+        public async Task<object> GetAttendanceOfEmployee([FromQuery] PaginationRequest paginationRequest, [FromQuery] AttendanceFilter attendanceFilter) 
         {
             try
             {
-                var userId = _context.User.Where(e => e.SMEmployeeID == SMEmployeeId && e.Password == password).Select(e => e.UserId).FirstOrDefault();
+                var userId = _context.User.Where(e => e.SMEmployeeID == attendanceFilter.SMEmployeeId && e.Password == attendanceFilter.password).Select(e => e.UserId).FirstOrDefault();
                 if (userId == null) throw new Exception("Incorrect user details. Please try again.");
 
                 IQueryable<AttendanceDTO> query = from q in _context.Attendance
-                                                  where q.UserId == userId && q.BranchId == BranchId
+                                                  where q.UserId == userId && q.BranchId == attendanceFilter.BranchId
+                                                  orderby q.Date descending
                                                   select new AttendanceDTO()
                                                   {
                                                       AttendanceId = q.AttendanceId,
                                                       BranchId = q.BranchId,
                                                       UserId = q.UserId,
+                                                      User = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.FirstName).FirstOrDefault() + ' ' + _context.User.Where(u => u.UserId == q.UserId).Select(u => u.LastName).FirstOrDefault(),
+                                                      SMEmployeeId = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.SMEmployeeID).FirstOrDefault(),
                                                       Date = q.Date,
                                                       TimeIn = q.TimeIn,
                                                       TimeOut = q.TimeOut,
@@ -83,6 +88,45 @@ namespace SalCentral.Api.Logics
                 }
 
                 throw new Exception("No attendance found for user.");
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<object> GetEmployeeAttendanceToday([FromQuery] PaginationRequest paginationRequest, [FromQuery] AttendanceFilter attendanceFilter)
+        {
+            try
+            {
+                var userId = _context.User.Where(e => e.SMEmployeeID == attendanceFilter.SMEmployeeId && e.Password == attendanceFilter.password).Select(e => e.UserId).FirstOrDefault();
+                if (userId == null) throw new Exception("Incorrect user details. Please try again.");
+
+                IQueryable<AttendanceDTO> query = from q in _context.Attendance
+                                                  where q.UserId == userId && q.BranchId == attendanceFilter.BranchId && q.Date.Date == DateTime.Today
+                                                  orderby q.Date descending
+                                                  select new AttendanceDTO()
+                                                  {
+                                                      AttendanceId = q.AttendanceId,
+                                                      BranchId = q.BranchId,
+                                                      UserId = q.UserId,
+                                                      User = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.FirstName).FirstOrDefault() + ' ' + _context.User.Where(u => u.UserId == q.UserId).Select(u => u.LastName).FirstOrDefault(),
+                                                      SMEmployeeId = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.SMEmployeeID).FirstOrDefault(),
+                                                      Date = q.Date,
+                                                      TimeIn = q.TimeIn,
+                                                      TimeOut = q.TimeOut,
+                                                  };
+
+                var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
+                var attendance = responsewrapper.Results;
+
+                if (attendance.Any())
+                {
+                    return responsewrapper;
+                }
+
+                throw new Exception("No attendance found for user on: " + DateTime.Today.ToString("d"));
 
             }
             catch (Exception ex)
