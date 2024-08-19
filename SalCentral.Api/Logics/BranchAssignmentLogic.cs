@@ -18,6 +18,7 @@ namespace SalCentral.Api.Logics
         public async Task<object> GetBranchAssignment([FromQuery] PaginationRequest paginationRequest, Guid UserId)
         {
             IQueryable<BranchAssignmentDTO> query = from u in _context.BranchAssignment
+                                                    where u.UserId == UserId
                                                     select new BranchAssignmentDTO()
                                                     {
                                                         BranchAssignmentId = u.BranchAssignmentId,

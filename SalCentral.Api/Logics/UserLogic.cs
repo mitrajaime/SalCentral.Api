@@ -38,6 +38,7 @@ namespace SalCentral.Api.Logics
                                         select new UserDTO()
                                         {
                                             UserId = u.UserId,
+                                            FullName = u.FirstName + ' ' + u.LastName,
                                             FirstName = u.FirstName,
                                             LastName = u.LastName,
                                             Email = u.Email,
@@ -89,6 +90,7 @@ namespace SalCentral.Api.Logics
                                             select new UserDTO()
                                             {
                                                 UserId = u.UserId,
+                                                FullName = u.FirstName + ' ' + u.LastName,
                                                 FirstName = u.FirstName,
                                                 LastName = u.LastName,
                                                 Email = u.Email,
