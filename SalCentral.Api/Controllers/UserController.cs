@@ -115,7 +115,7 @@ namespace SalCentral.Api.Controllers
             try
             {
                 var result = await _userLogic.AuthenticateUser(payload);
-                return Ok(result);
+                return Ok(result.RoleId);
 
             } catch (Exception ex)
             {
