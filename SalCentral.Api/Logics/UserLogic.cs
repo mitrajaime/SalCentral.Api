@@ -68,6 +68,11 @@ namespace SalCentral.Api.Logics
                 string SearchQuery = userFilter.LastName.Trim();
                 query = query.Where(i => i.LastName.Contains(SearchQuery));
            }
+            if (!string.IsNullOrWhiteSpace(userFilter.SMEmployeeId))
+            {
+                string SearchQuery = userFilter.SMEmployeeId.Trim();
+                query = query.Where(i => i.SMEmployeeID.Contains(SearchQuery));
+            }
 
             var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
             var users = responsewrapper.Results;
