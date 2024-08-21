@@ -23,6 +23,7 @@ namespace SalCentral.Api.Logics
             {
                 var branch = new Branch()
                 {
+                    BranchId = (Guid)payload.BranchId,
                     BranchName = payload.BranchName,
                 };
 
