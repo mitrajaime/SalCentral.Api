@@ -14,5 +14,6 @@ namespace SalCentral.Api.DbContext
         public virtual DbSet<Branch>? Branch { get; set; }
         public virtual DbSet<Attendance>? Attendance { get; set; }
         public virtual DbSet<Deduction>? Deduction { get; set; }
+        public virtual DbSet<Schedule>? Schedule { get; set; }
     }
 }

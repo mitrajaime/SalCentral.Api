@@ -69,10 +69,16 @@ namespace SalCentral.Api.Controllers
         }  
 
         [HttpPut("TimeOut")]
-        public async Task<IActionResult> TimeOut([FromBody] AttendanceDTO payload)
+        public async Task<IActionResult> TimeOut([FromBody] AttendanceDTO payload, bool? undoTimeOut)
         {
             try
             {
+                if(undoTimeOut == true)
+                {
+                    var timeOut = await _attendanceLogic.UndoTimeOut(payload);
+                    return Ok(timeOut);
+                }
+
                 var results = await _attendanceLogic.TimeOut(payload);
 
                 return Ok(results);

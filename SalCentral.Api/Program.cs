@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddDbContext<ApiDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SeviConnection")));
+builder.Services.AddDbContext<ApiDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("LocalConnection")));
 
 builder.Services.AddCors(options =>
 {
@@ -30,6 +30,7 @@ builder.Services.AddScoped<BranchLogic>();
 builder.Services.AddScoped<BranchAssignmentLogic>();
 builder.Services.AddScoped<AttendanceLogic>();
 builder.Services.AddScoped<DeductionLogic>();
+builder.Services.AddScoped<ScheduleLogic>();
 
 var app = builder.Build();                                                                                                                                                                               
 

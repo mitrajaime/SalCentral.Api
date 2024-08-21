@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SalCentral.Api.DbContext;
 using SalCentral.Api.DTOs.AttendanceDTO;
 using SalCentral.Api.Models;
+using System;
 using static SalCentral.Api.Pagination.PaginationRequestQuery;
 
 namespace SalCentral.Api.Logics
@@ -177,7 +178,31 @@ namespace SalCentral.Api.Logics
 
                 attendance.TimeOut = DateTime.Now;
                 TimeSpan timeRendered = attendance.TimeOut - attendance.TimeIn;
-                attendance.HoursRendered = (int)timeRendered.TotalHours;
+                attendance.HoursRendered = (int)timeRendered.TotalHours - 1;
+
+                // attendance.OverTimeHours = ___;
+
+                _context.Update(attendance);
+                await _context.SaveChangesAsync();
+
+                return attendance;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<object> UndoTimeOut([FromBody] AttendanceDTO payload)
+        {
+            try
+            {
+                var attendance = await _context.Attendance.Where(u => u.UserId == payload.UserId && u.BranchId == payload.BranchId)
+                                                          .OrderByDescending(u => u.Date)
+                                                          .FirstOrDefaultAsync();
+
+                attendance.TimeOut = DateTime.MinValue;
+                attendance.HoursRendered = 0;
 
                 // attendance.OverTimeHours = ___;
 
