@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using SalCentral.Api.DbContext;
 using SalCentral.Api.DTOs;
+using SalCentral.Api.DTOs.AttendanceDTO;
 using SalCentral.Api.DTOs.UserDTO;
 using SalCentral.Api.Models;
 using System.Linq.Expressions;
+using static SalCentral.Api.Pagination.PaginationRequestQuery;
 
 namespace SalCentral.Api.Logics
 {
@@ -17,24 +19,60 @@ namespace SalCentral.Api.Logics
             _context = context;
         }
 
+        public async Task<object> GetDeduction([FromQuery] PaginationRequest paginationRequest, [FromBody] DeductionDTO payload)
+        {
+            try
+            { 
+                IQueryable<DeductionDTO> query = from q in _context.Deduction
+                                                  select new DeductionDTO()
+                                                  {
+                                                      DeductionId = q.DeductionId,
+                                                      DeductionName = q.DeductionName,
+                                                      BranchId = q.BranchId,
+                                                      BranchName = _context.Branch.Where(u => u.BranchId == q.BranchId).Select(b => b.BranchName).FirstOrDefault(),
+                                                      Amount = q.Amount,
+                                                      Date = q.Date,
+                                                  };
+
+                if (query == null) throw new Exception("No deductions found.");
+
+                var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
+                var attendance = responsewrapper.Results;
+
+                if (attendance.Any())
+                {
+                    return responsewrapper;
+                }
+
+                return null;
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         public async Task<object> CreateDeduction([FromBody] DeductionDTO payload)
         {
             try
             {
-                var branch = new Branch()
+                var deduction = new Deduction()
                 {
-                    BranchName = payload.BranchName,
+                    DeductionName = payload.DeductionName,
+                    BranchId = (Guid)payload.BranchId,
+                    Amount = (double)payload.Amount,
+                    DeductionDescription = payload.DeductionDescription,
+                    Date = DateTime.Now,
                 };
 
-                var exists = _context.Deduction.Where(b => b.DeductionName == payload.DeductionName).Any();
-                if(exists)
-                {
-                    throw new Exception("This branch already exists.");
-                }
+                //var exists = _context.Deduction.Where(b => b.DeductionName == payload.DeductionName).Any();
+                //if(exists)
+                //{
+                //    throw new Exception("This deduction already exists.");
+                //}
 
-                await _context.Branch.AddAsync(branch);
+                await _context.Deduction.AddAsync(deduction);
                 await _context.SaveChangesAsync();
-                return branch;
+                return deduction;
 
             } catch (Exception ex)
             {
@@ -42,35 +80,21 @@ namespace SalCentral.Api.Logics
             }
         }
 
-        public async Task<object> PostUsersBranch([FromBody] UserDTO payload, Guid UserId)
+        public async Task<Deduction> EditDeduction([FromBody] DeductionDTO payload)
         {
             try
             {
-                var duplicates = payload.assignmentList
-                    .GroupBy(a => new { a.UserId, a.BranchId })
-                    .Where(l => l.Count() > 1)
-                    .Select(l => l.Key)
-                    .ToList();
+                var deduction = await _context.Deduction.Where(u => u.DeductionId == payload.DeductionId).FirstOrDefaultAsync();
 
-                if (duplicates.Any())
-                {
-                    throw new Exception("Duplicate assignments found");
-                }
+                deduction.DeductionName = payload.DeductionName;
+                deduction.DeductionDescription = payload.DeductionDescription;
+                deduction.Amount = (double)payload.Amount;
 
-                foreach (var a in payload.assignmentList)
-                {
-
-                    var assignment = new BranchAssignment()
-                    {
-                        UserId = UserId,
-                        BranchId = a.BranchId,
-                    };
-                    _context.BranchAssignment.Add(assignment);
-                }
-
+                _context.Deduction.Update(deduction);
                 await _context.SaveChangesAsync();
 
-                return payload;
+                return deduction;
+
             }
             catch (Exception ex)
             {

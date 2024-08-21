@@ -125,6 +125,80 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "SalCentral.Api.Controllers.DeductionController",
+    "Method": "GetDeductions",
+    "RelativePath": "api/Deduction",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "CurrentPage",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "ElementsPerPage",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "payload",
+        "Type": "SalCentral.Api.DTOs.DeductionDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SalCentral.Api.Controllers.DeductionController",
+    "Method": "PostDeduction",
+    "RelativePath": "api/Deduction",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "payload",
+        "Type": "SalCentral.Api.DTOs.DeductionDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SalCentral.Api.Controllers.DeductionController",
+    "Method": "DeleteDeduction",
+    "RelativePath": "api/Deduction",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "DeductionId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SalCentral.Api.Controllers.DeductionController",
+    "Method": "EditDeduction",
+    "RelativePath": "api/Deduction",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "payload",
+        "Type": "SalCentral.Api.DTOs.DeductionDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "SalCentral.Api.Controllers.RoleController",
     "Method": "GetRole",
     "RelativePath": "api/Role",
@@ -175,6 +249,11 @@
       },
       {
         "Name": "LastName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SMEmployeeId",
         "Type": "System.String",
         "IsRequired": false
       }
@@ -266,6 +345,11 @@
       {
         "Name": "UserId",
         "Type": "System.Nullable\u00601[[System.Guid, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "FullName",
+        "Type": "System.String",
         "IsRequired": false
       },
       {
