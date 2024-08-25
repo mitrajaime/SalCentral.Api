@@ -30,7 +30,7 @@ builder.Services.AddScoped<BranchLogic>();
 builder.Services.AddScoped<BranchAssignmentLogic>();
 builder.Services.AddScoped<AttendanceLogic>();
 builder.Services.AddScoped<DeductionLogic>();
-builder.Services.AddScoped<ScheduleLogic>();
+builder.Services.AddScoped<ScheduleLogic>(); 
 
 var app = builder.Build();                                                                                                                                                                               
 

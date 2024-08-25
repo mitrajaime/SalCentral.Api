@@ -110,10 +110,16 @@ namespace SalCentral.Api.Controllers
         }
 
         [HttpGet("Login")]
-        public async Task<IActionResult> AuthenticateUser([FromQuery] UserDTO payload)
+        public async Task<IActionResult> AuthenticateUser([FromQuery] UserDTO payload, bool? adminLogin)
         {
             try
             {
+                if(adminLogin == true)
+                {
+                    var adminResult = await _userLogic.AuthenticateAdmin(payload);
+                    return Ok(adminResult);
+                }
+
                 var result = await _userLogic.AuthenticateUser(payload);
                 return Ok(result);
 

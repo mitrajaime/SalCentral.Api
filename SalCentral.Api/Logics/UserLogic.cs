@@ -30,6 +30,22 @@ namespace SalCentral.Api.Logics
             }
         }
 
+        public async Task<User> AuthenticateAdmin([FromQuery] UserDTO payload)
+        {
+            try
+            {
+                var user = await _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID && u.Password == payload.Password ).FirstOrDefaultAsync();
+                if (user == null) { throw new Exception("Incorrect account details. Please try again."); }
+                if (user.RoleId.ToString() == "f711d87e-f3e9-4ebd-9d2d-08dcbd237523") { throw new Exception("You do not have the permissions to authorize this action."); }
+
+                return user;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         // GET, PUT, POST, DELETE
 
         public async Task<object> GetUsers([FromQuery] PaginationRequest paginationRequest, [FromQuery] UserFilter userFilter)
