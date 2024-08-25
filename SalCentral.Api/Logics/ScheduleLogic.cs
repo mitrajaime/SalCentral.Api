@@ -81,6 +81,35 @@ namespace SalCentral.Api.Logics
         {
             try
             {
+                if(payload.BranchId.ToString() == "ee6eaf8e-bd49-480d-f411-08dcbd238cc1") 
+                {
+                    var cnpSchedule = new Schedule()
+                    {
+                        UserId = (Guid)payload.UserId,
+                        BranchId = (Guid)payload.BranchId,
+                        Monday = true,
+                        Tuesday = true,
+                        Wednesday = true,
+                        Thursday = true,
+                        Friday = true,
+                        Saturday = true,
+                        Sunday = true,
+                        ExpectedTimeIn = "01/01/0001 9:00 AM",
+                        ExpectedTimeOut = "01/01/0001 7:00 PM",
+                    };
+
+                    var cnpScheduleExists = _context.Schedule.Where(b => b.UserId == payload.UserId).Any();
+                    if (cnpScheduleExists)
+                    {
+                        throw new Exception("This Schedule already exists for this user.");
+                    }
+
+                    await _context.Schedule.AddAsync(cnpSchedule);
+                    await _context.SaveChangesAsync();
+                    return cnpSchedule;
+                }
+
+
                 var Schedule = new Schedule()
                 {
                     UserId = (Guid)payload.UserId,
