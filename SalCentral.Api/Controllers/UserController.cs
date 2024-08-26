@@ -15,13 +15,16 @@ namespace SalCentral.Api.Controllers
         private readonly ApiDbContext _context;
         private readonly UserLogic _userLogic;
         private readonly BranchLogic _branchLogic;
+        private readonly ScheduleLogic _scheduleLogic;
 
-        public UserController(ApiDbContext context, UserLogic userLogic, BranchLogic branchLogic)
+        public UserController(ApiDbContext context, UserLogic userLogic, BranchLogic branchLogic, ScheduleLogic scheduleLogic)
         {
             _userLogic = userLogic;
             _context = context;
             _branchLogic = branchLogic;
+            _scheduleLogic = scheduleLogic;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetUsers([FromQuery] PaginationRequest paginationRequest, [FromQuery] UserFilter userFilter)
         {
@@ -55,6 +58,18 @@ namespace SalCentral.Api.Controllers
         {
             try
             {
+                foreach (var schedule in payload.scheduleList)
+                {
+                    try
+                    {
+                        var createSchedule = await _scheduleLogic.CreateSchedule(schedule);
+
+                    } catch (Exception ex)
+                    {
+                        return BadRequest(ex.Message);
+                    }
+                }
+
                 var result = await _userLogic.PostUser(payload);
                 if (result == null)
                 {

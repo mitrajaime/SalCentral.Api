@@ -18,5 +18,6 @@ namespace SalCentral.Api.DTOs.UserDTO
         public Guid? RoleId { get; set; }
         public string? RoleName { get; set;}
         public List<BranchAssignment>? assignmentList { get; set; }
+        public List<Schedule>? scheduleList { get; set; }
     }
 }

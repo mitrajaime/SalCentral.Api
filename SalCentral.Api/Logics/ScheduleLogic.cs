@@ -77,10 +77,11 @@ namespace SalCentral.Api.Logics
             }
         }
 
-        public async Task<object> CreateSchedule([FromBody] ScheduleDTO payload)
+        public async Task<object> CreateSchedule([FromBody] Schedule payload)
         {
             try
             {
+                //Click n Print 
                 if(payload.BranchId.ToString() == "ee6eaf8e-bd49-480d-f411-08dcbd238cc1") 
                 {
                     var cnpSchedule = new Schedule()
@@ -92,8 +93,8 @@ namespace SalCentral.Api.Logics
                         Wednesday = true,
                         Thursday = true,
                         Friday = true,
-                        Saturday = true,
-                        Sunday = true,
+                        Saturday = false,
+                        Sunday = false,
                         ExpectedTimeIn = "01/01/0001 9:00 AM",
                         ExpectedTimeOut = "01/01/0001 7:00 PM",
                     };
@@ -147,12 +148,6 @@ namespace SalCentral.Api.Logics
                         throw new Exception("More than one day off is not allowed for this branch.");
                     }
                 }
-                //
-                if (payload.BranchId.ToString() == "ee6eaf8e-bd49-480d-f411-08dcbd238cc1")
-                { 
-                   
-                }
-
 
                 var exists = _context.Schedule.Where(b => b.UserId == payload.UserId).Any();
                 if (exists)
