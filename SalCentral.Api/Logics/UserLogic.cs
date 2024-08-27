@@ -70,9 +70,17 @@ namespace SalCentral.Api.Logics
                                                            .FirstOrDefault(),
                                             assignmentList = _context.BranchAssignment.Where(b => b.UserId == u.UserId)
                                                            .ToList(),
+                                            scheduleList = _context.Schedule.Where(s => s.UserId == u.UserId &&
+                                                               (!userFilter.BranchId.HasValue || s.BranchId == userFilter.BranchId)) // Filters by branchId if branchId is passed as a parameter
+                                                           .ToList(),
                                         };
 
            if (query == null) throw new Exception("No users found.");
+
+           if (userFilter.BranchId.HasValue)
+           {
+                query = query.Where(i => i.assignmentList.Any(a => a.BranchId == userFilter.BranchId));
+           }
 
            if (!string.IsNullOrWhiteSpace(userFilter.FirstName))
            {
@@ -84,11 +92,11 @@ namespace SalCentral.Api.Logics
                 string SearchQuery = userFilter.LastName.Trim();
                 query = query.Where(i => i.LastName.Contains(SearchQuery));
            }
-            if (!string.IsNullOrWhiteSpace(userFilter.SMEmployeeId))
-            {
+           if (!string.IsNullOrWhiteSpace(userFilter.SMEmployeeId))
+           {
                 string SearchQuery = userFilter.SMEmployeeId.Trim();
                 query = query.Where(i => i.SMEmployeeID.Contains(SearchQuery));
-            }
+           }
 
             var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
             var users = responsewrapper.Results;
@@ -126,6 +134,8 @@ namespace SalCentral.Api.Logics
                                                                .Select(r => r.RoleName)
                                                                .FirstOrDefault(),
                                                 assignmentList = _context.BranchAssignment.Where(b => b.UserId == u.UserId)
+                                                               .ToList(),
+                                                scheduleList = _context.Schedule.Where(s => s.UserId == u.UserId)
                                                                .ToList(),
                                             };
 
@@ -170,7 +180,6 @@ namespace SalCentral.Api.Logics
             }
 
             await _context.User.AddAsync(user);
-            await _context.SaveChangesAsync();
 
             return user;
         }

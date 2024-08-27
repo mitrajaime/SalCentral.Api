@@ -4,6 +4,7 @@ using SalCentral.Api.DbContext;
 using SalCentral.Api.DTOs.ScheduleDTO;
 using SalCentral.Api.DTOs.UserDTO;
 using SalCentral.Api.Logics;
+using SalCentral.Api.Models;
 using static SalCentral.Api.Pagination.PaginationRequestQuery;
 
 namespace SalCentral.Api.Controllers
@@ -39,9 +40,25 @@ namespace SalCentral.Api.Controllers
             }
             
         }
+        [HttpGet("{UserId}")]
+
+        public async Task<IActionResult> GetScheduleByUserId([FromQuery] PaginationRequest paginationRequest, [FromQuery] ScheduleFilter scheduleFilter, Guid UserId)
+        {
+            try
+            {
+                var result = await _ScheduleLogic.GetScheduleByUserId(paginationRequest, scheduleFilter, UserId);
+                return Ok(result);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
 
         [HttpPost]
-        public async Task<ActionResult> PostSchedule([FromBody] ScheduleDTO payload)
+        public async Task<ActionResult> PostSchedule([FromBody] Schedule payload)
         {
             try
             {

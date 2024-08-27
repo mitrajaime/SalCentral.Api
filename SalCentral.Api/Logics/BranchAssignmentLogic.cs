@@ -22,6 +22,7 @@ namespace SalCentral.Api.Logics
                                                     select new BranchAssignmentDTO()
                                                     {
                                                         BranchAssignmentId = u.BranchAssignmentId,
+                                                        BranchId = u.BranchId,
                                                         UserId = u.UserId,
                                                         FirstName = _context.User
                                                                     .Where(y => y.UserId == u.UserId)
@@ -31,7 +32,6 @@ namespace SalCentral.Api.Logics
                                                                     .Where(y => y.UserId == u.UserId)
                                                                     .Select(f => f.LastName)
                                                                     .FirstOrDefault(),
-                                                        BranchId = u.BranchId,
                                                         BranchName = _context.Branch
                                                                      .Where(b => b.BranchId == u.BranchId)
                                                                      .Select(b => b.BranchName)

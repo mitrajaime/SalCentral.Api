@@ -58,17 +58,7 @@ namespace SalCentral.Api.Controllers
         {
             try
             {
-                foreach (var schedule in payload.scheduleList)
-                {
-                    try
-                    {
-                        var createSchedule = await _scheduleLogic.CreateSchedule(schedule);
-
-                    } catch (Exception ex)
-                    {
-                        return BadRequest(ex.Message);
-                    }
-                }
+                
 
                 var result = await _userLogic.PostUser(payload);
                 if (result == null)
@@ -81,7 +71,21 @@ namespace SalCentral.Api.Controllers
                 {
                     return NotFound();
                 }
+                
+                foreach (var schedule in payload.scheduleList)
+                {
+                    try
+                    {
+                        schedule.UserId = result.UserId;
+                        var createSchedule = await _scheduleLogic.CreateSchedule(schedule);
 
+                    } catch (Exception ex)
+                    {
+                        return BadRequest(ex.Message);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
                 return Ok(result);
 
             }

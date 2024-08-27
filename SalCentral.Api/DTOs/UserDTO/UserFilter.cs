@@ -5,5 +5,6 @@
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? SMEmployeeId {  get; set; }
+        public Guid? BranchId { get; set; }
     }
 }

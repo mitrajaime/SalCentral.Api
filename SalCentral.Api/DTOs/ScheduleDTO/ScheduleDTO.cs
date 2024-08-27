@@ -11,6 +11,7 @@ namespace SalCentral.Api.DTOs.ScheduleDTO
         public string? LastName { get; set; }
         public string? SMEmployeeID { get; set; }
         public Guid? BranchId { get; set; }
+        public string? BranchName { get; set; }
         public bool? Monday { get; set; }
         public bool? Tuesday { get; set; }
         public bool? Wednesday { get; set; }

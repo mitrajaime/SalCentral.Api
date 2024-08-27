@@ -35,11 +35,14 @@ namespace SalCentral.Api.Logics
                                                       LastName = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.LastName).FirstOrDefault(),
                                                       SMEmployeeID = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.SMEmployeeID).FirstOrDefault(),
                                                       BranchId = q.BranchId,
+                                                      BranchName = _context.Branch.Where(b => b.BranchId == q.BranchId).Select(n => n.BranchName).FirstOrDefault(),
                                                       Monday = q.Monday,
                                                       Tuesday = q.Tuesday,
                                                       Wednesday = q.Wednesday,
                                                       Thursday = q.Thursday,
                                                       Friday = q.Friday,
+                                                      Saturday = q.Saturday,
+                                                      Sunday = q.Sunday,
                                                       ExpectedTimeIn = q.ExpectedTimeIn,
                                                       ExpectedTimeOut = q.ExpectedTimeOut,
                                                   };
@@ -76,6 +79,68 @@ namespace SalCentral.Api.Logics
                 throw new Exception(ex.Message);
             }
         }
+        //specific
+        public async Task<object> GetScheduleByUserId([FromQuery] PaginationRequest paginationRequest, [FromQuery] ScheduleFilter scheduleFilter, Guid UserId)
+        {
+            try
+            {
+                IQueryable<ScheduleDTO> query = from q in _context.Schedule
+                                                where q.UserId == UserId && q.BranchId == scheduleFilter.BranchId
+                                                select new ScheduleDTO()
+                                                {
+                                                    ScheduleId = q.ScheduleId,
+                                                    UserId = q.UserId,
+                                                    FullName = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.FirstName).FirstOrDefault() + ' '
+                                                             + _context.User.Where(u => u.UserId == q.UserId).Select(u => u.LastName).FirstOrDefault(),
+                                                    FirstName = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.FirstName).FirstOrDefault(),
+                                                    LastName = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.LastName).FirstOrDefault(),
+                                                    SMEmployeeID = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.SMEmployeeID).FirstOrDefault(),
+                                                    BranchId = q.BranchId,
+                                                    BranchName = _context.Branch.Where(b => b.BranchId == q.BranchId).Select(n => n.BranchName).FirstOrDefault(),
+                                                    Monday = q.Monday,
+                                                    Tuesday = q.Tuesday,
+                                                    Wednesday = q.Wednesday,
+                                                    Thursday = q.Thursday,
+                                                    Friday = q.Friday,
+                                                    Saturday = q.Saturday,
+                                                    Sunday = q.Sunday,
+                                                    ExpectedTimeIn = q.ExpectedTimeIn,
+                                                    ExpectedTimeOut = q.ExpectedTimeOut,
+                                                };
+
+                if (query == null) throw new Exception("No Schedules found.");
+
+                if (!string.IsNullOrWhiteSpace(scheduleFilter.FirstName))
+                {
+                    string SearchQuery = scheduleFilter.FirstName.Trim();
+                    query = query.Where(i => i.FirstName.Contains(SearchQuery));
+                }
+                if (!string.IsNullOrWhiteSpace(scheduleFilter.LastName))
+                {
+                    string SearchQuery = scheduleFilter.LastName.Trim();
+                    query = query.Where(i => i.LastName.Contains(SearchQuery));
+                }
+                if (!string.IsNullOrWhiteSpace(scheduleFilter.SMEmployeeID))
+                {
+                    string SearchQuery = scheduleFilter.SMEmployeeID.Trim();
+                    query = query.Where(i => i.SMEmployeeID.Contains(SearchQuery));
+                }
+
+                var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
+                var schedule = responsewrapper.Results;
+
+                if (schedule.Any())
+                {
+                    return responsewrapper;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
         public async Task<object> CreateSchedule([FromBody] Schedule payload)
         {
@@ -99,14 +164,13 @@ namespace SalCentral.Api.Logics
                         ExpectedTimeOut = "01/01/0001 7:00 PM",
                     };
 
-                    var cnpScheduleExists = _context.Schedule.Where(b => b.UserId == payload.UserId).Any();
+                    var cnpScheduleExists = _context.Schedule.Where(b => b.UserId == payload.UserId && b.BranchId == payload.BranchId).Any();
                     if (cnpScheduleExists)
                     {
-                        throw new Exception("This Schedule already exists for this user.");
+                        throw new Exception("Schedule for Click n Print already exists for this user: ");
                     }
 
                     await _context.Schedule.AddAsync(cnpSchedule);
-                    await _context.SaveChangesAsync();
                     return cnpSchedule;
                 }
 
@@ -145,18 +209,17 @@ namespace SalCentral.Api.Logics
 
                     if (daysOffCount > 1)
                     {
-                        throw new Exception("More than one day off is not allowed for this branch.");
+                        throw new Exception("More than one day off is not allowed for Mitsubishi Photo.");
                     }
                 }
 
                 var exists = _context.Schedule.Where(b => b.UserId == payload.UserId).Any();
                 if (exists)
                 {
-                    throw new Exception("This Schedule already exists.");
+                    throw new Exception("Schedule for Mitsubishi Photo already exists.");
                 }
 
                 await _context.Schedule.AddAsync(Schedule);
-                await _context.SaveChangesAsync();
                 return Schedule;
 
             } catch (Exception ex)
