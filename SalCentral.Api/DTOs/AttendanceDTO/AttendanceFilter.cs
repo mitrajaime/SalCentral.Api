@@ -7,5 +7,6 @@
         public string? password { get; set; }
         public Guid? BranchId { get; set; }
         public bool? Today { get; set; }
+        public Guid? UserId { get; set; }
     }
 }

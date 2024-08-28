@@ -38,6 +38,8 @@ namespace SalCentral.Api.Logics
                                                       Date = q.Date,
                                                       TimeIn = q.TimeIn,
                                                       TimeOut = q.TimeOut,
+                                                      HoursRendered = q.HoursRendered,
+                                                      OverTimeHours = q.OverTimeHours,
                                                   };
 
                 if (query == null) throw new Exception("No attendance found.");
@@ -62,11 +64,8 @@ namespace SalCentral.Api.Logics
         {
             try
             {
-                var userId = _context.User.Where(e => e.SMEmployeeID == attendanceFilter.SMEmployeeId && e.Password == attendanceFilter.password).Select(e => e.UserId).FirstOrDefault();
-                if (userId == null) throw new Exception("Incorrect user details. Please try again.");
-
                 IQueryable<AttendanceDTO> query = from q in _context.Attendance
-                                                  where q.UserId == userId && q.BranchId == attendanceFilter.BranchId
+                                                  where q.UserId == attendanceFilter.UserId && q.BranchId == attendanceFilter.BranchId
                                                   orderby q.Date descending
                                                   select new AttendanceDTO()
                                                   {
@@ -78,6 +77,8 @@ namespace SalCentral.Api.Logics
                                                       Date = q.Date,
                                                       TimeIn = q.TimeIn,
                                                       TimeOut = q.TimeOut,
+                                                      HoursRendered = q.HoursRendered,
+                                                      OverTimeHours = q.OverTimeHours,
                                                   };
 
                 var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
@@ -101,11 +102,8 @@ namespace SalCentral.Api.Logics
         {
             try
             {
-                var userId = _context.User.Where(e => e.SMEmployeeID == attendanceFilter.SMEmployeeId && e.Password == attendanceFilter.password).Select(e => e.UserId).FirstOrDefault();
-                if (userId == null) throw new Exception("Incorrect user details. Please try again.");
-
                 IQueryable<AttendanceDTO> query = from q in _context.Attendance
-                                                  where q.UserId == userId && q.BranchId == attendanceFilter.BranchId && q.Date.Date == DateTime.Today
+                                                  where q.UserId == attendanceFilter.UserId && q.BranchId == attendanceFilter.BranchId && q.Date.Date == DateTime.Today
                                                   orderby q.Date descending
                                                   select new AttendanceDTO()
                                                   {
@@ -117,6 +115,8 @@ namespace SalCentral.Api.Logics
                                                       Date = q.Date,
                                                       TimeIn = q.TimeIn,
                                                       TimeOut = q.TimeOut,
+                                                      HoursRendered = q.HoursRendered,
+                                                      OverTimeHours = q.OverTimeHours,
                                                   };
 
                 var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);

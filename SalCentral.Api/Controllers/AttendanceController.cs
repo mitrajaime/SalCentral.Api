@@ -52,6 +52,21 @@ namespace SalCentral.Api.Controllers
             }
         }
 
+        [HttpGet("{UserId}")]
+        public async Task<IActionResult> GetAttendanceOfEmployee([FromQuery] PaginationRequest paginationRequest, [FromQuery] AttendanceFilter attendanceFilter)
+        {
+            try
+            {
+                var results = await _attendanceLogic.GetAttendanceOfEmployee(paginationRequest, attendanceFilter);
+
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost("TimeIn")]
         public async Task<IActionResult> TimeIn([FromBody] AttendanceDTO payload)
         {
