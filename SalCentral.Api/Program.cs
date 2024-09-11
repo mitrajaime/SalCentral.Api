@@ -27,7 +27,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<UserLogic>();
 builder.Services.AddScoped<PaginationLogic>();
 builder.Services.AddScoped<BranchLogic>();
-builder.Services.AddScoped<BranchAssignmentLogic>();
 builder.Services.AddScoped<AttendanceLogic>();
 builder.Services.AddScoped<DeductionLogic>();
 builder.Services.AddScoped<ScheduleLogic>(); 

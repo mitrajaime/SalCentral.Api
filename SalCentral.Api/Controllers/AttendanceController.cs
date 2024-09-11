@@ -14,15 +14,13 @@ namespace SalCentral.Api.Controllers
         private readonly ApiDbContext _context;
         private readonly UserLogic _userLogic;
         private readonly BranchLogic _branchLogic;
-        private readonly BranchAssignmentLogic _branchAssignmentLogic;
         private readonly AttendanceLogic _attendanceLogic;
 
-        public AttendanceController(ApiDbContext context,   UserLogic userLogic, BranchLogic branchLogic, BranchAssignmentLogic branchAssignmentLogic, AttendanceLogic attendanceLogic)
+        public AttendanceController(ApiDbContext context,   UserLogic userLogic, BranchLogic branchLogic, AttendanceLogic attendanceLogic)
         {
             _userLogic = userLogic;
             _context = context;
             _branchLogic = branchLogic;
-            _branchAssignmentLogic = branchAssignmentLogic;
             _attendanceLogic = attendanceLogic;
         }
 

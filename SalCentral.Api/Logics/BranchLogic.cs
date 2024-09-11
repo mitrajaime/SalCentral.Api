@@ -42,41 +42,5 @@ namespace SalCentral.Api.Logics
                 throw new Exception(ex.Message);
             }
         }
-
-        public async Task<object> PostUsersBranch([FromBody] UserDTO payload, Guid UserId)
-        {
-            try
-            {
-                var duplicates = payload.assignmentList
-                    .GroupBy(a => new { a.UserId, a.BranchId })
-                    .Where(l => l.Count() > 1)
-                    .Select(l => l.Key)
-                    .ToList();
-
-                if (duplicates.Any())
-                {
-                    throw new Exception("Duplicate assignments found");
-                }
-
-                foreach (var a in payload.assignmentList)
-                {
-
-                    var assignment = new BranchAssignment()
-                    {
-                        UserId = UserId,
-                        BranchId = a.BranchId,
-                    };
-                    _context.BranchAssignment.Add(assignment);
-                }
-
-                
-
-                return payload;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
     }
 }

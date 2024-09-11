@@ -68,8 +68,11 @@ namespace SalCentral.Api.Logics
                                                            .Where(r => r.RoleId == u.RoleId)
                                                            .Select(r => r.RoleName)
                                                            .FirstOrDefault(),
-                                            assignmentList = _context.BranchAssignment.Where(b => b.UserId == u.UserId)
-                                                           .ToList(),
+                                            BranchId = u.BranchId,
+                                            BranchName = _context.Branch
+                                                            .Where(b => b.BranchId == u.BranchId)
+                                                            .Select(b => b.BranchName)
+                                                            .FirstOrDefault(),
                                             scheduleList = _context.Schedule.Where(s => s.UserId == u.UserId &&
                                                                (!userFilter.BranchId.HasValue || s.BranchId == userFilter.BranchId)) // Filters by branchId if branchId is passed as a parameter
                                                            .ToList(),
@@ -79,7 +82,7 @@ namespace SalCentral.Api.Logics
 
            if (userFilter.BranchId.HasValue)
            {
-                query = query.Where(i => i.assignmentList.Any(a => a.BranchId == userFilter.BranchId));
+                query = query.Where(i => i.BranchId.ToString().Contains(userFilter.BranchId.ToString()));
            }
 
            if (!string.IsNullOrWhiteSpace(userFilter.FirstName))
@@ -133,8 +136,7 @@ namespace SalCentral.Api.Logics
                                                                .Where(r => r.RoleId == u.RoleId)
                                                                .Select(r => r.RoleName)
                                                                .FirstOrDefault(),
-                                                assignmentList = _context.BranchAssignment.Where(b => b.UserId == u.UserId)
-                                                               .ToList(),
+                                                BranchId = u.BranchId,
                                                 scheduleList = _context.Schedule.Where(s => s.UserId == u.UserId)
                                                                .ToList(),
                                             };
@@ -170,6 +172,7 @@ namespace SalCentral.Api.Logics
                 HireDate = DateTime.Now,
                 Password = payload.Password,
                 RoleId = (Guid)payload.RoleId,
+                BranchId = (Guid)payload.BranchId,
             };
 
             var exists = _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID).Any();

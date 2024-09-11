@@ -13,14 +13,12 @@ namespace SalCentral.Api.Logics
         private readonly ApiDbContext _context;
         private readonly UserLogic _userLogic;
         private readonly BranchLogic _branchLogic;
-        private readonly BranchAssignmentLogic _branchAssignmentLogic;
 
-        public AttendanceLogic(ApiDbContext context, UserLogic userLogic, BranchLogic branchLogic, BranchAssignmentLogic branchAssignmentLogic)
+        public AttendanceLogic(ApiDbContext context, UserLogic userLogic, BranchLogic branchLogic)
         {
             _userLogic = userLogic;
             _context = context;
             _branchLogic = branchLogic;
-            _branchAssignmentLogic = branchAssignmentLogic;
         }
 
         public async Task<object> GetAttendance([FromQuery] PaginationRequest paginationRequest)

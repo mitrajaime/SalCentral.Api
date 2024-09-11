@@ -58,16 +58,9 @@ namespace SalCentral.Api.Controllers
         {
             try
             {
-                
 
                 var result = await _userLogic.PostUser(payload);
                 if (result == null)
-                {
-                    return NotFound();
-                }
-
-                var branchResult = await _branchLogic.PostUsersBranch(payload,result.UserId);
-                if (branchResult == null)
                 {
                     return NotFound();
                 }
