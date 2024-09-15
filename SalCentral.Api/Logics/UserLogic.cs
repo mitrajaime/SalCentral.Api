@@ -73,9 +73,6 @@ namespace SalCentral.Api.Logics
                                                             .Where(b => b.BranchId == u.BranchId)
                                                             .Select(b => b.BranchName)
                                                             .FirstOrDefault(),
-                                            scheduleList = _context.Schedule.Where(s => s.UserId == u.UserId &&
-                                                               (!userFilter.BranchId.HasValue || s.BranchId == userFilter.BranchId)) // Filters by branchId if branchId is passed as a parameter
-                                                           .ToList(),
                                         };
 
            if (query == null) throw new Exception("No users found.");
@@ -137,8 +134,6 @@ namespace SalCentral.Api.Logics
                                                                .Select(r => r.RoleName)
                                                                .FirstOrDefault(),
                                                 BranchId = u.BranchId,
-                                                scheduleList = _context.Schedule.Where(s => s.UserId == u.UserId)
-                                                               .ToList(),
                                             };
 
                 if (query == null) throw new Exception("No users found.");
