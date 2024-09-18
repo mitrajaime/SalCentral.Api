@@ -20,6 +20,7 @@ namespace SalCentral.Api.Logics
         {
             try
             {
+                payload.Password = HashingLogic.HashData(payload.Password);
                 var user = await _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID && u.Password == payload.Password).FirstOrDefaultAsync();
 
                 if (user == null) { throw new Exception("Incorrect account details. Please try again."); }
@@ -165,7 +166,7 @@ namespace SalCentral.Api.Logics
                 ContactNo = payload.ContactNo,
                 SMEmployeeID = payload.SMEmployeeID,
                 HireDate = DateTime.Now,
-                Password = payload.Password,
+                Password = HashingLogic.HashData(payload.Password),
                 RoleId = (Guid)payload.RoleId,
                 BranchId = (Guid)payload.BranchId,
             };
@@ -192,7 +193,7 @@ namespace SalCentral.Api.Logics
                 user.LastName = payload.LastName;
                 user.Email = payload.Email;
                 user.ContactNo = payload.ContactNo;
-                user.Password = payload.Password;
+                user.Password = HashingLogic.HashData(payload.Password);
                 user.RoleId = (Guid)payload.RoleId;
 
                 _context.User.Update(user);

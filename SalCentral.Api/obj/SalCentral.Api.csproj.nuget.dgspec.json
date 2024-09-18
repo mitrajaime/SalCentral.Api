@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ACT-STUDENT\\Downloads\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj": {}
+    "C:\\Users\\ACT-STUDENT\\Source\\Repos\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ACT-STUDENT\\Downloads\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj": {
+    "C:\\Users\\ACT-STUDENT\\Source\\Repos\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ACT-STUDENT\\Downloads\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
+        "projectUniqueName": "C:\\Users\\ACT-STUDENT\\Source\\Repos\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
         "projectName": "SalCentral.Api",
-        "projectPath": "C:\\Users\\ACT-STUDENT\\Downloads\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
+        "projectPath": "C:\\Users\\ACT-STUDENT\\Source\\Repos\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
         "packagesPath": "C:\\Users\\ACT-STUDENT\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ACT-STUDENT\\Downloads\\SalCentral.Api\\SalCentral.Api\\obj\\",
+        "outputPath": "C:\\Users\\ACT-STUDENT\\Source\\Repos\\SalCentral.Api\\SalCentral.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -27,7 +27,6 @@
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "C:\\Program Files\\dotnet\\library-packs": {},
-          "C:\\Program Files\\dotnet\\sdk\\7.0.306\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -40,6 +39,11 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -84,7 +88,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202\\RuntimeIdentifierGraph.json"
         }
       }
     }
