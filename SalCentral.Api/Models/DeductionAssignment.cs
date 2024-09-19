@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SalCentral.Api.DTOs
+namespace SalCentral.Api.Models
 {
     public class DeductionAssignment
     {

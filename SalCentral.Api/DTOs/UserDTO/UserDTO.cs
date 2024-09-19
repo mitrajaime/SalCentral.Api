@@ -13,12 +13,11 @@ namespace SalCentral.Api.DTOs.UserDTO
         public string? ContactNo { get; set; }
         public string? SMEmployeeID { get; set; }
         public DateTime? HireDate { get; set; }
-        //public smth smth Photo { get; set; }
         public string? Password { get; set; }
         public Guid? RoleId { get; set; }
         public string? RoleName { get; set;}
         public Guid? BranchId { get; set; }
         public string? BranchName { get; set; }
-        public Schedule Schedule { get; set; }
+        public Schedule? Schedule { get; set; }
     }
 }

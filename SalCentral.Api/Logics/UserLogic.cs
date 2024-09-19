@@ -194,6 +194,7 @@ namespace SalCentral.Api.Logics
                 user.Email = payload.Email;
                 user.ContactNo = payload.ContactNo;
                 user.Password = HashingLogic.HashData(payload.Password);
+                user.BranchId = (Guid)payload.BranchId;
                 user.RoleId = (Guid)payload.RoleId;
 
                 _context.User.Update(user);
