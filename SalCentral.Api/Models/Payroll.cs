@@ -6,10 +6,12 @@ namespace SalCentral.Api.Models
     {
         [Key]
         public Guid PayrollId { get; set; }
+        public string? PayrollName { get; set; }
         public double TotalAmount { get; set; }
         public Guid GeneratedBy { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public bool IsPaid { get; set; }
+        public DateTime DateCreated { get; set; }
     }
 }

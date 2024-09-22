@@ -10,5 +10,7 @@ namespace SalCentral.Api.DTOs
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public bool? IsPaid { get; set; }
+        public Guid? BranchId { get; set; }
+        public Guid? UserId { get; set; }
     }
 }
