@@ -2439,23 +2439,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\ACT-STUDENT\\.nuget\\packages\\": {},
+    "C:\\Users\\Xxvy\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ACT-STUDENT\\Source\\Repos\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
+      "projectUniqueName": "C:\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
       "projectName": "SalCentral.Api",
-      "projectPath": "C:\\Users\\ACT-STUDENT\\Source\\Repos\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
-      "packagesPath": "C:\\Users\\ACT-STUDENT\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ACT-STUDENT\\Source\\Repos\\SalCentral.Api\\SalCentral.Api\\obj\\",
+      "projectPath": "C:\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
+      "packagesPath": "C:\\Users\\Xxvy\\.nuget\\packages\\",
+      "outputPath": "C:\\SalCentral.Api\\SalCentral.Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\ACT-STUDENT\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Xxvy\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -2526,7 +2526,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400\\RuntimeIdentifierGraph.json"
       }
     }
   }

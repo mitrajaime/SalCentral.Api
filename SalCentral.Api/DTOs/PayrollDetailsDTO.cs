@@ -11,5 +11,8 @@ namespace SalCentral.Api.DTOs
         public double? NetPay { get; set; }
         public double? GrossSalary { get; set; }
         public DateTime? PayDate { get; set; }
+
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 }

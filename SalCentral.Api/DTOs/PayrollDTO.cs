@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SalCentral.Api.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace SalCentral.Api.DTOs
 {
@@ -12,5 +13,6 @@ namespace SalCentral.Api.DTOs
         public bool? IsPaid { get; set; }
         public Guid? BranchId { get; set; }
         public Guid? UserId { get; set; }
+        public List<PayrollDetailsDTO>? PayrollDetailsList { get; set; }
     }
 }

@@ -10,12 +10,10 @@ namespace SalCentral.Api.Logics
     public class PayrollLogic
     {
         private readonly ApiDbContext _context;
-        private readonly PayrollDetails _payrollDetailsLogic;
 
-        public PayrollLogic(ApiDbContext context, PayrollDetails payrollDetails)
+        public PayrollLogic(ApiDbContext context)
         {
             _context = context;
-            _payrollDetailsLogic = payrollDetails;
         }
 
         public async Task<object> GetPayroll([FromQuery] PaginationRequest paginationRequest, Guid BranchId)
@@ -24,19 +22,19 @@ namespace SalCentral.Api.Logics
             {
 
                 IQueryable<PayrollDTO> query = from p in _context.Payroll
-                                               where u.BranchId == BranchId
+                                               
                                                join pd in _context.PayrollDetails on p.PayrollId equals pd.PayrollId
                                                join u in _context.User on pd.UserId equals u.UserId
                                                join b in _context.Branch on u.BranchId equals b.BranchId
+                                               where u.BranchId == BranchId
                                                select new PayrollDTO()
                                                {
                                                    BranchId = b.BranchId,
-                                                   TotalAmount = b.TotalAmount,
-                                                   GeneratedBy = b.GeneratedBy,
-                                                   StartDate = b.StartDate,
-                                                   EndDate = b.EndDate,
-                                                   IsPaid = b.IsPaid,
-                 
+                                                   TotalAmount = p.TotalAmount,
+                                                   GeneratedBy = p.GeneratedBy,
+                                                   StartDate = p.StartDate,
+                                                   EndDate = p.EndDate,
+                                                   IsPaid = p.IsPaid,
                                                };
 
                 if (query == null) throw new Exception("No payroll found in this branch.");
@@ -61,30 +59,88 @@ namespace SalCentral.Api.Logics
 
         public async Task<Payroll> CreatePayroll([FromBody] PayrollDTO payload)
         {
-
-            //Initial Create of Payroll
-            var payroll = new Payroll()
+            try
             {
-                PayrollId = new Guid(),
-                TotalAmount = 0,
-                GeneratedBy = (Guid)payload.UserId,
-                StartDate = (DateTime)payload.StartDate,
-                EndDate= (DateTime)payload.EndDate,
-                IsPaid = (bool)payload.IsPaid,
+                //Initial Create of Payroll
+                var payroll = new Payroll()
+                {
+                    PayrollId = new Guid(),
+                    TotalAmount = 0,
+                    GeneratedBy = (Guid)payload.UserId,
+                    StartDate = (DateTime)payload.StartDate,
+                    EndDate = (DateTime)payload.EndDate,
+                    IsPaid = (bool)payload.IsPaid,
+                };
+
+                foreach (var payrollDetail in payload.PayrollDetailsList)
+                {
+                    CreatePayrollDetail(payrollDetail);
+                }
+
+
+
+                //var exists = _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID).Any();
+
+                //if (exists)
+                //{
+                //    throw new Exception("The user provided already exists.");
+                //}
+
+                await _context.Payroll.AddAsync(payroll);
+
+                return payroll;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<PayrollDetails> CreatePayrollDetail([FromBody] PayrollDetailsDTO payload)
+        {
+
+
+
+            var payrollDetails = new PayrollDetails()
+            {
+                PayrollId = (Guid)payload.PayrollId,
+                UserId = (Guid)payload.UserId,
+                DeductedAmount = (double)payload.DeductedAmount,
+                NetPay = (double)payload.NetPay,
+                GrossSalary = (double)payload.GrossSalary,
+                PayDate = (DateTime)payload.PayDate,
             };
 
+            await _context.PayrollDetails.AddAsync(payrollDetails);
+            return payrollDetails;
+        }
 
+        public double CalculateNetPay(DateTime StartDate, DateTime EndDate, Guid UserId)
+        {
+            // has deductions
+            var totalHours = _context.Attendance
+                .Where(a => a.Date >= StartDate && a.Date <= EndDate && a.UserId == UserId)
+                .Sum(a => a.HoursRendered);
 
-            //var exists = _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID).Any();
+            // 8 hours = P468; 58.5 per hour; 
+            
+            double netPay = totalHours * 58.5;
 
-            //if (exists)
-            //{
-            //    throw new Exception("The user provided already exists.");
-            //}
+            return netPay;
+        }
 
-            await _context.Payroll.AddAsync(payroll);
+        public double CalculateGrossSalary(DateTime StartDate, DateTime EndDate, Guid UserId)
+        {
+            // no deductions
+            var totalHours = _context.Attendance
+                .Where(a => a.Date >= StartDate && a.Date <= EndDate && a.UserId == UserId)
+                .Sum(a => a.HoursRendered);
 
-            return payroll;
+            // 8 hours = P468; 58.5 per hour; 
+
+            double grossSalary = totalHours * 58.5;
+
+            return grossSalary;
         }
 
         //public async Task<User> EditUser([FromBody] UserDTO payload)
