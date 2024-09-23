@@ -2,6 +2,7 @@
 using SalCentral.Api.DbContext;
 using SalCentral.Api.DTOs;
 using SalCentral.Api.Models;
+using System.Linq;
 using static SalCentral.Api.Pagination.PaginationRequestQuery;
 
 
@@ -72,21 +73,23 @@ namespace SalCentral.Api.Logics
                     IsPaid = (bool)payload.IsPaid,
                 };
 
+                // how do i separate this by branch?
+
+                //var exists = _context.Payroll.Where(u => u.StartDate == payload.StartDate && u.EndDate == payload.EndDate).Any();
+
+                //if (exists)
+                //{
+                //    throw new Exception("There is already a payroll created within the given dates.");
+                //}
+
+                await _context.Payroll.AddAsync(payroll);
+
                 foreach (var payrollDetail in payload.PayrollDetailsList)
                 {
                     CreatePayrollDetail(payrollDetail);
                 }
-
-
-
-                //var exists = _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID).Any();
-
-                //if (exists)
-                //{
-                //    throw new Exception("The user provided already exists.");
-                //}
-
-                await _context.Payroll.AddAsync(payroll);
+                
+                await _context.SaveChangesAsync();
 
                 return payroll;
             }
@@ -98,16 +101,13 @@ namespace SalCentral.Api.Logics
 
         public async Task<PayrollDetails> CreatePayrollDetail([FromBody] PayrollDetailsDTO payload)
         {
-
-
-
             var payrollDetails = new PayrollDetails()
             {
                 PayrollId = (Guid)payload.PayrollId,
                 UserId = (Guid)payload.UserId,
                 DeductedAmount = (double)payload.DeductedAmount,
-                NetPay = (double)payload.NetPay,
-                GrossSalary = (double)payload.GrossSalary,
+                NetPay = CalculateNetPay((DateTime)payload.StartDate, (DateTime)payload.EndDate, (Guid)payload.UserId),
+                GrossSalary = CalculateGrossSalary((DateTime)payload.StartDate, (DateTime)payload.EndDate, (Guid)payload.UserId),
                 PayDate = (DateTime)payload.PayDate,
             };
 
@@ -115,23 +115,38 @@ namespace SalCentral.Api.Logics
             return payrollDetails;
         }
 
+        // has deductions
         public double CalculateNetPay(DateTime StartDate, DateTime EndDate, Guid UserId)
         {
-            // has deductions
+            
             var totalHours = _context.Attendance
                 .Where(a => a.Date >= StartDate && a.Date <= EndDate && a.UserId == UserId)
                 .Sum(a => a.HoursRendered);
 
+            var deductionAssignments = _context.DeductionAssignment
+                .Where(d => d.UserId == UserId)
+                .Select(d => d.DeductionId)
+                .ToList();
+
+            var deductions = _context.Deduction
+                .Where(d => deductionAssignments.Contains(d.DeductionId))
+                .ToList();
+
+            var totalDeductions = deductions.Sum(d => d.Amount);
+
             // 8 hours = P468; 58.5 per hour; 
-            
-            double netPay = totalHours * 58.5;
+
+            double grossPay = totalHours * 58.5;
+
+            double netPay = grossPay - totalDeductions;
 
             return netPay;
         }
 
+        // no deductions
         public double CalculateGrossSalary(DateTime StartDate, DateTime EndDate, Guid UserId)
         {
-            // no deductions
+            
             var totalHours = _context.Attendance
                 .Where(a => a.Date >= StartDate && a.Date <= EndDate && a.UserId == UserId)
                 .Sum(a => a.HoursRendered);

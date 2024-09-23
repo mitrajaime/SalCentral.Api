@@ -62,7 +62,6 @@ namespace SalCentral.Api.Logics
                                             ContactNo = u.ContactNo,
                                             SMEmployeeID = u.SMEmployeeID,
                                             HireDate = u.HireDate,
-                                            //Photo = u.Photo,
                                             Password = u.Password,
                                             RoleId = u.RoleId,
                                             RoleName = _context.Role
@@ -127,7 +126,6 @@ namespace SalCentral.Api.Logics
                                                 ContactNo = u.ContactNo,
                                                 SMEmployeeID = u.SMEmployeeID,
                                                 HireDate = u.HireDate,
-                                                //Photo = u.Photo,
                                                 Password = u.Password,
                                                 RoleId = u.RoleId,
                                                 RoleName = _context.Role
