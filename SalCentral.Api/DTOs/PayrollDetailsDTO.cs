@@ -7,12 +7,17 @@ namespace SalCentral.Api.DTOs
         public Guid? PayrollDetailsId { get; set; }
         public Guid? PayrollId { get; set; }
         public Guid? UserId { get; set; }
-        public double? DeductedAmount { get; set; }
-        public double? NetPay { get; set; }
-        public double? GrossSalary { get; set; }
+        public Guid? BranchId { get; set; }
+        public string? BranchName { get; set; }
+        public decimal? DeductedAmount { get; set; }
+        public decimal? NetPay { get; set; }
+        public decimal? GrossSalary { get; set; }
         public DateTime? PayDate { get; set; }
 
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public decimal? SSSContribution { get; set; }
+        public decimal? PagIbigContribution { get; set; }
+        public decimal? PhilHealthContribution { get; set; }
     }
 }

@@ -12,7 +12,6 @@ namespace SalCentral.Api.Models
         public string ContactNo { get; set; }
         public string SMEmployeeID { get; set; }
         public DateTime HireDate { get; set; }
-        //public smth smth Photo { get; set; }
         public string Password { get; set; }
         public Guid RoleId { get; set; }
         public Guid BranchId { get; set; }
