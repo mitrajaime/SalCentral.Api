@@ -78,6 +78,11 @@ namespace SalCentral.Api.Logics
                                                    NetPay = pd.NetPay,
                                                    GrossSalary = pd.GrossSalary,
                                                    PayDate = pd.PayDate,
+                                                   TotalHoursRendered = _context.Attendance.Where(a => a.UserId == u.UserId && 
+                                                                                                  a.Date >= p.StartDate && 
+                                                                                                  a.Date <= p.EndDate)
+                                                                                           .Select(a => a.HoursRendered)
+                                                                                           .Sum(),
                                                };
 
                 if (query == null) throw new Exception("No payroll found for this user");
