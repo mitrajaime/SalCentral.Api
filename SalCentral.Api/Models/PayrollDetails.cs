@@ -12,5 +12,8 @@ namespace SalCentral.Api.Models
         public decimal NetPay { get; set; }
         public decimal GrossSalary { get; set; }
         public DateTime PayDate { get; set; }
+        public decimal SSSContribution { get; set; }
+        public decimal PagIbigContribution { get; set; }
+        public decimal PhilHealthContribution { get; set; }
     }
 }

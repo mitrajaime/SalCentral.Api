@@ -17,5 +17,26 @@ namespace SalCentral.Api.DbContext
         public virtual DbSet<Schedule>? Schedule { get; set; }
         public virtual DbSet<Payroll>? Payroll { get; set; }
         public virtual DbSet<PayrollDetails>? PayrollDetails { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder); 
+
+            modelBuilder.Entity<Payroll>()
+                .Property(p => p.TotalAmount)
+                .HasColumnType("decimal(18,2)");  
+
+            modelBuilder.Entity<PayrollDetails>()
+                .Property(pd => pd.DeductedAmount)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<PayrollDetails>()
+                .Property(pd => pd.GrossSalary)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<PayrollDetails>()
+                .Property(pd => pd.NetPay)
+                .HasColumnType("decimal(18,2)");
+        }
     }
 }

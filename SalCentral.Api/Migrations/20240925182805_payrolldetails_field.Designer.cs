@@ -12,8 +12,8 @@ using SalCentral.Api.DbContext;
 namespace SalCentral.Api.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20240821153901_schedule")]
-    partial class schedule
+    [Migration("20240925182805_payrolldetails_field")]
+    partial class payrolldetails_field
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -71,23 +71,6 @@ namespace SalCentral.Api.Migrations
                     b.ToTable("Branch");
                 });
 
-            modelBuilder.Entity("SalCentral.Api.Models.BranchAssignment", b =>
-                {
-                    b.Property<Guid>("BranchAssignmentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("BranchId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("BranchAssignmentId");
-
-                    b.ToTable("BranchAssignment");
-                });
-
             modelBuilder.Entity("SalCentral.Api.Models.Deduction", b =>
                 {
                     b.Property<Guid>("DeductionId")
@@ -114,6 +97,93 @@ namespace SalCentral.Api.Migrations
                     b.HasKey("DeductionId");
 
                     b.ToTable("Deduction");
+                });
+
+            modelBuilder.Entity("SalCentral.Api.Models.DeductionAssignment", b =>
+                {
+                    b.Property<Guid>("DeductionAssignmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DeductionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("DeductionAssignmentId");
+
+                    b.ToTable("DeductionAssignment");
+                });
+
+            modelBuilder.Entity("SalCentral.Api.Models.Payroll", b =>
+                {
+                    b.Property<Guid>("PayrollId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("GeneratedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PayrollName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("PayrollId");
+
+                    b.ToTable("Payroll");
+                });
+
+            modelBuilder.Entity("SalCentral.Api.Models.PayrollDetails", b =>
+                {
+                    b.Property<Guid>("PayrollDetailsId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("DeductedAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("GrossSalary")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("NetPay")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("PagIbigContribution")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("PayDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PayrollId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("PhilHealthContribution")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("SSSContribution")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PayrollDetailsId");
+
+                    b.ToTable("PayrollDetails");
                 });
 
             modelBuilder.Entity("SalCentral.Api.Models.Role", b =>
@@ -181,6 +251,9 @@ namespace SalCentral.Api.Migrations
                 {
                     b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BranchId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ContactNo")

@@ -3,6 +3,7 @@ using SalCentral.Api.DbContext;
 using SalCentral.Api.DTOs;
 using SalCentral.Api.Models;
 using System.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static SalCentral.Api.Pagination.PaginationRequestQuery;
 
 
@@ -29,9 +30,11 @@ namespace SalCentral.Api.Logics
                                                where u.BranchId == BranchId
                                                select new PayrollDTO()
                                                {
+                                                   PayrollId = p.PayrollId,
                                                    BranchId = b.BranchId,
                                                    TotalAmount = p.TotalAmount,
                                                    GeneratedBy = p.GeneratedBy,
+                                                   GeneratedByName = _context.User.Where(u => u.UserId == p.GeneratedBy).Select(u => u.FirstName).FirstOrDefault() + ' ' + _context.User.Where(u => u.UserId == p.GeneratedBy).Select(u => u.LastName).FirstOrDefault(),
                                                    StartDate = p.StartDate,
                                                    EndDate = p.EndDate,
                                                    IsPaid = p.IsPaid,
@@ -40,9 +43,9 @@ namespace SalCentral.Api.Logics
                 if (query == null) throw new Exception("No payroll found in this branch.");
 
                 var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
-                var users = responsewrapper.Results;
+                var payroll = responsewrapper.Results;
 
-                if (users.Any())
+                if (payroll.Any())
                 {
                     return responsewrapper;
                 }
@@ -67,6 +70,7 @@ namespace SalCentral.Api.Logics
                                                where u.BranchId == BranchId && u.UserId == UserId
                                                select new PayrollDetailsDTO()
                                                {
+                                                   PayrollDetailsId = pd.PayrollDetailsId,
                                                    UserId = u.UserId,
                                                    BranchId = b.BranchId,
                                                    BranchName = b.BranchName,
@@ -99,15 +103,23 @@ namespace SalCentral.Api.Logics
         {
             try
             {
+                var weekNumber = (from p in _context.Payroll
+                                  join pd in _context.PayrollDetails on p.PayrollId equals pd.PayrollId
+                                  join u in _context.User on pd.UserId equals u.UserId
+                                  join b in _context.Branch on u.BranchId equals b.BranchId
+                                  where u.BranchId == payload.BranchId && p.StartDate <= (DateTime)payload.StartDate
+                                  select p).Count() + 1;
                 //Initial Create of Payroll
                 var payroll = new Payroll()
                 {
                     PayrollId = new Guid(),
+                    PayrollName = $"Week {weekNumber}: {((DateTime)payload.StartDate).ToString("MMMM d yyyy")} - {((DateTime)payload.EndDate).ToString("MMMM d yyyy")}",
                     TotalAmount = 0,
                     GeneratedBy = (Guid)payload.UserId,
                     StartDate = (DateTime)payload.StartDate,
                     EndDate = (DateTime)payload.EndDate,
                     IsPaid = (bool)payload.IsPaid,
+                    DateCreated = DateTime.Now,
                 };
 
                 // how do i separate this by branch?
@@ -124,6 +136,12 @@ namespace SalCentral.Api.Logics
                 foreach (var payrollDetail in payload.PayrollDetailsList)
                 {
                     payrollDetail.PayrollId = payroll.PayrollId;
+                    payrollDetail.BranchId = payload.BranchId;
+                    payrollDetail.SSSContribution = payload.SSSContribution;
+                    payrollDetail.PhilHealthContribution = payload.PhilHealthContribution;
+                    payrollDetail.PagIbigContribution = payload.PagIbigContribution;
+                    payrollDetail.StartDate = payload.StartDate;
+                    payrollDetail.EndDate = payload.EndDate;
                     CreatePayrollDetail(payrollDetail);
                 }
                 
@@ -139,37 +157,48 @@ namespace SalCentral.Api.Logics
 
         public async Task<PayrollDetails> CreatePayrollDetail(PayrollDetailsDTO payload)
         {
-            var payrollDetails = new PayrollDetails()
+            try
             {
-                PayrollDetailsId = new Guid(),
-                PayrollId = (Guid)payload.PayrollId,
-                UserId = (Guid)payload.UserId,
-                DeductedAmount = CalculateDeductions(new PayrollFields
+                var payrollDetails = new PayrollDetails()
                 {
-                    SSSContribution = payload.SSSContribution,
-                    PagIbigContribution = payload.PagIbigContribution,
-                    PhilHealthContribution = payload.PhilHealthContribution
-                }),
-                NetPay = CalculateNetPay(new PayrollFields
-                {
-                    StartDate = (DateTime)payload.StartDate,
-                    EndDate = (DateTime)payload.EndDate,
+                    PayrollDetailsId = new Guid(),
+                    PayrollId = (Guid)payload.PayrollId,
                     UserId = (Guid)payload.UserId,
-                    SSSContribution = payload.SSSContribution,
-                    PagIbigContribution = payload.PagIbigContribution,
-                    PhilHealthContribution = payload.PhilHealthContribution
-                }),
-                GrossSalary = CalculateGrossSalary(new PayrollFields
-                {
-                    StartDate = (DateTime)payload.StartDate,
-                    EndDate = (DateTime)payload.EndDate,
-                    UserId = (Guid)payload.UserId,
-                }),
-                PayDate = (DateTime)payload.PayDate,
-            };
+                    DeductedAmount = CalculateDeductions(new PayrollFields
+                    {
+                        SSSContribution = payload.SSSContribution,
+                        PagIbigContribution = payload.PagIbigContribution,
+                        PhilHealthContribution = payload.PhilHealthContribution
+                    }),
+                    NetPay = CalculateNetPay(new PayrollFields
+                    {
+                        StartDate = (DateTime)payload.StartDate,
+                        EndDate = (DateTime)payload.EndDate,
+                        UserId = (Guid)payload.UserId,
+                        SSSContribution = payload.SSSContribution,
+                        PagIbigContribution = payload.PagIbigContribution,
+                        PhilHealthContribution = payload.PhilHealthContribution
+                    }),
+                    GrossSalary = CalculateGrossSalary(new PayrollFields
+                    {
+                        StartDate = (DateTime)payload.StartDate,
+                        EndDate = (DateTime)payload.EndDate,
+                        UserId = (Guid)payload.UserId,
+                    }),
+                    PayDate = (DateTime)payload.PayDate,
+                    SSSContribution = (decimal)payload.SSSContribution,
+                    PagIbigContribution = (decimal)payload.PagIbigContribution,
+                    PhilHealthContribution = (decimal)payload.PhilHealthContribution
+                };
 
-            await _context.PayrollDetails.AddAsync(payrollDetails);
-            return payrollDetails;
+                _context.PayrollDetails.Add(payrollDetails);
+                return payrollDetails;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + ex.StackTrace);
+            }
+
         }
 
         public decimal CalculateDeductions(PayrollFields payroll)
@@ -182,6 +211,12 @@ namespace SalCentral.Api.Logics
             var deductions = _context.Deduction
                 .Where(d => deductionAssignments.Contains(d.DeductionId))
                 .Sum(d => d.Amount);
+
+            if (!deductionAssignments.Any())
+            {
+                deductions = 0;
+            }
+
 
             decimal totalContributions = (decimal)(payroll.SSSContribution + payroll.PagIbigContribution + payroll.PhilHealthContribution);
 
@@ -209,13 +244,18 @@ namespace SalCentral.Api.Logics
 
             var totalDeductions = deductions.Sum(d => d.Amount);
 
+            if (!deductionAssignments.Any())
+            {
+                totalDeductions = 0;
+            }
+
             decimal totalContributions = (decimal)(payroll.SSSContribution + payroll.PagIbigContribution + payroll.PhilHealthContribution);
 
             // 8 hours = P468; 58.5 per hour; 
 
             decimal grossPay = (decimal)(totalHours * 58.5);
 
-            decimal netPay = grossPay - (decimal)totalDeductions;
+            decimal netPay = grossPay - (decimal)totalDeductions - totalContributions;
 
             return netPay;
         }

@@ -12,8 +12,8 @@ using SalCentral.Api.DbContext;
 namespace SalCentral.Api.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20240919143139_branchIdcolumnuser")]
-    partial class branchIdcolumnuser
+    [Migration("20240925150615_payroll_models_initial")]
+    partial class payroll_models_initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -99,11 +99,31 @@ namespace SalCentral.Api.Migrations
                     b.ToTable("Deduction");
                 });
 
+            modelBuilder.Entity("SalCentral.Api.Models.DeductionAssignment", b =>
+                {
+                    b.Property<Guid>("DeductionAssignmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DeductionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("DeductionAssignmentId");
+
+                    b.ToTable("DeductionAssignment");
+                });
+
             modelBuilder.Entity("SalCentral.Api.Models.Payroll", b =>
                 {
                     b.Property<Guid>("PayrollId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
@@ -114,11 +134,14 @@ namespace SalCentral.Api.Migrations
                     b.Property<bool>("IsPaid")
                         .HasColumnType("bit");
 
+                    b.Property<string>("PayrollName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("TotalAmount")
-                        .HasColumnType("float");
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("PayrollId");
 
@@ -131,14 +154,14 @@ namespace SalCentral.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("DeductedAmount")
-                        .HasColumnType("float");
+                    b.Property<decimal>("DeductedAmount")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("GrossSalary")
-                        .HasColumnType("float");
+                    b.Property<decimal>("GrossSalary")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("NetPay")
-                        .HasColumnType("float");
+                    b.Property<decimal>("NetPay")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("PayDate")
                         .HasColumnType("datetime2");

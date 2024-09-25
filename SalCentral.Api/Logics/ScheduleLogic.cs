@@ -4,7 +4,6 @@ using SalCentral.Api.DbContext;
 using SalCentral.Api.DTOs.AttendanceDTO;
 using SalCentral.Api.DTOs.ScheduleDTO;
 using SalCentral.Api.DTOs.UserDTO;
-using SalCentral.Api.Migrations;
 using SalCentral.Api.Models;
 using System.Linq.Expressions;
 using static SalCentral.Api.Pagination.PaginationRequestQuery;
