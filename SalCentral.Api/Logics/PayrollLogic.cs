@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SalCentral.Api.DbContext;
 using SalCentral.Api.DTOs;
 using SalCentral.Api.Models;
@@ -31,13 +32,14 @@ namespace SalCentral.Api.Logics
                                                select new PayrollDTO()
                                                {
                                                    PayrollId = p.PayrollId,
+                                                   PayrollName = p.PayrollName,
+
                                                    BranchId = b.BranchId,
                                                    TotalAmount = p.TotalAmount,
                                                    GeneratedBy = p.GeneratedBy,
                                                    GeneratedByName = _context.User.Where(u => u.UserId == p.GeneratedBy).Select(u => u.FirstName).FirstOrDefault() + ' ' + _context.User.Where(u => u.UserId == p.GeneratedBy).Select(u => u.LastName).FirstOrDefault(),
                                                    StartDate = p.StartDate,
                                                    EndDate = p.EndDate,
-                                                   IsPaid = p.IsPaid,
                                                };
 
                 if (query == null) throw new Exception("No payroll found in this branch.");
@@ -78,6 +80,7 @@ namespace SalCentral.Api.Logics
                                                    NetPay = pd.NetPay,
                                                    GrossSalary = pd.GrossSalary,
                                                    PayDate = pd.PayDate,
+                                                   IsPaid = pd.IsPaid,
                                                    TotalHoursRendered = _context.Attendance.Where(a => a.UserId == u.UserId && 
                                                                                                   a.Date >= p.StartDate && 
                                                                                                   a.Date <= p.EndDate)
@@ -123,7 +126,6 @@ namespace SalCentral.Api.Logics
                     GeneratedBy = (Guid)payload.UserId,
                     StartDate = (DateTime)payload.StartDate,
                     EndDate = (DateTime)payload.EndDate,
-                    IsPaid = (bool)payload.IsPaid,
                     DateCreated = DateTime.Now,
                 };
 
@@ -147,8 +149,11 @@ namespace SalCentral.Api.Logics
                     payrollDetail.PagIbigContribution = payload.PagIbigContribution;
                     payrollDetail.StartDate = payload.StartDate;
                     payrollDetail.EndDate = payload.EndDate;
+
                     CreatePayrollDetail(payrollDetail);
                 }
+
+                CalculateTotalAmount(payroll.PayrollId);
                 
                 await _context.SaveChangesAsync();
 
@@ -191,6 +196,7 @@ namespace SalCentral.Api.Logics
                         UserId = (Guid)payload.UserId,
                     }),
                     PayDate = (DateTime)payload.PayDate,
+                    IsPaid = false,
                     SSSContribution = (decimal)payload.SSSContribution,
                     PagIbigContribution = (decimal)payload.PagIbigContribution,
                     PhilHealthContribution = (decimal)payload.PhilHealthContribution
@@ -208,76 +214,119 @@ namespace SalCentral.Api.Logics
 
         public decimal CalculateDeductions(PayrollFields payroll)
         {
-            var deductionAssignments = _context.DeductionAssignment
-                .Where(d => d.UserId == payroll.UserId)
-                .Select(d => d.DeductionId)
-                .ToList();
-
-            var deductions = _context.Deduction
-                .Where(d => deductionAssignments.Contains(d.DeductionId))
-                .Sum(d => d.Amount);
-
-            if (!deductionAssignments.Any())
+            try
             {
-                deductions = 0;
+                var deductionAssignments = _context.DeductionAssignment
+                    .Where(d => d.UserId == payroll.UserId)
+                    .Select(d => d.DeductionId)
+                    .ToList();
+
+                var deductions = _context.Deduction
+                    .Where(d => deductionAssignments.Contains(d.DeductionId))
+                    .Sum(d => d.Amount);
+
+                if (!deductionAssignments.Any())
+                {
+                    deductions = 0;
+                }
+
+                decimal totalContributions = (decimal)(payroll.SSSContribution + payroll.PagIbigContribution + payroll.PhilHealthContribution);
+
+                decimal totalDeductions = (decimal)deductions + totalContributions;
+
+                return totalDeductions;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to calculate deductions: " + ex.Message);
             }
 
-
-            decimal totalContributions = (decimal)(payroll.SSSContribution + payroll.PagIbigContribution + payroll.PhilHealthContribution);
-
-            decimal totalDeductions = (decimal)deductions + totalContributions;
-
-            return totalDeductions;
         }
 
         // has deductions
         public decimal CalculateNetPay(PayrollFields payroll)
         {
-            
-            var totalHours = _context.Attendance
-                .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId)
-                .Sum(a => a.HoursRendered);
-
-            var deductionAssignments = _context.DeductionAssignment
-                .Where(d => d.UserId == payroll.UserId)
-                .Select(d => d.DeductionId)
-                .ToList();
-
-            var deductions = _context.Deduction
-                .Where(d => deductionAssignments.Contains(d.DeductionId))
-                .ToList();
-
-            var totalDeductions = deductions.Sum(d => d.Amount);
-
-            if (!deductionAssignments.Any())
+            try
             {
-                totalDeductions = 0;
+                var totalHours = _context.Attendance
+                    .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId)
+                    .Sum(a => a.HoursRendered);
+
+                var deductionAssignments = _context.DeductionAssignment
+                    .Where(d => d.UserId == payroll.UserId)
+                    .Select(d => d.DeductionId)
+                    .ToList();
+
+                var deductions = _context.Deduction
+                    .Where(d => deductionAssignments.Contains(d.DeductionId))
+                    .ToList();
+
+                var totalDeductions = deductions.Sum(d => d.Amount);
+
+                if (!deductionAssignments.Any())
+                {
+                    totalDeductions = 0;
+                }
+
+                decimal totalContributions = (decimal)(payroll.SSSContribution + payroll.PagIbigContribution + payroll.PhilHealthContribution);
+
+                // 8 hours = P468; 58.5 per hour; 
+
+                decimal grossPay = (decimal)(totalHours * 58.5);
+
+                decimal netPay = grossPay - (decimal)totalDeductions - totalContributions;
+
+                return netPay;
+
+            } catch (Exception ex)
+            {
+                throw new Exception("Failed to compute for net pay: " + ex.Message);
             }
 
-            decimal totalContributions = (decimal)(payroll.SSSContribution + payroll.PagIbigContribution + payroll.PhilHealthContribution);
-
-            // 8 hours = P468; 58.5 per hour; 
-
-            decimal grossPay = (decimal)(totalHours * 58.5);
-
-            decimal netPay = grossPay - (decimal)totalDeductions - totalContributions;
-
-            return netPay;
         }
 
         // no deductions
         public decimal CalculateGrossSalary(PayrollFields payroll)
         {
+            try
+            {
+                var totalHours = _context.Attendance
+                    .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId)
+                    .Sum(a => a.HoursRendered);
+
+                // 8 hours = P468; 58.5 per hour; 
+
+                decimal grossSalary = (decimal)(totalHours * 58.5);
+
+                return grossSalary;
+
+            } catch (Exception ex)
+            {
+                throw new Exception("Failed to compute for gross salary: " + ex.Message);
+            }
             
-            var totalHours = _context.Attendance
-                .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId)
-                .Sum(a => a.HoursRendered);
+        }
 
-            // 8 hours = P468; 58.5 per hour; 
+        public async Task<decimal> CalculateTotalAmount(Guid PayrollId)
+        {
+            try
+            {
+                var payrollDetailsAmount = _context.PayrollDetails
+                .Where(p => p.PayrollId == PayrollId).Select(p => p.NetPay).Sum();
 
-            decimal grossSalary = (decimal)(totalHours * 58.5);
+                var payroll = await _context.Payroll.Where(p => p.PayrollId == PayrollId).FirstOrDefaultAsync();
 
-            return grossSalary;
+                payroll.TotalAmount = (decimal)payrollDetailsAmount;
+
+                _context.Payroll.Update(payroll);
+
+                return payroll.TotalAmount;
+
+            } catch (Exception ex) 
+            {
+                throw new Exception("Failed to compute for total amount: " + ex.Message);
+            }
+            
         }
 
         //public async Task<User> EditUser([FromBody] UserDTO payload)

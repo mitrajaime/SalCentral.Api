@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ACT-STUDENT\\Source\\Repos\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj": {}
+    "D:\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ACT-STUDENT\\Source\\Repos\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj": {
+    "D:\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ACT-STUDENT\\Source\\Repos\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
+        "projectUniqueName": "D:\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
         "projectName": "SalCentral.Api",
-        "projectPath": "C:\\Users\\ACT-STUDENT\\Source\\Repos\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
-        "packagesPath": "C:\\Users\\ACT-STUDENT\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ACT-STUDENT\\Source\\Repos\\SalCentral.Api\\SalCentral.Api\\obj\\",
+        "projectPath": "D:\\SalCentral.Api\\SalCentral.Api\\SalCentral.Api.csproj",
+        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+        "outputPath": "D:\\SalCentral.Api\\SalCentral.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\ACT-STUDENT\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -27,7 +27,6 @@
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "C:\\Program Files\\dotnet\\library-packs": {},
-          "C:\\Program Files\\dotnet\\sdk\\7.0.306\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -40,6 +39,11 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -84,7 +88,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202\\RuntimeIdentifierGraph.json"
         }
       }
     }

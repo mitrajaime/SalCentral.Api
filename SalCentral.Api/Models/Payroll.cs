@@ -11,7 +11,6 @@ namespace SalCentral.Api.Models
         public Guid GeneratedBy { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public bool IsPaid { get; set; }
         public DateTime DateCreated { get; set; }
     }
 }
