@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SalCentral.Api.DbContext;
 using SalCentral.Api.DTOs;
+using SalCentral.Api.DTOs.UserDTO;
 using SalCentral.Api.Models;
 using System.Linq;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -19,7 +20,7 @@ namespace SalCentral.Api.Logics
             _context = context;
         }
 
-        public async Task<object> GetPayroll([FromQuery] PaginationRequest paginationRequest, Guid BranchId)
+        public async Task<object> GetPayroll([FromQuery] PaginationRequest paginationRequest, Guid BranchId, string? PayrollName)
         {
             try
             {
@@ -43,6 +44,12 @@ namespace SalCentral.Api.Logics
                                                };
 
                 if (query == null) throw new Exception("No payroll found in this branch.");
+
+                if (!string.IsNullOrWhiteSpace(PayrollName))
+                {
+                    string SearchQuery = PayrollName.Trim();
+                    query = query.Where(i => i.PayrollName.Contains(SearchQuery));
+                }
 
                 var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
                 var payroll = responsewrapper.Results;
