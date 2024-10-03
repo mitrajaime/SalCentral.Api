@@ -68,7 +68,7 @@ namespace SalCentral.Api.Logics
 
         }
 
-        public async Task<object> GetPayrollDetail([FromQuery] PaginationRequest paginationRequest, Guid BranchId, Guid UserId)
+        public async Task<object> GetPayrollDetail([FromQuery] PaginationRequest paginationRequest, Guid PayrollId)
         {
             try
             {
@@ -76,11 +76,13 @@ namespace SalCentral.Api.Logics
                                                join p in _context.Payroll on pd.PayrollId equals p.PayrollId
                                                join u in _context.User on pd.UserId equals u.UserId
                                                join b in _context.Branch on u.BranchId equals b.BranchId
-                                               where u.BranchId == BranchId && u.UserId == UserId
+                                               where p.PayrollId == PayrollId
                                                select new PayrollDetailsDTO()
                                                {
                                                    PayrollDetailsId = pd.PayrollDetailsId,
+                                                   PayrollId = pd.PayrollId,
                                                    UserId = u.UserId,
+                                                   FullName = u.FirstName + ' ' + u.LastName,
                                                    BranchId = b.BranchId,
                                                    BranchName = b.BranchName,
                                                    DeductedAmount = pd.DeductedAmount,
@@ -93,6 +95,9 @@ namespace SalCentral.Api.Logics
                                                                                                   a.Date <= p.EndDate)
                                                                                            .Select(a => a.HoursRendered)
                                                                                            .Sum(),
+                                                   PagIbigContribution = pd.PagIbigContribution,
+                                                   PhilHealthContribution = pd.PhilHealthContribution,
+                                                   SSSContribution = pd.SSSContribution,
                                                };
 
                 if (query == null) throw new Exception("No payroll found for this user");
@@ -159,6 +164,8 @@ namespace SalCentral.Api.Logics
 
                     CreatePayrollDetail(payrollDetail);
                 }
+
+                await _context.SaveChangesAsync();
 
                 CalculateTotalAmount(payroll.PayrollId);
                 

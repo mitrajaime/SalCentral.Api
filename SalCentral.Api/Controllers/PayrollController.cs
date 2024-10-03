@@ -23,11 +23,11 @@ namespace SalCentral.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPayroll([FromQuery] PaginationRequest paginationRequest, Guid BranchId)
+        public async Task<IActionResult> GetPayroll([FromQuery] PaginationRequest paginationRequest, Guid BranchId, string? PayrollName)
         {
             try
             {
-                var result = await _payrollLogic.GetPayroll(paginationRequest, BranchId);
+                var result = await _payrollLogic.GetPayroll(paginationRequest, BranchId, PayrollName);
                 return Ok(result);
             }
             catch (Exception ex)

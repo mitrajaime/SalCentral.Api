@@ -6,6 +6,8 @@ namespace SalCentral.Api.DTOs
     {
         public Guid? PayrollDetailsId { get; set; }
         public Guid? PayrollId { get; set; }
+        public string? FullName { get; set; }
+
         public Guid? UserId { get; set; }
         public Guid? BranchId { get; set; }
         public string? BranchName { get; set; }
