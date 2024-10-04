@@ -333,6 +333,7 @@ namespace SalCentral.Api.Logics
                 payroll.TotalAmount = (decimal)payrollDetailsAmount;
 
                 _context.Payroll.Update(payroll);
+                _context.SaveChanges();
 
                 return payroll.TotalAmount;
 
