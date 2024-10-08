@@ -178,7 +178,13 @@ namespace SalCentral.Api.Logics
                 TimeSpan timeRendered = attendance.TimeOut - attendance.TimeIn;
                 attendance.HoursRendered = (int)timeRendered.TotalHours - 1;
 
-                // attendance.OverTimeHours = ___;
+                if(attendance.HoursRendered > 8)
+                {
+                    attendance.OverTimeHours = attendance.HoursRendered - 8;
+                } else
+                {
+                    attendance.OverTimeHours = 0;
+                }
 
                 _context.Update(attendance);
                 await _context.SaveChangesAsync();
@@ -195,14 +201,13 @@ namespace SalCentral.Api.Logics
         {
             try
             {
-                var attendance = await _context.Attendance.Where(u => u.UserId == payload.UserId && u.BranchId == payload.BranchId)
+                var attendance = await _context.Attendance.Where(u => u.UserId == payload.UserId)
                                                           .OrderByDescending(u => u.Date)
                                                           .FirstOrDefaultAsync();
 
                 attendance.TimeOut = DateTime.MinValue;
                 attendance.HoursRendered = 0;
-
-                // attendance.OverTimeHours = ___;
+                attendance.OverTimeHours = 0;
 
                 _context.Update(attendance);
                 await _context.SaveChangesAsync();

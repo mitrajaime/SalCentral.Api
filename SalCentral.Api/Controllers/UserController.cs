@@ -110,6 +110,20 @@ namespace SalCentral.Api.Controllers
             }
         }
 
+        [HttpPut("GenerateAuthorizationKey")]
+        public async Task<IActionResult> GenerateAuthorizationKey(Guid UserId)
+        {
+            try
+            {
+                var result = await _userLogic.GenerateAuthorizationKey(UserId);
+                return Ok(result);
+
+            } catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("Login")]
         public async Task<IActionResult> AuthenticateUser([FromQuery] UserDTO payload, bool? adminLogin)
         {

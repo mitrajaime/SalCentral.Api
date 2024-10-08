@@ -16,12 +16,37 @@ namespace SalCentral.Api.Logics
             _context = context;
         }
 
-        public async Task<User> AuthenticateUser([FromQuery] UserDTO payload)
+        public async Task<object> AuthenticateUser([FromQuery] UserDTO payload)
         {
             try
             {
                 payload.Password = HashingLogic.HashData(payload.Password);
-                var user = await _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID && u.Password == payload.Password).FirstOrDefaultAsync();
+                var user = await _context.User
+                                .Where(u => u.SMEmployeeID == payload.SMEmployeeID && u.Password == payload.Password)
+                                .Select(u => new UserDTO
+                                {
+                                    UserId = u.UserId,
+                                    FullName = u.FirstName + ' ' + u.LastName,
+                                    FirstName = u.FirstName,
+                                    LastName = u.LastName,
+                                    Email = u.Email,
+                                    ContactNo = u.ContactNo,
+                                    SMEmployeeID = u.SMEmployeeID,
+                                    HireDate = u.HireDate,
+                                    Password = u.Password,
+                                    RoleId = u.RoleId,
+                                    RoleName = _context.Role
+                                    .Where(r => r.RoleId == u.RoleId)
+                                    .Select(r => r.RoleName)
+                                    .FirstOrDefault(),
+                                    BranchId = u.BranchId,
+                                    BranchName = _context.Branch
+                                    .Where(b => b.BranchId == u.BranchId)
+                                    .Select(b => b.BranchName)
+                                    .FirstOrDefault(),
+                                    AuthorizationKey = u.AuthorizationKey,
+                                })
+                                .FirstOrDefaultAsync();
 
                 if (user == null) { throw new Exception("Incorrect account details. Please try again."); }
 
@@ -35,9 +60,11 @@ namespace SalCentral.Api.Logics
         {
             try
             {
-                var user = await _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID && u.Password == payload.Password ).FirstOrDefaultAsync();
-                if (user == null) { throw new Exception("Incorrect account details. Please try again."); }
+                var user = await _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID && u.AuthorizationKey == payload.AuthorizationKey).FirstOrDefaultAsync();
+                if (user == null) { throw new Exception("Incorrect authorization key. Please try again."); }
                 if (user.RoleId.ToString() == "f711d87e-f3e9-4ebd-9d2d-08dcbd237523") { throw new Exception("You do not have the permissions to authorize this action."); }
+
+                await GenerateAuthorizationKey((Guid)user.UserId);
 
                 return user;
             }
@@ -73,6 +100,7 @@ namespace SalCentral.Api.Logics
                                                             .Where(b => b.BranchId == u.BranchId)
                                                             .Select(b => b.BranchName)
                                                             .FirstOrDefault(),
+                                            AuthorizationKey = u.AuthorizationKey,
                                         };
 
            if (query == null) throw new Exception("No users found.");
@@ -205,5 +233,25 @@ namespace SalCentral.Api.Logics
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task<User> GenerateAuthorizationKey(Guid UserId)
+        {
+            try
+            {
+                var user = await _context.User.Where(u => u.UserId == UserId).FirstOrDefaultAsync();
+
+                user.AuthorizationKey = Guid.NewGuid();
+
+                _context.User.Update(user);
+                await _context.SaveChangesAsync();
+
+                return user;
+
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
     }
 }
