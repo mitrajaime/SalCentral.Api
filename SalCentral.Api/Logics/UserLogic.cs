@@ -195,6 +195,7 @@ namespace SalCentral.Api.Logics
                 Password = HashingLogic.HashData(payload.Password),
                 RoleId = (Guid)payload.RoleId,
                 BranchId = (Guid)payload.BranchId,
+                AuthorizationKey = payload.RoleId == Guid.Parse("f711d87e-f3e9-4ebd-9d2d-08dcbd237523") ? null : Guid.NewGuid(),
             };
 
             var exists = _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID).Any();

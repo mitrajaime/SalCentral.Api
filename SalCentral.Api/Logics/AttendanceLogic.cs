@@ -26,10 +26,12 @@ namespace SalCentral.Api.Logics
             try
             {
                 IQueryable<AttendanceDTO> query = from q in _context.Attendance
+                                                  join u in _context.User on q.UserId equals u.UserId
+                                                  join b in _context.Branch on u.BranchId equals b.BranchId
                                                   select new AttendanceDTO()
                                                   {
                                                       AttendanceId = q.AttendanceId,
-                                                      BranchId = q.BranchId,
+                                                      BranchId = b.BranchId,
                                                       UserId = q.UserId,
                                                       User = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.FirstName).FirstOrDefault() + ' ' + _context.User.Where(u => u.UserId == q.UserId).Select(u => u.LastName).FirstOrDefault(),
                                                       SMEmployeeId = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.SMEmployeeID).FirstOrDefault(),
@@ -63,12 +65,14 @@ namespace SalCentral.Api.Logics
             try
             {
                 IQueryable<AttendanceDTO> query = from q in _context.Attendance
-                                                  where q.UserId == attendanceFilter.UserId && q.BranchId == attendanceFilter.BranchId
+                                                  join u in _context.User on q.UserId equals u.UserId
+                                                  join b in _context.Branch on u.BranchId equals b.BranchId
+                                                  where q.UserId == attendanceFilter.UserId && b.BranchId == attendanceFilter.BranchId
                                                   orderby q.Date descending
                                                   select new AttendanceDTO()
                                                   {
                                                       AttendanceId = q.AttendanceId,
-                                                      BranchId = q.BranchId,
+                                                      BranchId = b.BranchId,
                                                       UserId = q.UserId,
                                                       User = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.FirstName).FirstOrDefault() + ' ' + _context.User.Where(u => u.UserId == q.UserId).Select(u => u.LastName).FirstOrDefault(),
                                                       SMEmployeeId = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.SMEmployeeID).FirstOrDefault(),
@@ -101,12 +105,14 @@ namespace SalCentral.Api.Logics
             try
             {
                 IQueryable<AttendanceDTO> query = from q in _context.Attendance
-                                                  where q.UserId == attendanceFilter.UserId && q.BranchId == attendanceFilter.BranchId && q.Date.Date == DateTime.Today
+                                                  join u in _context.User on q.UserId equals u.UserId
+                                                  join b in _context.Branch on u.BranchId equals b.BranchId
+                                                  where q.UserId == attendanceFilter.UserId && b.BranchId == attendanceFilter.BranchId && q.Date.Date == DateTime.Today
                                                   orderby q.Date descending
                                                   select new AttendanceDTO()
                                                   {
                                                       AttendanceId = q.AttendanceId,
-                                                      BranchId = q.BranchId,
+                                                      BranchId = b.BranchId,
                                                       UserId = q.UserId,
                                                       User = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.FirstName).FirstOrDefault() + ' ' + _context.User.Where(u => u.UserId == q.UserId).Select(u => u.LastName).FirstOrDefault(),
                                                       SMEmployeeId = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.SMEmployeeID).FirstOrDefault(),
@@ -151,7 +157,6 @@ namespace SalCentral.Api.Logics
                 {
                     Date = DateTime.UtcNow,
                     TimeIn = DateTime.UtcNow,
-                    BranchId = (Guid)payload.BranchId,
                     UserId = (Guid)payload.UserId,
                 };
 
@@ -170,9 +175,14 @@ namespace SalCentral.Api.Logics
         {
             try
             {
-                var attendance = await _context.Attendance.Where(u => u.UserId == payload.UserId && u.BranchId == payload.BranchId)
-                                                          .OrderByDescending(u => u.Date)
-                                                          .FirstOrDefaultAsync();
+                var attendance = await (from a in _context.Attendance
+                                        join u in _context.User
+                                        on a.UserId equals u.UserId
+                                        join b in _context.Branch
+                                        on u.BranchId equals b.BranchId
+                                        where a.UserId == payload.UserId && b.BranchId == payload.BranchId
+                                        orderby a.Date descending
+                                        select a).FirstOrDefaultAsync();
 
                 attendance.TimeOut = DateTime.Now;
                 TimeSpan timeRendered = attendance.TimeOut - attendance.TimeIn;

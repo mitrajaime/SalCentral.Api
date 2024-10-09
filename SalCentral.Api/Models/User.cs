@@ -15,6 +15,6 @@ namespace SalCentral.Api.Models
         public string Password { get; set; }
         public Guid RoleId { get; set; }
         public Guid BranchId { get; set; }
-        public Guid AuthorizationKey { get; set; }
+        public Guid? AuthorizationKey { get; set; }
     }
 }

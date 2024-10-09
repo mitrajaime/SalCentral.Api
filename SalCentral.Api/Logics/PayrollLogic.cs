@@ -30,18 +30,30 @@ namespace SalCentral.Api.Logics
                                                join u in _context.User on pd.UserId equals u.UserId
                                                join b in _context.Branch on u.BranchId equals b.BranchId
                                                where u.BranchId == BranchId
+                                               group p by new
+                                               {
+                                                   p.PayrollId,
+                                                   p.PayrollName,
+                                                   p.TotalAmount,
+                                                   p.GeneratedBy,
+                                                   p.StartDate,
+                                                   p.EndDate,
+                                                   p.DateCreated,
+                                                   b.BranchId
+                                               } into g
                                                select new PayrollDTO()
                                                {
-                                                   PayrollId = p.PayrollId,
-                                                   PayrollName = p.PayrollName,
-
-                                                   BranchId = b.BranchId,
-                                                   TotalAmount = p.TotalAmount,
-                                                   GeneratedBy = p.GeneratedBy,
-                                                   GeneratedByName = _context.User.Where(u => u.UserId == p.GeneratedBy).Select(u => u.FirstName).FirstOrDefault() + ' ' + _context.User.Where(u => u.UserId == p.GeneratedBy).Select(u => u.LastName).FirstOrDefault(),
-                                                   StartDate = p.StartDate,
-                                                   EndDate = p.EndDate,
+                                                   PayrollId = g.Key.PayrollId,
+                                                   PayrollName = g.Key.PayrollName,
+                                                   BranchId = g.Key.BranchId,
+                                                   TotalAmount = g.Key.TotalAmount,
+                                                   GeneratedBy = g.Key.GeneratedBy,
+                                                   GeneratedByName = _context.User.Where(u => u.UserId == g.Key.GeneratedBy).Select(u => u.FirstName).FirstOrDefault() + ' ' + _context.User.Where(u => u.UserId == g.Key.GeneratedBy).Select(u => u.LastName).FirstOrDefault(),
+                                                   StartDate = g.Key.StartDate,
+                                                   EndDate = g.Key.EndDate,
+                                                   DateCreated = g.Key.DateCreated
                                                };
+
 
                 if (query == null) throw new Exception("No payroll found in this branch.");
 
@@ -129,10 +141,11 @@ namespace SalCentral.Api.Logics
                                   join b in _context.Branch on u.BranchId equals b.BranchId
                                   where u.BranchId == payload.BranchId && p.StartDate <= (DateTime)payload.StartDate
                                   select p).Count() + 1;
-                //Initial Create of Payroll
+
+                // Create the payroll
                 var payroll = new Payroll()
                 {
-                    PayrollId = new Guid(),
+                    PayrollId = Guid.NewGuid(),
                     PayrollName = $"Week {weekNumber}: {((DateTime)payload.StartDate).ToString("MMMM d yyyy")} - {((DateTime)payload.EndDate).ToString("MMMM d yyyy")}",
                     TotalAmount = 0,
                     GeneratedBy = (Guid)payload.UserId,
@@ -141,34 +154,37 @@ namespace SalCentral.Api.Logics
                     DateCreated = DateTime.Now,
                 };
 
-                // how do i separate this by branch?
-
-                //var exists = _context.Payroll.Where(u => u.StartDate == payload.StartDate && u.EndDate == payload.EndDate).Any();
-
-                //if (exists)
-                //{
-                //    throw new Exception("There is already a payroll created within the given dates.");
-                //}
-
                 await _context.Payroll.AddAsync(payroll);
 
-                foreach (var payrollDetail in payload.PayrollDetailsList)
+                // Fetch all users with attendance within the date range and for the specified branch
+                var usersWithAttendance = _context.Attendance
+                    .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate)
+                    .Join(_context.User, attendance => attendance.UserId, user => user.UserId, (attendance, user) => user)
+                    .Where(user => user.BranchId == payload.BranchId)
+                    .Distinct()
+                    .ToList();
+
+                foreach (var user in usersWithAttendance)
                 {
-                    payrollDetail.PayrollId = payroll.PayrollId;
-                    payrollDetail.BranchId = payload.BranchId;
-                    payrollDetail.SSSContribution = payload.SSSContribution;
-                    payrollDetail.PhilHealthContribution = payload.PhilHealthContribution;
-                    payrollDetail.PagIbigContribution = payload.PagIbigContribution;
-                    payrollDetail.StartDate = payload.StartDate;
-                    payrollDetail.EndDate = payload.EndDate;
+                    var payrollDetail = new PayrollDetailsDTO
+                    {
+                        PayrollId = payroll.PayrollId,
+                        BranchId = payload.BranchId,
+                        UserId = user.UserId,
+                        SSSContribution = payload.SSSContribution,
+                        PhilHealthContribution = payload.PhilHealthContribution,
+                        PagIbigContribution = payload.PagIbigContribution,
+                        StartDate = payload.StartDate,
+                        EndDate = payload.EndDate
+                    };
 
                     CreatePayrollDetail(payrollDetail);
                 }
 
                 await _context.SaveChangesAsync();
 
-                CalculateTotalAmount(payroll.PayrollId);
-                
+                await CalculateTotalAmount(payroll.PayrollId);
+
                 await _context.SaveChangesAsync();
 
                 return payroll;
@@ -178,6 +194,7 @@ namespace SalCentral.Api.Logics
                 throw new Exception(ex.Message);
             }
         }
+
 
         public async Task<PayrollDetails> CreatePayrollDetail(PayrollDetailsDTO payload)
         {
@@ -209,7 +226,6 @@ namespace SalCentral.Api.Logics
                         EndDate = (DateTime)payload.EndDate,
                         UserId = (Guid)payload.UserId,
                     }),
-                    PayDate = (DateTime)payload.PayDate,
                     IsPaid = false,
                     SSSContribution = (decimal)payload.SSSContribution,
                     PagIbigContribution = (decimal)payload.PagIbigContribution,
@@ -325,15 +341,22 @@ namespace SalCentral.Api.Logics
         {
             try
             {
-                var payrollDetailsAmount = _context.PayrollDetails
-                .Where(p => p.PayrollId == PayrollId).Select(p => p.NetPay).Sum();
+                var payrollDetailsAmount = await _context.PayrollDetails
+                    .Where(p => p.PayrollId == PayrollId)
+                    .Select(p => p.NetPay)
+                    .SumAsync();
 
                 var payroll = await _context.Payroll.Where(p => p.PayrollId == PayrollId).FirstOrDefaultAsync();
+
+                if (payroll == null)
+                {
+                    throw new Exception("Payroll not found");
+                }
 
                 payroll.TotalAmount = (decimal)payrollDetailsAmount;
 
                 _context.Payroll.Update(payroll);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return payroll.TotalAmount;
 

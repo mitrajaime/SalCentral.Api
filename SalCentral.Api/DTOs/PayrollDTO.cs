@@ -12,6 +12,7 @@ namespace SalCentral.Api.DTOs
         public Guid? GeneratedBy { get; set; }
         public string? GeneratedByName { get; set; }
 
+        public DateTime? DateCreated { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public Guid? BranchId { get; set; }
