@@ -1,9 +1,9 @@
-﻿namespace SalCentral.Api.DTOs
+﻿namespace SalCentral.Api.DTOs.PayrollDTO
 {
     public class PayrollFields
     {
         public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set;}
+        public DateTime? EndDate { get; set; }
         public Guid? UserId { get; set; }
         public decimal? SSSContribution { get; set; }
         public decimal? PagIbigContribution { get; set; }

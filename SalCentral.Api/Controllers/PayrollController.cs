@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SalCentral.Api.DbContext;
-using SalCentral.Api.DTOs;
+using SalCentral.Api.DTOs.PayrollDTO;
 using SalCentral.Api.DTOs.UserDTO;
 using SalCentral.Api.Logics;
 using SalCentral.Api.Models;
@@ -23,11 +23,11 @@ namespace SalCentral.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPayroll([FromQuery] PaginationRequest paginationRequest, Guid BranchId, string? PayrollName)
+        public async Task<IActionResult> GetPayroll([FromQuery] PaginationRequest paginationRequest, [FromQuery] PayrollFilter payrollFilter)
         {
             try
             {
-                var result = await _payrollLogic.GetPayroll(paginationRequest, BranchId, PayrollName);
+                var result = await _payrollLogic.GetPayroll(paginationRequest, payrollFilter);
                 return Ok(result);
             }
             catch (Exception ex)

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SalCentral.Api.DbContext;
-using SalCentral.Api.DTOs;
+using SalCentral.Api.DTOs.PayrollDTO;
 using SalCentral.Api.Logics;
 using SalCentral.Api.Models;
 using static SalCentral.Api.Pagination.PaginationRequestQuery;

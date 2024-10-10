@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SalCentral.Api.DbContext;
 using SalCentral.Api.DTOs;
+using SalCentral.Api.DTOs.PayrollDTO;
 using SalCentral.Api.DTOs.UserDTO;
 using SalCentral.Api.Models;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace SalCentral.Api.Logics
             _context = context;
         }
 
-        public async Task<object> GetPayroll([FromQuery] PaginationRequest paginationRequest, Guid BranchId, string? PayrollName)
+        public async Task<object> GetPayroll([FromQuery] PaginationRequest paginationRequest, [FromQuery] PayrollFilter payrollFilter)
         {
             try
             {
@@ -29,7 +30,7 @@ namespace SalCentral.Api.Logics
                                                join pd in _context.PayrollDetails on p.PayrollId equals pd.PayrollId
                                                join u in _context.User on pd.UserId equals u.UserId
                                                join b in _context.Branch on u.BranchId equals b.BranchId
-                                               where u.BranchId == BranchId
+                                               where u.BranchId == payrollFilter.BranchId
                                                group p by new
                                                {
                                                    p.PayrollId,
@@ -48,7 +49,10 @@ namespace SalCentral.Api.Logics
                                                    BranchId = g.Key.BranchId,
                                                    TotalAmount = g.Key.TotalAmount,
                                                    GeneratedBy = g.Key.GeneratedBy,
-                                                   GeneratedByName = _context.User.Where(u => u.UserId == g.Key.GeneratedBy).Select(u => u.FirstName).FirstOrDefault() + ' ' + _context.User.Where(u => u.UserId == g.Key.GeneratedBy).Select(u => u.LastName).FirstOrDefault(),
+                                                   GeneratedByName = _context.User
+                                                       .Where(u => u.UserId == g.Key.GeneratedBy)
+                                                       .Select(u => u.FirstName + " " + u.LastName)
+                                                       .FirstOrDefault(),
                                                    StartDate = g.Key.StartDate,
                                                    EndDate = g.Key.EndDate,
                                                    DateCreated = g.Key.DateCreated
@@ -57,10 +61,15 @@ namespace SalCentral.Api.Logics
 
                 if (query == null) throw new Exception("No payroll found in this branch.");
 
-                if (!string.IsNullOrWhiteSpace(PayrollName))
+                if (!string.IsNullOrWhiteSpace(payrollFilter.PayrollName))
                 {
-                    string SearchQuery = PayrollName.Trim();
+                    string SearchQuery = payrollFilter.PayrollName.Trim();
                     query = query.Where(i => i.PayrollName.Contains(SearchQuery));
+                }
+                if (!string.IsNullOrWhiteSpace(payrollFilter.GeneratedByName))
+                {
+                    string generatedByQuery = payrollFilter.GeneratedByName.Trim();
+                    query = query.Where(i => i.GeneratedByName.Contains(generatedByQuery));
                 }
 
                 var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
@@ -135,12 +144,12 @@ namespace SalCentral.Api.Logics
         {
             try
             {
-                var weekNumber = (from p in _context.Payroll
+                var weekNumber = await (from p in _context.Payroll
                                   join pd in _context.PayrollDetails on p.PayrollId equals pd.PayrollId
                                   join u in _context.User on pd.UserId equals u.UserId
                                   join b in _context.Branch on u.BranchId equals b.BranchId
                                   where u.BranchId == payload.BranchId && p.StartDate <= (DateTime)payload.StartDate
-                                  select p).Count() + 1;
+                                  select p).CountAsync() + 1;
 
                 // Create the payroll
                 var payroll = new Payroll()
@@ -157,12 +166,12 @@ namespace SalCentral.Api.Logics
                 await _context.Payroll.AddAsync(payroll);
 
                 // Fetch all users with attendance within the date range and for the specified branch
-                var usersWithAttendance = _context.Attendance
+                var usersWithAttendance = await _context.Attendance
                     .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate)
                     .Join(_context.User, attendance => attendance.UserId, user => user.UserId, (attendance, user) => user)
                     .Where(user => user.BranchId == payload.BranchId)
                     .Distinct()
-                    .ToList();
+                    .ToListAsync();
 
                 foreach (var user in usersWithAttendance)
                 {
@@ -178,7 +187,7 @@ namespace SalCentral.Api.Logics
                         EndDate = payload.EndDate
                     };
 
-                    CreatePayrollDetail(payrollDetail);
+                    await CreatePayrollDetail(payrollDetail);
                 }
 
                 await _context.SaveChangesAsync();
@@ -205,13 +214,13 @@ namespace SalCentral.Api.Logics
                     PayrollDetailsId = new Guid(),
                     PayrollId = (Guid)payload.PayrollId,
                     UserId = (Guid)payload.UserId,
-                    DeductedAmount = CalculateDeductions(new PayrollFields
+                    DeductedAmount = await CalculateDeductions(new PayrollFields
                     {
                         SSSContribution = payload.SSSContribution,
                         PagIbigContribution = payload.PagIbigContribution,
                         PhilHealthContribution = payload.PhilHealthContribution
                     }),
-                    NetPay = CalculateNetPay(new PayrollFields
+                    NetPay = await CalculateNetPay(new PayrollFields
                     {
                         StartDate = (DateTime)payload.StartDate,
                         EndDate = (DateTime)payload.EndDate,
@@ -220,7 +229,7 @@ namespace SalCentral.Api.Logics
                         PagIbigContribution = payload.PagIbigContribution,
                         PhilHealthContribution = payload.PhilHealthContribution
                     }),
-                    GrossSalary = CalculateGrossSalary(new PayrollFields
+                    GrossSalary = await CalculateGrossSalary(new PayrollFields
                     {
                         StartDate = (DateTime)payload.StartDate,
                         EndDate = (DateTime)payload.EndDate,
@@ -232,7 +241,7 @@ namespace SalCentral.Api.Logics
                     PhilHealthContribution = (decimal)payload.PhilHealthContribution
                 };
 
-                _context.PayrollDetails.Add(payrollDetails);
+                await _context.PayrollDetails.AddAsync(payrollDetails);
                 return payrollDetails;
             }
             catch (Exception ex)
@@ -242,18 +251,18 @@ namespace SalCentral.Api.Logics
 
         }
 
-        public decimal CalculateDeductions(PayrollFields payroll)
+        public async Task<decimal> CalculateDeductions(PayrollFields payroll)
         {
             try
             {
-                var deductionAssignments = _context.DeductionAssignment
+                var deductionAssignments = await _context.DeductionAssignment
                     .Where(d => d.UserId == payroll.UserId)
                     .Select(d => d.DeductionId)
-                    .ToList();
+                    .ToListAsync();
 
-                var deductions = _context.Deduction
+                var deductions = await _context.Deduction
                     .Where(d => deductionAssignments.Contains(d.DeductionId))
-                    .Sum(d => d.Amount);
+                    .SumAsync(d => d.Amount);
 
                 if (!deductionAssignments.Any())
                 {
@@ -274,22 +283,22 @@ namespace SalCentral.Api.Logics
         }
 
         // has deductions
-        public decimal CalculateNetPay(PayrollFields payroll)
+        public async Task<decimal> CalculateNetPay(PayrollFields payroll)
         {
             try
             {
-                var totalHours = _context.Attendance
+                var totalHours = await _context.Attendance
                     .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId)
-                    .Sum(a => a.HoursRendered);
+                    .SumAsync(a => a.HoursRendered);
 
-                var deductionAssignments = _context.DeductionAssignment
+                var deductionAssignments = await _context.DeductionAssignment
                     .Where(d => d.UserId == payroll.UserId)
                     .Select(d => d.DeductionId)
-                    .ToList();
+                    .ToListAsync();
 
-                var deductions = _context.Deduction
+                var deductions = await _context.Deduction
                     .Where(d => deductionAssignments.Contains(d.DeductionId))
-                    .ToList();
+                    .ToListAsync();
 
                 var totalDeductions = deductions.Sum(d => d.Amount);
 
@@ -316,13 +325,13 @@ namespace SalCentral.Api.Logics
         }
 
         // no deductions
-        public decimal CalculateGrossSalary(PayrollFields payroll)
+        public async Task<decimal> CalculateGrossSalary(PayrollFields payroll)
         {
             try
             {
-                var totalHours = _context.Attendance
+                var totalHours = await _context.Attendance
                     .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId)
-                    .Sum(a => a.HoursRendered);
+                    .SumAsync(a => a.HoursRendered);
 
                 // 8 hours = P468; 58.5 per hour; 
 

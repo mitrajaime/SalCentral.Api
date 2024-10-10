@@ -1,7 +1,7 @@
 ﻿using SalCentral.Api.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace SalCentral.Api.DTOs
+namespace SalCentral.Api.DTOs.PayrollDTO
 {
     public class PayrollDTO
     {
