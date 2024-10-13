@@ -100,6 +100,7 @@ namespace SalCentral.Api.Logics
                                                             .Where(b => b.BranchId == u.BranchId)
                                                             .Select(b => b.BranchName)
                                                             .FirstOrDefault(),
+                                            Salary = u.Salary,
                                             AuthorizationKey = u.AuthorizationKey,
                                         };
 
@@ -160,6 +161,7 @@ namespace SalCentral.Api.Logics
                                                                .Where(r => r.RoleId == u.RoleId)
                                                                .Select(r => r.RoleName)
                                                                .FirstOrDefault(),
+                                                Salary = u.Salary,
                                                 BranchId = u.BranchId,
                                             };
 
@@ -196,6 +198,7 @@ namespace SalCentral.Api.Logics
                 RoleId = (Guid)payload.RoleId,
                 BranchId = (Guid)payload.BranchId,
                 AuthorizationKey = payload.RoleId == Guid.Parse("f711d87e-f3e9-4ebd-9d2d-08dcbd237523") ? null : Guid.NewGuid(),
+                Salary = (decimal)payload.Salary
             };
 
             var exists = _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID).Any();
@@ -223,6 +226,7 @@ namespace SalCentral.Api.Logics
                 user.Password = HashingLogic.HashData(payload.Password);
                 user.BranchId = (Guid)payload.BranchId;
                 user.RoleId = (Guid)payload.RoleId;
+                user.Salary = (decimal)payload.Salary;
 
                 _context.User.Update(user);
                 await _context.SaveChangesAsync();
