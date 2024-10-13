@@ -184,7 +184,8 @@ namespace SalCentral.Api.Logics
                         PhilHealthContribution = payload.PhilHealthContribution,
                         PagIbigContribution = payload.PagIbigContribution,
                         StartDate = payload.StartDate,
-                        EndDate = payload.EndDate
+                        EndDate = payload.EndDate,
+                        Salary = user.Salary
                     };
 
                     await CreatePayrollDetail(payrollDetail);
@@ -218,7 +219,8 @@ namespace SalCentral.Api.Logics
                     {
                         SSSContribution = payload.SSSContribution,
                         PagIbigContribution = payload.PagIbigContribution,
-                        PhilHealthContribution = payload.PhilHealthContribution
+                        PhilHealthContribution = payload.PhilHealthContribution,
+                        Salary = payload.Salary
                     }),
                     NetPay = await CalculateNetPay(new PayrollFields
                     {
@@ -227,13 +229,15 @@ namespace SalCentral.Api.Logics
                         UserId = (Guid)payload.UserId,
                         SSSContribution = payload.SSSContribution,
                         PagIbigContribution = payload.PagIbigContribution,
-                        PhilHealthContribution = payload.PhilHealthContribution
+                        PhilHealthContribution = payload.PhilHealthContribution,
+                        Salary = payload.Salary
                     }),
                     GrossSalary = await CalculateGrossSalary(new PayrollFields
                     {
                         StartDate = (DateTime)payload.StartDate,
                         EndDate = (DateTime)payload.EndDate,
                         UserId = (Guid)payload.UserId,
+                        Salary = payload.Salary
                     }),
                     IsPaid = false,
                     SSSContribution = (decimal)payload.SSSContribution,

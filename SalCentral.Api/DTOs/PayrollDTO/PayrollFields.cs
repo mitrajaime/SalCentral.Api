@@ -8,5 +8,6 @@
         public decimal? SSSContribution { get; set; }
         public decimal? PagIbigContribution { get; set; }
         public decimal? PhilHealthContribution { get; set; }
+        public decimal? Salary { get; set; }
     }
 }
