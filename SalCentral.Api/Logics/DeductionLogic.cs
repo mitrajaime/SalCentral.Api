@@ -28,11 +28,17 @@ namespace SalCentral.Api.Logics
                                                   {
                                                       DeductionId = q.DeductionId,
                                                       DeductionName = q.DeductionName,
+                                                      DeductionDescription = q.DeductionDescription,
                                                       BranchId = q.BranchId,
                                                       BranchName = _context.Branch.Where(u => u.BranchId == q.BranchId).Select(b => b.BranchName).FirstOrDefault(),
                                                       Amount = q.Amount,
                                                       Date = q.Date,
                                                   };
+
+                if (payload.BranchId.HasValue)
+                {
+                    query = query.Where(i => i.BranchId.ToString().Contains(payload.BranchId.ToString()));
+                }
 
                 if (query == null) throw new Exception("No deductions found.");
 
@@ -59,7 +65,7 @@ namespace SalCentral.Api.Logics
                 {
                     DeductionName = payload.DeductionName,
                     BranchId = (Guid)payload.BranchId,
-                    Amount = (double)payload.Amount,
+                    Amount = (decimal)payload.Amount,
                     DeductionDescription = payload.DeductionDescription,
                     Date = DateTime.Now,
                 };
@@ -88,7 +94,7 @@ namespace SalCentral.Api.Logics
 
                 deduction.DeductionName = payload.DeductionName;
                 deduction.DeductionDescription = payload.DeductionDescription;
-                deduction.Amount = (double)payload.Amount;
+                deduction.Amount = (decimal)payload.Amount;
 
                 _context.Deduction.Update(deduction);
                 await _context.SaveChangesAsync();

@@ -16,6 +16,6 @@ namespace SalCentral.Api.Models
         public Guid RoleId { get; set; }
         public Guid BranchId { get; set; }
         public Guid? AuthorizationKey { get; set; }
-        public decimal Salary { get; set; }
+        public decimal SalaryRate { get; set; }
     }
 }

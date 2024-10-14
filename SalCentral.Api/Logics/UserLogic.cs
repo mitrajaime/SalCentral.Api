@@ -100,7 +100,7 @@ namespace SalCentral.Api.Logics
                                                             .Where(b => b.BranchId == u.BranchId)
                                                             .Select(b => b.BranchName)
                                                             .FirstOrDefault(),
-                                            Salary = u.Salary,
+                                            SalaryRate = u.SalaryRate,
                                             AuthorizationKey = u.AuthorizationKey,
                                         };
 
@@ -161,7 +161,7 @@ namespace SalCentral.Api.Logics
                                                                .Where(r => r.RoleId == u.RoleId)
                                                                .Select(r => r.RoleName)
                                                                .FirstOrDefault(),
-                                                Salary = u.Salary,
+                                                SalaryRate = u.SalaryRate,
                                                 BranchId = u.BranchId,
                                             };
 
@@ -185,32 +185,39 @@ namespace SalCentral.Api.Logics
 
         public async Task<User> PostUser([FromBody] UserDTO payload)
         {
-            var user = new User()
+            try
             {
-                UserId = new Guid(),
-                FirstName = payload.FirstName,
-                LastName = payload.LastName,
-                Email = payload.Email,
-                ContactNo = payload.ContactNo,
-                SMEmployeeID = payload.SMEmployeeID,
-                HireDate = DateTime.Now,
-                Password = HashingLogic.HashData(payload.Password),
-                RoleId = (Guid)payload.RoleId,
-                BranchId = (Guid)payload.BranchId,
-                AuthorizationKey = payload.RoleId == Guid.Parse("f711d87e-f3e9-4ebd-9d2d-08dcbd237523") ? null : Guid.NewGuid(),
-                Salary = (decimal)payload.Salary
-            };
+                var user = new User()
+                {
+                    UserId = new Guid(),
+                    FirstName = payload.FirstName,
+                    LastName = payload.LastName,
+                    Email = payload.Email,
+                    ContactNo = payload.ContactNo,
+                    SMEmployeeID = payload.SMEmployeeID,
+                    HireDate = DateTime.Now,
+                    Password = HashingLogic.HashData(payload.Password),
+                    RoleId = (Guid)payload.RoleId,
+                    BranchId = (Guid)payload.BranchId,
+                    AuthorizationKey = payload.RoleId == Guid.Parse("f711d87e-f3e9-4ebd-9d2d-08dcbd237523") ? null : Guid.NewGuid(),
+                    SalaryRate = (decimal)payload.SalaryRate
+                };
 
-            var exists = _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID).Any();
+                var exists = _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID).Any();
 
-            if (exists)
+                if (exists)
+                {
+                    throw new Exception("The user provided already exists.");
+                }
+
+                await _context.User.AddAsync(user);
+
+                return user;
+
+            } catch (Exception ex)
             {
-                throw new Exception("The user provided already exists.");
+                throw new Exception(ex.Message);
             }
-
-            await _context.User.AddAsync(user);
-
-            return user;
         }
 
         public async Task<User> EditUser([FromBody] UserDTO payload)
@@ -226,7 +233,7 @@ namespace SalCentral.Api.Logics
                 user.Password = HashingLogic.HashData(payload.Password);
                 user.BranchId = (Guid)payload.BranchId;
                 user.RoleId = (Guid)payload.RoleId;
-                user.Salary = (decimal)payload.Salary;
+                user.SalaryRate = (decimal)payload.SalaryRate;
 
                 _context.User.Update(user);
                 await _context.SaveChangesAsync();

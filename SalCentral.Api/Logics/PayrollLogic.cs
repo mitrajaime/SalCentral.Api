@@ -119,6 +119,7 @@ namespace SalCentral.Api.Logics
                                                    PagIbigContribution = pd.PagIbigContribution,
                                                    PhilHealthContribution = pd.PhilHealthContribution,
                                                    SSSContribution = pd.SSSContribution,
+                                                   CurrentSalaryRate = pd.CurrentSalaryRate
                                                };
 
                 if (query == null) throw new Exception("No payroll found for this user");
@@ -150,6 +151,11 @@ namespace SalCentral.Api.Logics
                                   join b in _context.Branch on u.BranchId equals b.BranchId
                                   where u.BranchId == payload.BranchId && p.StartDate <= (DateTime)payload.StartDate
                                   select p).CountAsync() + 1;
+
+                if(payload.BranchId == null)
+                {
+
+                }
 
                 // Create the payroll
                 var payroll = new Payroll()
@@ -185,7 +191,7 @@ namespace SalCentral.Api.Logics
                         PagIbigContribution = payload.PagIbigContribution,
                         StartDate = payload.StartDate,
                         EndDate = payload.EndDate,
-                        Salary = user.Salary
+                        CurrentSalaryRate = user.SalaryRate
                     };
 
                     await CreatePayrollDetail(payrollDetail);
@@ -220,7 +226,7 @@ namespace SalCentral.Api.Logics
                         SSSContribution = payload.SSSContribution,
                         PagIbigContribution = payload.PagIbigContribution,
                         PhilHealthContribution = payload.PhilHealthContribution,
-                        Salary = payload.Salary
+                        SalaryRate = payload.CurrentSalaryRate
                     }),
                     NetPay = await CalculateNetPay(new PayrollFields
                     {
@@ -230,14 +236,14 @@ namespace SalCentral.Api.Logics
                         SSSContribution = payload.SSSContribution,
                         PagIbigContribution = payload.PagIbigContribution,
                         PhilHealthContribution = payload.PhilHealthContribution,
-                        Salary = payload.Salary
+                        SalaryRate = payload.CurrentSalaryRate
                     }),
                     GrossSalary = await CalculateGrossSalary(new PayrollFields
                     {
                         StartDate = (DateTime)payload.StartDate,
                         EndDate = (DateTime)payload.EndDate,
                         UserId = (Guid)payload.UserId,
-                        Salary = payload.Salary
+                        SalaryRate = payload.CurrentSalaryRate
                     }),
                     IsPaid = false,
                     SSSContribution = (decimal)payload.SSSContribution,
@@ -315,7 +321,7 @@ namespace SalCentral.Api.Logics
 
                 // 8 hours = P468; 58.5 per hour; 
 
-                decimal grossPay = (decimal)(totalHours * 58.5);
+                decimal grossPay = (decimal)(totalHours * payroll.SalaryRate);
 
                 decimal netPay = grossPay - (decimal)totalDeductions - totalContributions;
 
@@ -339,7 +345,7 @@ namespace SalCentral.Api.Logics
 
                 // 8 hours = P468; 58.5 per hour; 
 
-                decimal grossSalary = (decimal)(totalHours * 58.5);
+                decimal grossSalary = (decimal)(totalHours * payroll.SalaryRate);
 
                 return grossSalary;
 

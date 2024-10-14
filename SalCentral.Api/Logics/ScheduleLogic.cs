@@ -146,7 +146,7 @@ namespace SalCentral.Api.Logics
             try
             {
                 //Click n Print 
-                if(payload.BranchId.ToString() == "ee6eaf8e-bd49-480d-f411-08dcbd238cc1") 
+                if(payload.BranchId.ToString() == "cfdee1be-1b99-47a7-f410-08dcbd238cc1") 
                 {
                     var cnpSchedule = new Schedule()
                     {
@@ -190,7 +190,7 @@ namespace SalCentral.Api.Logics
                 };
 
                 //Mitsubishi Photo
-                if(payload.BranchId.ToString() == "cfdee1be-1b99-47a7-f410-08dcbd238cc1")
+                if (payload.BranchId.ToString() == "ee6eaf8e-bd49-480d-f411-08dcbd238cc1")
                 {
                     // checks payload if it has more than one field(MTWTF) with false
                     var daysOfWeek = new[]
