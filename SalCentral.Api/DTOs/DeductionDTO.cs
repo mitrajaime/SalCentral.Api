@@ -9,5 +9,6 @@
         public string? DeductionDescription { get; set; }
         public decimal? Amount { get; set; }
         public DateTime? Date { get; set; }
+        public IEnumerable<DeductionAssignmentDTO>? userList { get; set; }
     }
 }

@@ -25,7 +25,7 @@ namespace SalCentral.Api.Controllers
             _deductionLogic = deductionLogic;
         }
         [HttpGet]
-        public async Task<IActionResult> GetDeductions([FromQuery] PaginationRequest paginationRequest, [FromBody] DeductionDTO payload)
+        public async Task<IActionResult> GetDeductions([FromQuery] PaginationRequest paginationRequest, [FromQuery] DeductionDTO payload)
         {
             try
             {

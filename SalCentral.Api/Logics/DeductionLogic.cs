@@ -4,6 +4,7 @@ using SalCentral.Api.DbContext;
 using SalCentral.Api.DTOs;
 using SalCentral.Api.DTOs.AttendanceDTO;
 using SalCentral.Api.DTOs.UserDTO;
+using SalCentral.Api.Migrations;
 using SalCentral.Api.Models;
 using System.Linq.Expressions;
 using static SalCentral.Api.Pagination.PaginationRequestQuery;
@@ -19,25 +20,26 @@ namespace SalCentral.Api.Logics
             _context = context;
         }
 
-        public async Task<object> GetDeduction([FromQuery] PaginationRequest paginationRequest, [FromBody] DeductionDTO payload)
+        public async Task<object> GetDeduction([FromQuery] PaginationRequest paginationRequest, [FromQuery] DeductionDTO payload)
         {
             try
             { 
                 IQueryable<DeductionDTO> query = from q in _context.Deduction
-                                                  select new DeductionDTO()
-                                                  {
-                                                      DeductionId = q.DeductionId,
-                                                      DeductionName = q.DeductionName,
-                                                      DeductionDescription = q.DeductionDescription,
-                                                      BranchId = q.BranchId,
-                                                      BranchName = _context.Branch.Where(u => u.BranchId == q.BranchId).Select(b => b.BranchName).FirstOrDefault(),
-                                                      Amount = q.Amount,
-                                                      Date = q.Date,
-                                                  };
+                                                 where q.BranchId == payload.BranchId
+                                                 select new DeductionDTO()
+                                                 {
+                                                     DeductionId = q.DeductionId,
+                                                     DeductionName = q.DeductionName,
+                                                     DeductionDescription = q.DeductionDescription,
+                                                     BranchId = q.BranchId,
+                                                     BranchName = _context.Branch.Where(u => u.BranchId == q.BranchId).Select(b => b.BranchName).FirstOrDefault(),
+                                                     Amount = q.Amount,
+                                                     Date = q.Date,
+                                                 };
 
-                if (payload.BranchId.HasValue)
+                if (!string.IsNullOrWhiteSpace(payload.DeductionName))
                 {
-                    query = query.Where(i => i.BranchId.ToString().Contains(payload.BranchId.ToString()));
+                    query = query.Where(i => i.BranchId.ToString().Contains(payload.DeductionName.ToString()));
                 }
 
                 if (query == null) throw new Exception("No deductions found.");
@@ -70,15 +72,32 @@ namespace SalCentral.Api.Logics
                     Date = DateTime.Now,
                 };
 
+                await _context.Deduction.AddAsync(deduction);
+                await _context.SaveChangesAsync();
+
+                var deductionAssignments = new List<DeductionAssignment>();
+
+                foreach (var d in payload.userList)
+                {
+                    var deductionAssignment = new DeductionAssignment()
+                    {
+                        DeductionId = deduction.DeductionId,
+                        UserId = (Guid)d.UserId,
+                    };
+
+                    deductionAssignments.Add(deductionAssignment);
+                };
+
                 //var exists = _context.Deduction.Where(b => b.DeductionName == payload.DeductionName).Any();
                 //if(exists)
                 //{
                 //    throw new Exception("This deduction already exists.");
                 //}
 
-                await _context.Deduction.AddAsync(deduction);
+                await _context.DeductionAssignment.AddRangeAsync(deductionAssignments);
                 await _context.SaveChangesAsync();
-                return deduction;
+                
+                return payload;
 
             } catch (Exception ex)
             {

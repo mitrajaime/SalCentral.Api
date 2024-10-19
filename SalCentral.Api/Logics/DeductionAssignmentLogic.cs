@@ -14,7 +14,7 @@ namespace SalCentral.Api.Logics
             _context = context;
         }
 
-        public async Task<object> GetDeductionAssignment([FromQuery] PaginationRequest paginationRequest, [FromBody] DeductionAssignmentDTO payload)
+        public async Task<object> GetDeductionAssignment([FromQuery] PaginationRequest paginationRequest, Guid DeductionId)
         {
             try
             {
@@ -22,6 +22,7 @@ namespace SalCentral.Api.Logics
                                                            join u in _context.User on da.UserId equals u.UserId
                                                            join b in _context.Branch on u.BranchId equals b.BranchId
                                                            join d in _context.Deduction on da.DeductionId equals d.DeductionId
+                                                           where da.DeductionId == DeductionId
                                                            select new DeductionAssignmentDTO()
                                                            {
                                                                DeductionAssignmentId = da.DeductionAssignmentId,
