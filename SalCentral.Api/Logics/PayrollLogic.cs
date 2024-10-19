@@ -119,7 +119,7 @@ namespace SalCentral.Api.Logics
                                                    PagIbigContribution = pd.PagIbigContribution,
                                                    PhilHealthContribution = pd.PhilHealthContribution,
                                                    SSSContribution = pd.SSSContribution,
-                                                   CurrentSalaryRate = pd.CurrentSalaryRate
+                                                   CurrentSalaryRate = u.SalaryRate
                                                };
 
                 if (query == null) throw new Exception("No payroll found for this user");
