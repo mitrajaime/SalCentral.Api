@@ -29,6 +29,7 @@ builder.Services.AddScoped<PaginationLogic>();
 builder.Services.AddScoped<BranchLogic>();
 builder.Services.AddScoped<AttendanceLogic>();
 builder.Services.AddScoped<DeductionLogic>();
+builder.Services.AddScoped<DeductionAssignmentLogic>();
 builder.Services.AddScoped<ScheduleLogic>();
 builder.Services.AddScoped<PayrollLogic>();
 builder.Services.AddScoped<HashingLogic>();
