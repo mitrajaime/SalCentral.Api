@@ -78,64 +78,78 @@ namespace SalCentral.Api.Logics
 
         public async Task<object> GetUsers([FromQuery] PaginationRequest paginationRequest, [FromQuery] UserFilter userFilter)
         {
-            IQueryable<UserDTO> query = from u in _context.User
-                                        select new UserDTO()
-                                        {
-                                            UserId = u.UserId,
-                                            FullName = u.FirstName + ' ' + u.LastName,
-                                            FirstName = u.FirstName,
-                                            LastName = u.LastName,
-                                            Email = u.Email,
-                                            ContactNo = u.ContactNo,
-                                            SMEmployeeID = u.SMEmployeeID,
-                                            HireDate = u.HireDate,
-                                            Password = u.Password,
-                                            RoleId = u.RoleId,
-                                            RoleName = _context.Role
-                                                           .Where(r => r.RoleId == u.RoleId)
-                                                           .Select(r => r.RoleName)
-                                                           .FirstOrDefault(),
-                                            BranchId = u.BranchId,
-                                            BranchName = _context.Branch
-                                                            .Where(b => b.BranchId == u.BranchId)
-                                                            .Select(b => b.BranchName)
-                                                            .FirstOrDefault(),
-                                            SalaryRate = u.SalaryRate,
-                                            AuthorizationKey = u.AuthorizationKey,
-                                        };
-
-           if (query == null) throw new Exception("No users found.");
-
-           if (userFilter.BranchId.HasValue)
-           {
-                query = query.Where(i => i.BranchId.ToString().Contains(userFilter.BranchId.ToString()));
-           }
-
-           if (!string.IsNullOrWhiteSpace(userFilter.FirstName))
-           {
-                string SearchQuery = userFilter.FirstName.Trim();
-                query = query.Where(i => i.FirstName.Contains(SearchQuery));
-           }
-           if (!string.IsNullOrWhiteSpace(userFilter.LastName))
-           {
-                string SearchQuery = userFilter.LastName.Trim();
-                query = query.Where(i => i.LastName.Contains(SearchQuery));
-           }
-           if (!string.IsNullOrWhiteSpace(userFilter.SMEmployeeId))
-           {
-                string SearchQuery = userFilter.SMEmployeeId.Trim();
-                query = query.Where(i => i.SMEmployeeID.Contains(SearchQuery));
-           }
-
-            var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
-            var users = responsewrapper.Results;
-
-            if (users.Any())
+            try
             {
-                return responsewrapper;
-            }
+                IQueryable<UserDTO> query = from u in _context.User
+                                            select new UserDTO()
+                                            {
+                                                UserId = u.UserId,
+                                                FullName = u.FirstName + ' ' + u.LastName,
+                                                FirstName = u.FirstName,
+                                                LastName = u.LastName,
+                                                Email = u.Email,
+                                                ContactNo = u.ContactNo,
+                                                SMEmployeeID = u.SMEmployeeID,
+                                                HireDate = u.HireDate,
+                                                Password = u.Password,
+                                                RoleId = u.RoleId,
+                                                RoleName = _context.Role
+                                                               .Where(r => r.RoleId == u.RoleId)
+                                                               .Select(r => r.RoleName)
+                                                               .FirstOrDefault(),
+                                                BranchId = u.BranchId,
+                                                BranchName = _context.Branch
+                                                                .Where(b => b.BranchId == u.BranchId)
+                                                                .Select(b => b.BranchName)
+                                                                .FirstOrDefault(),
+                                                SalaryRate = u.SalaryRate,
+                                                AuthorizationKey = u.AuthorizationKey,
+                                            };
 
-            return null;
+                if (query == null) throw new Exception("No users found.");
+
+                if (userFilter.BranchId.HasValue)
+                {
+                    query = query.Where(i => i.BranchId.ToString().Contains(userFilter.BranchId.ToString()));
+                }
+
+                if (!string.IsNullOrWhiteSpace(userFilter.FullName))
+                {
+                    string SearchQuery = userFilter.FullName.Trim().ToLower();
+                    query = query.Where(i => (i.FirstName + " " + i.LastName).ToLower().Contains(SearchQuery));
+                }
+
+                if (!string.IsNullOrWhiteSpace(userFilter.FirstName))
+                {
+                    string SearchQuery = userFilter.FirstName.Trim();
+                    query = query.Where(i => i.FirstName.Contains(SearchQuery));
+                }
+                if (!string.IsNullOrWhiteSpace(userFilter.LastName))
+                {
+                    string SearchQuery = userFilter.LastName.Trim();
+                    query = query.Where(i => i.LastName.Contains(SearchQuery));
+                }
+                if (!string.IsNullOrWhiteSpace(userFilter.SMEmployeeId))
+                {
+                    string SearchQuery = userFilter.SMEmployeeId.Trim();
+                    query = query.Where(i => i.SMEmployeeID.Contains(SearchQuery));
+                }
+
+                var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
+                var users = responsewrapper.Results;
+
+                if (users.Any())
+                {
+                    return responsewrapper;
+                }
+
+                return null;
+            }
+            catch (Exception ex) 
+            {
+                throw new Exception(ex.Message);
+            }
+            
         }
 
         public async Task<object> GetUserById([FromQuery] PaginationRequest paginationRequest, Guid UserId)

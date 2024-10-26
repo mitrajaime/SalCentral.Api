@@ -23,7 +23,7 @@ namespace SalCentral.Api.Logics
         public async Task<object> GetDeduction([FromQuery] PaginationRequest paginationRequest, [FromQuery] DeductionDTO payload)
         {
             try
-            { 
+            {
                 IQueryable<DeductionDTO> query = from q in _context.Deduction
                                                  where q.BranchId == payload.BranchId
                                                  select new DeductionDTO()
@@ -35,29 +35,29 @@ namespace SalCentral.Api.Logics
                                                      BranchName = _context.Branch.Where(u => u.BranchId == q.BranchId).Select(b => b.BranchName).FirstOrDefault(),
                                                      Amount = q.Amount,
                                                      Date = q.Date,
+                                                     userList = _context.DeductionAssignment.Where(d => d.DeductionId == q.DeductionId).Select(u => new DeductionAssignmentDTO
+                                                     { 
+                                                         UserId = u.UserId, 
+                                                     }).ToList()
                                                  };
 
+                // Filter by DeductionName if provided
                 if (!string.IsNullOrWhiteSpace(payload.DeductionName))
                 {
-                    query = query.Where(i => i.BranchId.ToString().Contains(payload.DeductionName.ToString()));
+                    query = query.Where(i => i.DeductionName.Contains(payload.DeductionName));
                 }
 
-                if (query == null) throw new Exception("No deductions found.");
+                if (!query.Any()) throw new Exception("No deductions found.");
 
-                var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
-                var attendance = responsewrapper.Results;
-
-                if (attendance.Any())
-                {
-                    return responsewrapper;
-                }
-
-                return null;
-            } catch (Exception ex)
+                var responseWrapper = await PaginationLogic.PaginateData(query, paginationRequest);
+                return responseWrapper.Results.Any() ? responseWrapper : null;
+            }
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
         }
+
 
         public async Task<object> CreateDeduction([FromBody] DeductionDTO payload)
         {

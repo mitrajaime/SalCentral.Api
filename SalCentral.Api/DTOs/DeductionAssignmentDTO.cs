@@ -14,4 +14,8 @@
         public decimal? Amount { get; set; }
         public DateTime? Date { get; set; }
     }
+    public class DeductionAssignmentUserList
+    {
+        public Guid? UserId { get; set; }
+    }
 }
