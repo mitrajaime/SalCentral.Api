@@ -58,7 +58,6 @@ namespace SalCentral.Api.Logics
                                                    DateCreated = g.Key.DateCreated
                                                };
 
-
                 if (query == null) throw new Exception("No payroll found in this branch.");
 
                 if (!string.IsNullOrWhiteSpace(payrollFilter.PayrollName))
@@ -342,8 +341,6 @@ namespace SalCentral.Api.Logics
                 var totalHours = await _context.Attendance
                     .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId)
                     .SumAsync(a => a.HoursRendered);
-
-                // 8 hours = P468; 58.5 per hour; 
 
                 decimal grossSalary = (decimal)(totalHours * payroll.SalaryRate);
 

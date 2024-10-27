@@ -191,9 +191,7 @@ namespace SalCentral.Api.Logics
                 if(attendance.HoursRendered > 8)
                 {
                     attendance.OverTimeHours = attendance.HoursRendered - 8;
-                } else
-                {
-                    attendance.OverTimeHours = 0;
+                    attendance.HoursRendered = 8;
                 }
 
                 _context.Update(attendance);
