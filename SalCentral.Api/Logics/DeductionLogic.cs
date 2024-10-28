@@ -37,8 +37,9 @@ namespace SalCentral.Api.Logics
                                                      Date = q.Date,
                                                      userList = _context.DeductionAssignment.Where(d => d.DeductionId == q.DeductionId).Select(u => new DeductionAssignmentDTO
                                                      { 
-                                                         UserId = u.UserId, 
-                                                     }).ToList()
+                                                         UserId = u.UserId,
+
+                                                     }).ToList()    
                                                  };
 
                 // Filter by DeductionName if provided
@@ -63,26 +64,27 @@ namespace SalCentral.Api.Logics
         {
             try
             {
-                var deduction = new Deduction()
-                {
-                    DeductionName = payload.DeductionName,
-                    BranchId = (Guid)payload.BranchId,
-                    Amount = (decimal)payload.Amount,
-                    DeductionDescription = payload.DeductionDescription,
-                    Date = DateTime.Now,
-                };
-
-                await _context.Deduction.AddAsync(deduction);
-                await _context.SaveChangesAsync();
 
                 var deductionAssignments = new List<DeductionAssignment>();
 
-                foreach (var d in payload.userList)
+                foreach (var d in payload.deductionList)
                 {
+                    var deduction = new Deduction()
+                    {
+                        DeductionName = d.DeductionName,
+                        BranchId = (Guid)payload.BranchId,
+                        Amount = (decimal)d.Amount,
+                        DeductionDescription = d.DeductionDescription,
+                        Date = DateTime.Now,
+                    };
+
+                    await _context.Deduction.AddAsync(deduction);
+                    await _context.SaveChangesAsync();
+
                     var deductionAssignment = new DeductionAssignment()
                     {
                         DeductionId = deduction.DeductionId,
-                        UserId = (Guid)d.UserId,
+                        UserId = (Guid)payload.UserId,
                     };
 
                     deductionAssignments.Add(deductionAssignment);
