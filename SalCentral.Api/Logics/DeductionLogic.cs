@@ -117,6 +117,24 @@ namespace SalCentral.Api.Logics
                 deduction.DeductionDescription = payload.DeductionDescription;
                 deduction.Amount = (decimal)payload.Amount;
 
+                var deductionAssignment = await _context.DeductionAssignment.Where(u => u.DeductionId == payload.DeductionId).ToListAsync();
+
+                _context.DeductionAssignment.RemoveRange(deductionAssignment);
+
+                var newDeductionAssignmentList = new List<DeductionAssignment>();
+
+                foreach (var a in deductionAssignment)
+                {
+                    var newDeductionAssignment = new DeductionAssignment()
+                    {
+                        DeductionId = (Guid)payload.DeductionId,
+                        UserId = a.UserId,
+                    };
+
+                    newDeductionAssignmentList.Add(newDeductionAssignment);
+                }
+
+                await _context.DeductionAssignment.AddRangeAsync(newDeductionAssignmentList);
                 _context.Deduction.Update(deduction);
                 await _context.SaveChangesAsync();
 
@@ -124,6 +142,23 @@ namespace SalCentral.Api.Logics
 
             }
             catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string> DeleteDeduction(Guid DeductionId)
+        {
+            try
+            {
+                var deduction = _context.Deduction.Where(u => u.DeductionId == DeductionId).FirstOrDefault();
+                if (deduction == null) { return "Deduction does not exist"; }
+
+                _context.Deduction.Remove(deduction);
+                _context.SaveChanges();
+
+                return "Deduction deleted successfully";
+            } catch (Exception ex) 
             {
                 throw new Exception(ex.Message);
             }

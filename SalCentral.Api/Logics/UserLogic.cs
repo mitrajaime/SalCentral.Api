@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SalCentral.Api.DbContext;
 using SalCentral.Api.DTOs.UserDTO;
 using SalCentral.Api.Models;
+using System.Security.Cryptography;
 using static SalCentral.Api.Pagination.PaginationRequestQuery;
 
 namespace SalCentral.Api.Logics
@@ -213,7 +214,7 @@ namespace SalCentral.Api.Logics
                     Password = HashingLogic.HashData(payload.Password),
                     RoleId = (Guid)payload.RoleId,
                     BranchId = (Guid)payload.BranchId,
-                    AuthorizationKey = payload.RoleId == Guid.Parse("f711d87e-f3e9-4ebd-9d2d-08dcbd237523") ? null : Guid.NewGuid(),
+                    AuthorizationKey = payload.RoleId == Guid.Parse("f711d87e-f3e9-4ebd-9d2d-08dcbd237523") ? null : GetRandomlyGenerateBase64String(8),
                     SalaryRate = (decimal)payload.SalaryRate
                 };
 
@@ -266,7 +267,7 @@ namespace SalCentral.Api.Logics
             {
                 var user = await _context.User.Where(u => u.UserId == UserId).FirstOrDefaultAsync();
 
-                user.AuthorizationKey = Guid.NewGuid();
+                user.AuthorizationKey = GetRandomlyGenerateBase64String(8);
 
                 _context.User.Update(user);
                 await _context.SaveChangesAsync();
@@ -279,5 +280,9 @@ namespace SalCentral.Api.Logics
             }
         }
 
+        public static string GetRandomlyGenerateBase64String(int count)
+        {
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(count));
+        }
     }
 }

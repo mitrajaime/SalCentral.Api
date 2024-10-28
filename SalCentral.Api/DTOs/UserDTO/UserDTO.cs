@@ -18,7 +18,7 @@ namespace SalCentral.Api.DTOs.UserDTO
         public string? RoleName { get; set;}
         public Guid? BranchId { get; set; }
         public string? BranchName { get; set; }
-        public Guid? AuthorizationKey { get; set; }
+        public string? AuthorizationKey { get; set; }
         public decimal? SalaryRate { get; set; }
         public Schedule? Schedule { get; set; }
     }
