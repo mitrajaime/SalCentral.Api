@@ -6,10 +6,10 @@ namespace SalCentral.Api.Models
     {
         [Key]
         public Guid DeductionId { get; set; }
-        public Guid BranchId { get; set; }
         public string DeductionName { get; set; }
         public string DeductionDescription { get; set; }
         public decimal Amount { get; set; }
         public DateTime Date { get; set; }
+        public bool? IsMandatory { get; set; }
     }
 }

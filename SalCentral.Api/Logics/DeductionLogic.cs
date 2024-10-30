@@ -24,47 +24,51 @@ namespace SalCentral.Api.Logics
         {
             try
             {
-                IQueryable<DeductionDTO> query = from q in _context.Deduction
-                                                 where q.BranchId == payload.BranchId
-                                                 select new DeductionDTO()
-                                                 {
-                                                     DeductionId = q.DeductionId,
-                                                     DeductionName = q.DeductionName,
-                                                     DeductionDescription = q.DeductionDescription,
-                                                     BranchId = q.BranchId,
-                                                     BranchName = _context.Branch.Where(u => u.BranchId == q.BranchId).Select(b => b.BranchName).FirstOrDefault(),
-                                                     Amount = q.Amount,
-                                                     Date = q.Date,
-                                                     userList = _context.DeductionAssignment.Where(d => d.DeductionId == q.DeductionId).Select(u => new DeductionAssignmentDTO
-                                                     { 
-                                                         UserId = u.UserId,
+                var query = from d in _context.Deduction
+                            join da in _context.DeductionAssignment on d.DeductionId equals da.DeductionId
+                            join u in _context.User on da.UserId equals u.UserId
+                            where u.BranchId == payload.BranchId
+                            group d by new
+                            {
+                                d.DeductionId,
+                                d.DeductionName,
+                                d.DeductionDescription,
+                                d.IsMandatory,
+                                d.Amount,
+                                d.Date
+                            } into g
+                            select new DeductionDTO
+                            {
+                                DeductionId = g.Key.DeductionId,
+                                DeductionName = g.Key.DeductionName,
+                                DeductionDescription = g.Key.DeductionDescription,
+                                IsMandatory = g.Key.IsMandatory,
+                                Amount = g.Key.Amount,
+                                Date = g.Key.Date
+                            };
 
-                                                     }).ToList()    
-                                                 };
-
-                // Filter by DeductionName if provided
                 if (!string.IsNullOrWhiteSpace(payload.DeductionName))
                 {
                     query = query.Where(i => i.DeductionName.Contains(payload.DeductionName));
                 }
 
-                if (!query.Any()) throw new Exception("No deductions found.");
+                if (!await query.AnyAsync())
+                    throw new Exception("No deductions found.");
 
                 var responseWrapper = await PaginationLogic.PaginateData(query, paginationRequest);
+
                 return responseWrapper.Results.Any() ? responseWrapper : null;
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception($"Error retrieving deductions: {ex.Message}");
             }
         }
-
 
         public async Task<object> CreateDeduction([FromBody] DeductionDTO payload)
         {
             try
             {
-
                 var deductionAssignments = new List<DeductionAssignment>();
 
                 foreach (var d in payload.deductionList)
@@ -72,8 +76,8 @@ namespace SalCentral.Api.Logics
                     var deduction = new Deduction()
                     {
                         DeductionName = d.DeductionName,
-                        BranchId = (Guid)payload.BranchId,
                         Amount = (decimal)d.Amount,
+                        IsMandatory = payload.IsMandatory,
                         DeductionDescription = d.DeductionDescription,
                         Date = DateTime.Now,
                     };
@@ -90,8 +94,8 @@ namespace SalCentral.Api.Logics
                     deductionAssignments.Add(deductionAssignment);
                 };
 
-                //var exists = _context.Deduction.Where(b => b.DeductionName == payload.DeductionName).Any();
-                //if(exists)
+                //var exists = _context.Deduction.Where(b => b.DeductionName == payload.DeductionName && b.IsMandatory = true).Any();
+                //if (exists)
                 //{
                 //    throw new Exception("This deduction already exists.");
                 //}
@@ -115,6 +119,7 @@ namespace SalCentral.Api.Logics
 
                 deduction.DeductionName = payload.DeductionName;
                 deduction.DeductionDescription = payload.DeductionDescription;
+                deduction.IsMandatory = payload.IsMandatory;
                 deduction.Amount = (decimal)payload.Amount;
 
                 var deductionAssignment = await _context.DeductionAssignment.Where(u => u.DeductionId == payload.DeductionId).ToListAsync();

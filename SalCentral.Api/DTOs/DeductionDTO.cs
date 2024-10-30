@@ -9,6 +9,7 @@
         public string? BranchName { get; set; }
         public string? DeductionName { get; set; }
         public string? DeductionDescription { get; set; }
+        public bool? IsMandatory { get; set; }
         public decimal? Amount { get; set; }
         public DateTime? Date { get; set; }
 

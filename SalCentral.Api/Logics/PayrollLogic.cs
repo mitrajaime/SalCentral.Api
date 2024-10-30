@@ -328,36 +328,41 @@ namespace SalCentral.Api.Logics
                     .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId)
                     .SumAsync(a => a.HoursRendered);
 
-                var deductionAssignments = await _context.DeductionAssignment
-                    .Where(d => d.UserId == payroll.UserId)
-                    .Select(d => d.DeductionId)
-                    .ToListAsync();
-
+                // for mandatory and non-mandatory deductions
                 var deductions = await _context.Deduction
-                    .Where(d => deductionAssignments.Contains(d.DeductionId))
+                    .Join(_context.DeductionAssignment,
+                          d => d.DeductionId,
+                          da => da.DeductionId,
+                          (d, da) => new { Deduction = d, DeductionAssignment = da })
+                    .Where(x => x.DeductionAssignment.UserId == payroll.UserId)
                     .ToListAsync();
 
-                var totalDeductions = deductions.Sum(d => d.Amount);
+                // getting the sum of mandatory and non-mandatory deductions
+                var mandatoryDeductions = deductions
+                    .Where(x => x.Deduction.IsMandatory == true)
+                    .Sum(x => x.Deduction.Amount);
 
-                if (!deductionAssignments.Any())
-                {
-                    totalDeductions = 0;
-                }
+                var nonMandatoryDeductions = deductions
+                    .Where(x => x.Deduction.IsMandatory != true &&
+                                x.Deduction.Date >= payroll.StartDate &&
+                                x.Deduction.Date <= payroll.EndDate)
+                    .Sum(x => x.Deduction.Amount);
+
+                var totalDeductions = mandatoryDeductions + nonMandatoryDeductions;
 
                 decimal totalContributions = (decimal)(payroll.SSSContribution + payroll.PagIbigContribution + payroll.PhilHealthContribution);
-
                 decimal grossPay = (decimal)(totalHours * payroll.SalaryRate);
-
-                decimal netPay = grossPay - (decimal)totalDeductions - totalContributions + (decimal)payroll.HolidayPay;
+                decimal netPay = grossPay - totalDeductions - totalContributions + (decimal)payroll.HolidayPay;
 
                 return netPay;
 
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw new Exception("Failed to compute for net pay: " + ex.Message);
             }
-
         }
+
 
         // no deductions
         public async Task<decimal> CalculateGrossSalary(PayrollFields payroll)

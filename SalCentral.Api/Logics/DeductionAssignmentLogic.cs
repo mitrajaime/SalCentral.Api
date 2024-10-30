@@ -34,7 +34,7 @@ namespace SalCentral.Api.Logics
                                                                UserId = u.UserId,
                                                                FullName = u.FirstName + " " + u.LastName,
                                                                smEmployeeId = u.SMEmployeeID,
-
+                                                               DeductionId = da.DeductionId
                                                            };
 
                 if (query == null) throw new Exception("No deductions found.");
