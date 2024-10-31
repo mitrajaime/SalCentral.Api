@@ -77,7 +77,7 @@ namespace SalCentral.Api.Logics
                     {
                         DeductionName = d.DeductionName,
                         Amount = (decimal)d.Amount,
-                        IsMandatory = payload.IsMandatory,
+                        IsMandatory = d.IsMandatory,
                         DeductionDescription = d.DeductionDescription,
                         Date = DateTime.Now,
                     };
