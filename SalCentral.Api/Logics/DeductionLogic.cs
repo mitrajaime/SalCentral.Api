@@ -52,6 +52,11 @@ namespace SalCentral.Api.Logics
                     query = query.Where(i => i.DeductionName.Contains(payload.DeductionName));
                 }
 
+                if (payload.IsMandatory.HasValue && payload.IsMandatory.Value == false)
+                {
+                    query = query.Where(i => i.IsMandatory == false);
+                }
+
                 if (!await query.AnyAsync())
                     throw new Exception("No deductions found.");
 
@@ -119,7 +124,6 @@ namespace SalCentral.Api.Logics
 
                 deduction.DeductionName = payload.DeductionName;
                 deduction.DeductionDescription = payload.DeductionDescription;
-                deduction.IsMandatory = payload.IsMandatory;
                 deduction.Amount = (decimal)payload.Amount;
 
                 var deductionAssignment = await _context.DeductionAssignment.Where(u => u.DeductionId == payload.DeductionId).ToListAsync();
@@ -128,12 +132,12 @@ namespace SalCentral.Api.Logics
 
                 var newDeductionAssignmentList = new List<DeductionAssignment>();
 
-                foreach (var a in deductionAssignment)
+                foreach (var a in payload.userList)
                 {
                     var newDeductionAssignment = new DeductionAssignment()
                     {
                         DeductionId = (Guid)payload.DeductionId,
-                        UserId = a.UserId,
+                        UserId = (Guid)a.UserId,
                     };
 
                     newDeductionAssignmentList.Add(newDeductionAssignment);
