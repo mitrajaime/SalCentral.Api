@@ -107,6 +107,8 @@ namespace SalCentral.Api.Logics
                                                    BranchName = b.BranchName,
                                                    DeductedAmount = pd.DeductedAmount,
                                                    NetPay = pd.NetPay,
+                                                   HolidayPay = pd.HolidayPay,
+                                                   OvertimePay = pd.OvertimePay,
                                                    GrossSalary = pd.GrossSalary,
                                                    PayDate = pd.PayDate,
                                                    IsPaid = pd.IsPaid,
@@ -190,7 +192,8 @@ namespace SalCentral.Api.Logics
                         PagIbigContribution = payload.PagIbigContribution,
                         StartDate = payload.StartDate,
                         EndDate = payload.EndDate,
-                        CurrentSalaryRate = user.SalaryRate
+                        CurrentSalaryRate = user.SalaryRate,
+                        holidayList = payload.holidayList
                     };
 
                     await CreatePayrollDetail(payrollDetail);
@@ -215,6 +218,11 @@ namespace SalCentral.Api.Logics
         {
             try
             {
+                var holidayPay = await CalculateHolidayPay(new PayrollFields
+                {
+                    holidayList = payload.holidayList
+                });
+
                 var payrollDetails = new PayrollDetails()
                 {
                     PayrollDetailsId = new Guid(),
@@ -235,7 +243,8 @@ namespace SalCentral.Api.Logics
                         SSSContribution = payload.SSSContribution,
                         PagIbigContribution = payload.PagIbigContribution,
                         PhilHealthContribution = payload.PhilHealthContribution,
-                        SalaryRate = payload.CurrentSalaryRate
+                        SalaryRate = payload.CurrentSalaryRate,
+                        HolidayPay = holidayPay
                     }),
                     GrossSalary = await CalculateGrossSalary(new PayrollFields
                     {
@@ -244,6 +253,8 @@ namespace SalCentral.Api.Logics
                         UserId = (Guid)payload.UserId,
                         SalaryRate = payload.CurrentSalaryRate
                     }),
+                    HolidayPay = holidayPay,
+                    //OvertimePay = ,
                     IsPaid = false,
                     SSSContribution = (decimal)payload.SSSContribution,
                     PagIbigContribution = (decimal)payload.PagIbigContribution,
@@ -258,6 +269,23 @@ namespace SalCentral.Api.Logics
                 throw new Exception(ex.Message + ex.StackTrace);
             }
 
+        }
+
+        public async Task<decimal> CalculateHolidayPay(PayrollFields payroll)
+        {
+            try
+            {
+                var totalAttendance = await _context.Attendance
+                    .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId)
+                    .ToListAsync();
+
+                var holidayPay = totalAttendance.Count * 500;
+
+                return holidayPay;
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<decimal> CalculateDeductions(PayrollFields payroll)
@@ -300,38 +328,41 @@ namespace SalCentral.Api.Logics
                     .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId)
                     .SumAsync(a => a.HoursRendered);
 
-                var deductionAssignments = await _context.DeductionAssignment
-                    .Where(d => d.UserId == payroll.UserId)
-                    .Select(d => d.DeductionId)
-                    .ToListAsync();
-
+                // for mandatory and non-mandatory deductions
                 var deductions = await _context.Deduction
-                    .Where(d => deductionAssignments.Contains(d.DeductionId))
+                    .Join(_context.DeductionAssignment,
+                          d => d.DeductionId,
+                          da => da.DeductionId,
+                          (d, da) => new { Deduction = d, DeductionAssignment = da })
+                    .Where(x => x.DeductionAssignment.UserId == payroll.UserId)
                     .ToListAsync();
 
-                var totalDeductions = deductions.Sum(d => d.Amount);
+                // getting the sum of mandatory and non-mandatory deductions
+                var mandatoryDeductions = deductions
+                    .Where(x => x.Deduction.IsMandatory == true)
+                    .Sum(x => x.Deduction.Amount);
 
-                if (!deductionAssignments.Any())
-                {
-                    totalDeductions = 0;
-                }
+                var nonMandatoryDeductions = deductions
+                    .Where(x => x.Deduction.IsMandatory != true &&
+                                x.Deduction.Date >= payroll.StartDate &&
+                                x.Deduction.Date <= payroll.EndDate)
+                    .Sum(x => x.Deduction.Amount);
+
+                var totalDeductions = mandatoryDeductions + nonMandatoryDeductions;
 
                 decimal totalContributions = (decimal)(payroll.SSSContribution + payroll.PagIbigContribution + payroll.PhilHealthContribution);
-
-                // 8 hours = P468; 58.5 per hour; 
-
                 decimal grossPay = (decimal)(totalHours * payroll.SalaryRate);
-
-                decimal netPay = grossPay - (decimal)totalDeductions - totalContributions;
+                decimal netPay = grossPay - totalDeductions - totalContributions + (decimal)payroll.HolidayPay;
 
                 return netPay;
 
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw new Exception("Failed to compute for net pay: " + ex.Message);
             }
-
         }
+
 
         // no deductions
         public async Task<decimal> CalculateGrossSalary(PayrollFields payroll)

@@ -64,13 +64,9 @@ namespace SalCentral.Api.Controllers
         {
             try
             {
-                var deduction = _context.Deduction.Where(u => u.DeductionId == DeductionId).FirstOrDefault();
-                if(deduction == null) { return NotFound(); }
+                var result = await _deductionLogic.DeleteDeduction(DeductionId);
 
-                _context.Deduction.Remove(deduction);
-                _context.SaveChanges();
-
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {

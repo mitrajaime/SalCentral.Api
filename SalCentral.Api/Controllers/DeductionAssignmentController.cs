@@ -23,10 +23,15 @@ namespace SalCentral.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetDeductionAssignment([FromQuery] PaginationRequest paginationRequest, Guid DeductionId)
+        public async Task<IActionResult> GetDeductionAssignment([FromQuery] PaginationRequest paginationRequest, Guid DeductionId, Guid? UserId )
         {
             try
             {
+                if(UserId != null) {
+                    var userResult = await _deductionAssignmentLogic.GetDeductionAssignmentOfUser(paginationRequest, (Guid)UserId);
+                    return Ok(userResult);
+                }
+
                 var result = await _deductionAssignmentLogic.GetDeductionAssignment(paginationRequest, DeductionId);
                 return Ok(result);
             }

@@ -22,115 +22,55 @@ namespace SalCentral.Api.Logics
         public async Task<object> GetSchedule([FromQuery] PaginationRequest paginationRequest, [FromQuery] ScheduleFilter scheduleFilter)
         {
             try
-            { 
-                IQueryable<ScheduleDTO> query = from q in _context.Schedule
-                                                  select new ScheduleDTO()
-                                                  {
-                                                      ScheduleId = q.ScheduleId,
-                                                      UserId = q.UserId,
-                                                      FullName = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.FirstName).FirstOrDefault() + ' ' 
-                                                               + _context.User.Where(u => u.UserId == q.UserId).Select(u => u.LastName).FirstOrDefault(),
-                                                      FirstName = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.FirstName).FirstOrDefault(),
-                                                      LastName = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.LastName).FirstOrDefault(),
-                                                      SMEmployeeID = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.SMEmployeeID).FirstOrDefault(),
-                                                      BranchId = q.BranchId,
-                                                      BranchName = _context.Branch.Where(b => b.BranchId == q.BranchId).Select(n => n.BranchName).FirstOrDefault(),
-                                                      Monday = q.Monday,
-                                                      Tuesday = q.Tuesday,
-                                                      Wednesday = q.Wednesday,
-                                                      Thursday = q.Thursday,
-                                                      Friday = q.Friday,
-                                                      Saturday = q.Saturday,
-                                                      Sunday = q.Sunday,
-                                                      ExpectedTimeIn = q.ExpectedTimeIn,
-                                                      ExpectedTimeOut = q.ExpectedTimeOut,
-                                                  };
+            {
+                var query = from q in _context.Schedule
+                            join u in _context.User on q.UserId equals u.UserId
+                            join b in _context.Branch on q.BranchId equals b.BranchId
+                            select new ScheduleDTO
+                            {
+                                ScheduleId = q.ScheduleId,
+                                UserId = q.UserId,
+                                FullName = u.FirstName + " " + u.LastName,
+                                FirstName = u.FirstName,
+                                LastName = u.LastName,
+                                SMEmployeeID = u.SMEmployeeID,
+                                BranchId = q.BranchId,
+                                BranchName = b.BranchName,
+                                Monday = q.Monday,
+                                Tuesday = q.Tuesday,
+                                Wednesday = q.Wednesday,
+                                Thursday = q.Thursday,
+                                Friday = q.Friday,
+                                Saturday = q.Saturday,
+                                Sunday = q.Sunday,
+                                ExpectedTimeIn = q.ExpectedTimeIn,
+                                ExpectedTimeOut = q.ExpectedTimeOut,
+                            };
 
                 if (query == null) throw new Exception("No Schedules found.");
 
                 if (!string.IsNullOrWhiteSpace(scheduleFilter.FirstName))
                 {
-                    string SearchQuery = scheduleFilter.FirstName.Trim();
-                    query = query.Where(i => i.FirstName.Contains(SearchQuery));
+                    string searchQuery = scheduleFilter.FirstName.Trim();
+                    query = query.Where(i => i.FirstName.Contains(searchQuery));
                 }
                 if (!string.IsNullOrWhiteSpace(scheduleFilter.LastName))
                 {
-                    string SearchQuery = scheduleFilter.LastName.Trim();
-                    query = query.Where(i => i.LastName.Contains(SearchQuery));
+                    string searchQuery = scheduleFilter.LastName.Trim();
+                    query = query.Where(i => i.LastName.Contains(searchQuery));
                 }
                 if (!string.IsNullOrWhiteSpace(scheduleFilter.SMEmployeeID))
                 {
-                    string SearchQuery = scheduleFilter.SMEmployeeID.Trim();
-                    query = query.Where(i => i.SMEmployeeID.Contains(SearchQuery));
+                    string searchQuery = scheduleFilter.SMEmployeeID.Trim();
+                    query = query.Where(i => i.SMEmployeeID.Contains(searchQuery));
                 }
 
-                var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
-                var schedule = responsewrapper.Results;
+                var responseWrapper = await PaginationLogic.PaginateData(query, paginationRequest);
+                var schedule = responseWrapper.Results;
 
                 if (schedule.Any())
                 {
-                    return responsewrapper;
-                }
-
-                return null;
-            } catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-        //specific
-        public async Task<object> GetScheduleByUserId([FromQuery] PaginationRequest paginationRequest, [FromQuery] ScheduleFilter scheduleFilter, Guid UserId)
-        {
-            try
-            {
-                IQueryable<ScheduleDTO> query = from q in _context.Schedule
-                                                where q.UserId == UserId && q.BranchId == scheduleFilter.BranchId
-                                                select new ScheduleDTO()
-                                                {
-                                                    ScheduleId = q.ScheduleId,
-                                                    UserId = q.UserId,
-                                                    FullName = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.FirstName).FirstOrDefault() + ' '
-                                                             + _context.User.Where(u => u.UserId == q.UserId).Select(u => u.LastName).FirstOrDefault(),
-                                                    FirstName = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.FirstName).FirstOrDefault(),
-                                                    LastName = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.LastName).FirstOrDefault(),
-                                                    SMEmployeeID = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.SMEmployeeID).FirstOrDefault(),
-                                                    BranchId = q.BranchId,
-                                                    BranchName = _context.Branch.Where(b => b.BranchId == q.BranchId).Select(n => n.BranchName).FirstOrDefault(),
-                                                    Monday = q.Monday,
-                                                    Tuesday = q.Tuesday,
-                                                    Wednesday = q.Wednesday,
-                                                    Thursday = q.Thursday,
-                                                    Friday = q.Friday,
-                                                    Saturday = q.Saturday,
-                                                    Sunday = q.Sunday,
-                                                    ExpectedTimeIn = q.ExpectedTimeIn,
-                                                    ExpectedTimeOut = q.ExpectedTimeOut,
-                                                };
-
-                if (query == null) throw new Exception("No Schedules found.");
-
-                if (!string.IsNullOrWhiteSpace(scheduleFilter.FirstName))
-                {
-                    string SearchQuery = scheduleFilter.FirstName.Trim();
-                    query = query.Where(i => i.FirstName.Contains(SearchQuery));
-                }
-                if (!string.IsNullOrWhiteSpace(scheduleFilter.LastName))
-                {
-                    string SearchQuery = scheduleFilter.LastName.Trim();
-                    query = query.Where(i => i.LastName.Contains(SearchQuery));
-                }
-                if (!string.IsNullOrWhiteSpace(scheduleFilter.SMEmployeeID))
-                {
-                    string SearchQuery = scheduleFilter.SMEmployeeID.Trim();
-                    query = query.Where(i => i.SMEmployeeID.Contains(SearchQuery));
-                }
-
-                var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
-                var schedule = responsewrapper.Results;
-
-                if (schedule.Any())
-                {
-                    return responsewrapper;
+                    return responseWrapper;
                 }
 
                 return null;
@@ -140,6 +80,71 @@ namespace SalCentral.Api.Logics
                 throw new Exception(ex.Message);
             }
         }
+
+        //specific
+        public async Task<object> GetScheduleByUserId([FromQuery] PaginationRequest paginationRequest, [FromQuery] ScheduleFilter scheduleFilter, Guid UserId)
+        {
+            try
+            {
+                var query = from q in _context.Schedule
+                            join u in _context.User on q.UserId equals u.UserId
+                            join b in _context.Branch on q.BranchId equals b.BranchId
+                            where q.UserId == UserId && q.BranchId == scheduleFilter.BranchId
+                            select new ScheduleDTO
+                            {
+                                ScheduleId = q.ScheduleId,
+                                UserId = q.UserId,
+                                FullName = u.FirstName + " " + u.LastName,
+                                FirstName = u.FirstName,
+                                LastName = u.LastName,
+                                SMEmployeeID = u.SMEmployeeID,
+                                BranchId = q.BranchId,
+                                BranchName = b.BranchName,
+                                Monday = q.Monday,
+                                Tuesday = q.Tuesday,
+                                Wednesday = q.Wednesday,
+                                Thursday = q.Thursday,
+                                Friday = q.Friday,
+                                Saturday = q.Saturday,
+                                Sunday = q.Sunday,
+                                ExpectedTimeIn = q.ExpectedTimeIn,
+                                ExpectedTimeOut = q.ExpectedTimeOut,
+                            };
+
+                if (query == null) throw new Exception("No Schedules found.");
+
+                if (!string.IsNullOrWhiteSpace(scheduleFilter.FirstName))
+                {
+                    string searchQuery = scheduleFilter.FirstName.Trim();
+                    query = query.Where(i => i.FirstName.Contains(searchQuery));
+                }
+                if (!string.IsNullOrWhiteSpace(scheduleFilter.LastName))
+                {
+                    string searchQuery = scheduleFilter.LastName.Trim();
+                    query = query.Where(i => i.LastName.Contains(searchQuery));
+                }
+                if (!string.IsNullOrWhiteSpace(scheduleFilter.SMEmployeeID))
+                {
+                    string searchQuery = scheduleFilter.SMEmployeeID.Trim();
+                    query = query.Where(i => i.SMEmployeeID.Contains(searchQuery));
+                }
+
+                var responseWrapper = await PaginationLogic.PaginateData(query, paginationRequest);
+                var schedule = responseWrapper.Results;
+
+                if (schedule.Any())
+                {
+                    return responseWrapper;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
 
         public async Task<object> CreateSchedule([FromBody] Schedule payload)
         {

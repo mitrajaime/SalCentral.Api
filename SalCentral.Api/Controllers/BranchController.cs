@@ -30,6 +30,7 @@ namespace SalCentral.Api.Controllers
                              {
                                  BranchId = b.BranchId,
                                  BranchName = b.BranchName,
+                                 Address = b.Address,
                              };
 
                 return Ok(branch);

@@ -12,6 +12,8 @@ namespace SalCentral.Api.DTOs
         public Guid? BranchId { get; set; }
         public string? BranchName { get; set; }
         public decimal? DeductedAmount { get; set; }
+        public decimal? OvertimePay {  get; set; }
+        public decimal? HolidayPay { get; set; }
         public decimal? NetPay { get; set; }
         public decimal? CurrentSalaryRate { get; set; }
 
@@ -27,5 +29,6 @@ namespace SalCentral.Api.DTOs
 
         public double? TotalHoursRendered { get; set; }
 
+        public List<DateTime>? holidayList { get; set; }
     }
 }

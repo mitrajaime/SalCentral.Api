@@ -23,5 +23,6 @@ namespace SalCentral.Api.DTOs.PayrollDTO
         public decimal? PhilHealthContribution { get; set; }
 
         public List<PayrollDetailsDTO>? PayrollDetailsList { get; set; }
+        public List<DateTime>? holidayList { get; set; }
     }
 }

@@ -25,6 +25,7 @@ namespace SalCentral.Api.Logics
                 {
                     BranchId = (Guid)payload.BranchId,
                     BranchName = payload.BranchName,
+                    Address = payload.Address
                 };
 
                 var exists = _context.Branch.Where(b => b.BranchName == payload.BranchName).Any();

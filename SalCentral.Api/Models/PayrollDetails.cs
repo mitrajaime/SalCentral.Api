@@ -12,6 +12,8 @@ namespace SalCentral.Api.Models
         public decimal DeductedAmount { get; set; }
         public decimal NetPay { get; set; }
         public decimal GrossSalary { get; set; }
+        public decimal OvertimePay { get; set; }
+        public decimal HolidayPay { get; set; } 
         public bool IsPaid { get; set; }
         public DateTime PayDate { get; set; }
         public decimal SSSContribution { get; set; }

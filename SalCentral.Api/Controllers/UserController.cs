@@ -54,7 +54,7 @@ namespace SalCentral.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> PostUsers([FromBody] UserDTO payload)
+        public async Task<ActionResult> PostUser([FromBody] UserDTO payload)
         {
             try
             {
