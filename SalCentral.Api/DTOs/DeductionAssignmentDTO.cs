@@ -15,6 +15,9 @@
         public DateTime? Date { get; set; }
         public bool? IsMandatory { get; set; }
         public string? DeductionDescription { get; set; }
+        public string? SSS { get; set; }
+        public string? PagIbig { get; set; }
+        public string? PhilHealth { get; set; }
     }
     public class DeductionAssignmentUserList
     {

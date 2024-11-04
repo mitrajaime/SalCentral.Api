@@ -20,6 +20,9 @@ namespace SalCentral.Api.DTOs.UserDTO
         public string? BranchName { get; set; }
         public string? AuthorizationKey { get; set; }
         public decimal? SalaryRate { get; set; }
+        public string? SSS { get; set; }
+        public string? PagIbig { get; set; }
+        public string? PhilHealth { get; set; }
         public Schedule? Schedule { get; set; }
     }
 }

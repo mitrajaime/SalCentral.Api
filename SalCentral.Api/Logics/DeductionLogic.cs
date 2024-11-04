@@ -78,6 +78,22 @@ namespace SalCentral.Api.Logics
 
                 foreach (var d in payload.deductionList)
                 {
+                    switch (d.DeductionName)
+                    {
+                        case "SSS":
+                            if (string.IsNullOrEmpty(payload.SSS)) { throw new Exception("Please fill up the SSS ID field before adding a new SSS deduction."); };
+                            break;
+                        case "Pagibig":
+                            if (string.IsNullOrEmpty(payload.PagIbig)) { throw new Exception("Please fill up the Pag-Ibig ID field before adding a new Pag-Ibig deduction."); };
+                            break;
+                        case "PhilHealth":
+                            if (string.IsNullOrEmpty(payload.PhilHealth)) { throw new Exception("Please fill up the PhilHealth ID field before adding a new PhilHealth deduction."); };
+                            break;
+                    }
+                }
+
+                foreach (var d in payload.deductionList)
+                {
                     var deduction = new Deduction()
                     {
                         DeductionName = d.DeductionName,
@@ -95,6 +111,22 @@ namespace SalCentral.Api.Logics
                         DeductionId = deduction.DeductionId,
                         UserId = (Guid)payload.UserId,
                     };
+
+                    var user = await _context.User.Where(u => u.UserId == payload.UserId).FirstOrDefaultAsync();
+                    if (user == null) { throw new Exception("User does not exist"); }
+
+                    switch (deduction.DeductionName)
+                    {
+                        case "SSS":
+                            user.SSS = payload.SSS;
+                            break;
+                        case "Pagibig":
+                            user.PagIbig = payload.PagIbig;
+                            break;
+                        case "PhilHealth":
+                            user.PhilHealth = payload.PhilHealth;
+                            break;
+                    }
 
                     deductionAssignments.Add(deductionAssignment);
                 };
@@ -116,7 +148,110 @@ namespace SalCentral.Api.Logics
             }
         }
 
-        public async Task<Deduction> EditDeduction([FromBody] DeductionDTO payload)
+        public async Task<DeductionDTO> EditMandatoryDeduction([FromBody] DeductionDTO payload)
+        {
+            try
+            {
+                var user = await _context.User.Where(u => u.UserId == payload.UserId).FirstOrDefaultAsync();
+                if (user == null) { throw new Exception("User does not exist"); }
+
+                var deductionIds = payload.deductionList.Select(d => d.DeductionId).ToList();
+
+                var deductionAssignmentsOfUser = await _context.DeductionAssignment.Where(u => u.UserId == user.UserId).ToListAsync();
+                var mandatoryDeductionsFromDB = await _context.Deduction.Where(d => d.IsMandatory == true).Select(d => d.DeductionId).ToListAsync();
+
+                var filteredDeductionAssignments = deductionAssignmentsOfUser.Where(d => mandatoryDeductionsFromDB.Contains(d.DeductionId)).ToList();
+
+                if (filteredDeductionAssignments.Any())
+                {
+                    _context.DeductionAssignment.RemoveRange(filteredDeductionAssignments);
+
+                    var deductionIdToDelete = filteredDeductionAssignments.Select(d => d.DeductionId);
+
+                    var deductionsToRemove = await _context.Deduction
+                        .Where(d => deductionIdToDelete.Contains(d.DeductionId))
+                        .ToListAsync();
+
+                    foreach(var d in deductionsToRemove)
+                    {
+                        switch (d.DeductionName)
+                        {
+                            case "SSS":
+                                user.SSS = "";
+                                _context.User.Update(user);
+                                await _context.SaveChangesAsync();
+                                break;
+                            case "Pagibig":
+                                user.PagIbig = "";
+                                _context.User.Update(user);
+                                await _context.SaveChangesAsync();
+                                break;
+                            case "PhilHealth":
+                                user.PhilHealth = "";
+                                _context.User.Update(user);
+                                await _context.SaveChangesAsync();
+                                break;
+                        }
+                    }
+
+                    _context.Deduction.RemoveRange(deductionsToRemove);
+
+                    await _context.SaveChangesAsync();
+                }
+                
+                foreach (var deductionDTO in payload.deductionList)
+                {
+                    var newDeduction = new Deduction
+                    {
+                        DeductionName = deductionDTO.DeductionName,
+                        DeductionDescription = deductionDTO.DeductionName,
+                        Amount = (decimal)deductionDTO.Amount,
+                        IsMandatory = deductionDTO.IsMandatory,
+                        Date = DateTime.Now,
+                    };
+                    _context.Deduction.Add(newDeduction);
+                    await _context.SaveChangesAsync();
+                    
+                    var newAssignment = new DeductionAssignment
+                    {
+                        UserId = (Guid)payload.UserId,
+                        DeductionId = newDeduction.DeductionId
+                    };
+                    _context.DeductionAssignment.Add(newAssignment);
+
+                    switch (newDeduction.DeductionName)
+                    {
+                        case "SSS":
+                            user.SSS = payload.SSS;
+                            _context.User.Update(user);
+                            await _context.SaveChangesAsync();
+                            break;
+                        case "Pagibig":
+                            user.PagIbig = payload.PagIbig;
+                            _context.User.Update(user);
+                            await _context.SaveChangesAsync();
+                            break;
+                        case "PhilHealth":
+                            user.PhilHealth = payload.PhilHealth;
+                            _context.User.Update(user);
+                            await _context.SaveChangesAsync();
+                            break;
+                    }
+                    
+                }
+
+                await _context.SaveChangesAsync();
+
+                return payload;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+
+        public async Task<Deduction> EditNonMandatoryDeduction([FromBody] DeductionDTO payload)
         {
             try
             {

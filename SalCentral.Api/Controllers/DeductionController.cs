@@ -75,14 +75,21 @@ namespace SalCentral.Api.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> EditDeduction([FromBody] DeductionDTO payload)
+        public async Task<IActionResult> EditDeduction([FromBody] DeductionDTO payload, bool? IsMandatory)
         {
             try
             {
-                var result = await _deductionLogic.EditDeduction(payload);
+                if(IsMandatory == true)
+                {
+                    var mandatoryResult = await _deductionLogic.EditMandatoryDeduction(payload);
+                    return Ok(mandatoryResult);
+                }
+
+                var result = await _deductionLogic.EditNonMandatoryDeduction(payload);
                 return Ok(result);
 
-            } catch (Exception ex)
+            } 
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SalCentral.Api.DbContext;
 using SalCentral.Api.DTOs.UserDTO;
 using SalCentral.Api.Models;
+using System.Runtime.Intrinsics.X86;
 using System.Security.Cryptography;
 using static SalCentral.Api.Pagination.PaginationRequestQuery;
 
@@ -46,6 +47,9 @@ namespace SalCentral.Api.Logics
                                     .Select(b => b.BranchName)
                                     .FirstOrDefault(),
                                     AuthorizationKey = u.AuthorizationKey,
+                                    SSS = u.SSS,
+                                    PagIbig = u.PagIbig,
+                                    PhilHealth = u.PhilHealth,
                                 })
                                 .FirstOrDefaultAsync();
 
@@ -105,6 +109,9 @@ namespace SalCentral.Api.Logics
                                                                 .FirstOrDefault(),
                                                 SalaryRate = u.SalaryRate,
                                                 AuthorizationKey = u.AuthorizationKey,
+                                                SSS = u.SSS,
+                                                PagIbig = u.PagIbig,
+                                                PhilHealth = u.PhilHealth,
                                             };
 
                 if (query == null) throw new Exception("No users found.");
@@ -178,6 +185,9 @@ namespace SalCentral.Api.Logics
                                                                .FirstOrDefault(),
                                                 SalaryRate = u.SalaryRate,
                                                 BranchId = u.BranchId,
+                                                SSS = u.SSS,
+                                                PagIbig = u.PagIbig,
+                                                PhilHealth = u.PhilHealth,
                                             };
 
                 if (query == null) throw new Exception("No users found.");
@@ -215,7 +225,10 @@ namespace SalCentral.Api.Logics
                     RoleId = (Guid)payload.RoleId,
                     BranchId = (Guid)payload.BranchId,
                     AuthorizationKey = payload.RoleId == Guid.Parse("f711d87e-f3e9-4ebd-9d2d-08dcbd237523") ? null : GetRandomlyGenerateBase64String(8),
-                    SalaryRate = (decimal)payload.SalaryRate
+                    SalaryRate = (decimal)payload.SalaryRate,
+                    SSS = payload.SSS == null ? null : payload.SSS,
+                    PagIbig = payload.PagIbig == null ? null : payload.PagIbig,
+                    PhilHealth = payload.PhilHealth == null ? null : payload.PhilHealth,
                 };
 
                 var exists = _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID).Any();
@@ -249,6 +262,9 @@ namespace SalCentral.Api.Logics
                 user.BranchId = (Guid)payload.BranchId;
                 user.RoleId = (Guid)payload.RoleId;
                 user.SalaryRate = (decimal)payload.SalaryRate;
+                user.SSS = payload.SSS == null ? null : payload.SSS;
+                user.PagIbig = payload.PagIbig == null ? null : payload.PagIbig;
+                user.PhilHealth = payload.PhilHealth == null ? null : payload.PhilHealth;
 
                 _context.User.Update(user);
                 await _context.SaveChangesAsync();

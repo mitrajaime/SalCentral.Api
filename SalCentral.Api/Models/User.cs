@@ -17,5 +17,8 @@ namespace SalCentral.Api.Models
         public Guid BranchId { get; set; }
         public string? AuthorizationKey { get; set; }
         public decimal SalaryRate { get; set; }
+        public string? SSS { get; set; }
+        public string? PagIbig { get; set; }
+        public string? PhilHealth { get; set; }
     }
 }

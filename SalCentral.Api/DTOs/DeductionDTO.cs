@@ -13,6 +13,10 @@
         public decimal? Amount { get; set; }
         public DateTime? Date { get; set; }
 
+        public string? SSS { get; set; }
+        public string? PhilHealth { get; set; }
+        public string? PagIbig { get; set; }
+
         public List<DeductionAssignmentDTO>? deductionList { get; set; }
         public List<DeductionAssignmentDTO>? userList { get; set;}
     }
