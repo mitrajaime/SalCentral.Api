@@ -9,7 +9,8 @@
         public decimal? PagIbigContribution { get; set; }
         public decimal? PhilHealthContribution { get; set; }
         public decimal? SalaryRate { get; set; }
-        public decimal? HolidayPay {  get; set; }
+        public decimal? HolidayPay { get; set; }
+        public decimal? OvertimePay { get; set; }
         public List<DateTime>? holidayList { get; set; }
     }
 }

@@ -102,5 +102,18 @@ namespace SalCentral.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPut]
+        public async Task<IActionResult> EditOvertimeHours([FromBody] AttendanceDTO payload)
+        {
+            try
+            {
+                var results = await _attendanceLogic.EditAllowedOvertimeHours(payload);
+                return Ok(results);
+            } catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

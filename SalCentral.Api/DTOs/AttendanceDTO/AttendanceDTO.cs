@@ -12,5 +12,13 @@
         public string? User {  get; set; }
         public int? HoursRendered { get; set; }
         public int? OverTimeHours { get; set; }
+        public int? AllowedOvertimeHours { get; set; }
+
+        public List<userList>? userList { get; set; }
+    }
+    public class userList
+    {
+        public Guid? UserId { get; set; }
+        public int? allowedOvertimeHours { get; set; }
     }
 }

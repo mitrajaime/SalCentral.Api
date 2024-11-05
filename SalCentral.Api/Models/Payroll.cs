@@ -12,5 +12,6 @@ namespace SalCentral.Api.Models
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public DateTime DateCreated { get; set; }
+        
     }
 }

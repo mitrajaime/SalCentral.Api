@@ -12,5 +12,6 @@ namespace SalCentral.Api.Models
         public Guid UserId { get; set; }
         public int HoursRendered { get; set; }
         public int OverTimeHours { get; set; } = 0;
+        public int AllowedOvertimeHours { get; set; } = 0;
     }
 }

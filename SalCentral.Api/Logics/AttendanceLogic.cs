@@ -68,7 +68,7 @@ namespace SalCentral.Api.Logics
                                                   join u in _context.User on q.UserId equals u.UserId
                                                   join b in _context.Branch on u.BranchId equals b.BranchId
                                                   where q.UserId == attendanceFilter.UserId && b.BranchId == attendanceFilter.BranchId
-                                                  orderby q.Date descending
+                                                  orderby q.Date.Date descending
                                                   select new AttendanceDTO()
                                                   {
                                                       AttendanceId = q.AttendanceId,
@@ -81,6 +81,7 @@ namespace SalCentral.Api.Logics
                                                       TimeOut = q.TimeOut,
                                                       HoursRendered = q.HoursRendered,
                                                       OverTimeHours = q.OverTimeHours,
+                                                      AllowedOvertimeHours = q.AllowedOvertimeHours,
                                                   };
 
                 var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
@@ -155,8 +156,8 @@ namespace SalCentral.Api.Logics
                 // for debugging
                 var timeIn = new Attendance()
                 {
-                    Date = DateTime.UtcNow,
-                    TimeIn = DateTime.UtcNow,
+                    Date = new DateTime(2024, 11, 5, 8, 0, 0),
+                    TimeIn = new DateTime(2024, 11, 5, 8, 0, 0),
                     UserId = (Guid)payload.UserId,
                 };
 
@@ -184,7 +185,7 @@ namespace SalCentral.Api.Logics
                                         orderby a.Date descending
                                         select a).FirstOrDefaultAsync();
 
-                attendance.TimeOut = DateTime.Now;
+                attendance.TimeOut = new DateTime(2024, 11, 5, 20, 0, 0);
                 TimeSpan timeRendered = attendance.TimeOut - attendance.TimeIn;
                 attendance.HoursRendered = (int)timeRendered.TotalHours - 1;
 
@@ -221,6 +222,31 @@ namespace SalCentral.Api.Logics
                 await _context.SaveChangesAsync();
 
                 return attendance;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<object> EditAllowedOvertimeHours([FromBody] AttendanceDTO payload)
+        {
+            try
+            {
+                foreach (var user in payload.userList)
+                {
+                    var attendanceOfEmployee = await (from a in _context.Attendance
+                                                      where a.UserId == user.UserId && a.Date.Date == payload.Date
+                                                      select a).FirstOrDefaultAsync();
+                    if(attendanceOfEmployee == null) { throw new Exception("No attendance found for employee at this date."); }
+
+                    attendanceOfEmployee.AllowedOvertimeHours = (int)user.allowedOvertimeHours;
+                    _context.Attendance.Update(attendanceOfEmployee);
+                }
+
+                await _context.SaveChangesAsync();
+
+                return payload;
             }
             catch (Exception ex)
             {

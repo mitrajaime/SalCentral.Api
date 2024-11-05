@@ -223,6 +223,14 @@ namespace SalCentral.Api.Logics
                     holidayList = payload.holidayList
                 });
 
+                var overtimePay = await CalculateHolidayPay(new PayrollFields
+                {
+                    StartDate = (DateTime)payload.StartDate,
+                    EndDate = (DateTime)payload.EndDate,
+                    UserId = (Guid)payload.UserId
+                    //SalaryRate = payload.CurrentSalaryRate
+                });
+
                 var payrollDetails = new PayrollDetails()
                 {
                     PayrollDetailsId = new Guid(),
@@ -244,7 +252,8 @@ namespace SalCentral.Api.Logics
                         PagIbigContribution = payload.PagIbigContribution,
                         PhilHealthContribution = payload.PhilHealthContribution,
                         SalaryRate = payload.CurrentSalaryRate,
-                        HolidayPay = holidayPay
+                        HolidayPay = holidayPay,
+                        OvertimePay = overtimePay,
                     }),
                     GrossSalary = await CalculateGrossSalary(new PayrollFields
                     {
@@ -254,7 +263,7 @@ namespace SalCentral.Api.Logics
                         SalaryRate = payload.CurrentSalaryRate
                     }),
                     HolidayPay = holidayPay,
-                    //OvertimePay = ,
+                    OvertimePay = overtimePay,
                     IsPaid = false,
                     SSSContribution = (decimal)payload.SSSContribution,
                     PagIbigContribution = (decimal)payload.PagIbigContribution,
@@ -282,7 +291,8 @@ namespace SalCentral.Api.Logics
                 var holidayPay = totalAttendance.Count * 500;
 
                 return holidayPay;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -319,6 +329,47 @@ namespace SalCentral.Api.Logics
 
         }
 
+        public async Task<decimal> CalculateOvertimePay(PayrollFields payroll)
+        {
+            try
+            {
+                // Retrieve all attendance records for the specified user within the date range
+                var attendanceRecords = await _context.Attendance
+                    .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId)
+                    .ToListAsync();
+
+                int totalOvertimeHours = 0;
+
+                foreach (var attendance in attendanceRecords)
+                {
+                    int overtimeHours = attendance.OverTimeHours;
+
+                    // Ensure overtime doesn't exceed allowed overtime for this record
+                    if (overtimeHours > attendance.AllowedOvertimeHours)
+                    {
+                        overtimeHours = attendance.AllowedOvertimeHours;
+                    }
+
+                    totalOvertimeHours += overtimeHours;
+                }
+
+                if(totalOvertimeHours == 0)
+                {
+                    return 0;
+                }
+
+                decimal hourlyRate = (468 + (468 * 0.30M)) / 8; 
+                decimal overtimePay = hourlyRate * totalOvertimeHours;
+
+                return overtimePay;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+
         // has deductions
         public async Task<decimal> CalculateNetPay(PayrollFields payroll)
         {
@@ -352,7 +403,7 @@ namespace SalCentral.Api.Logics
 
                 decimal totalContributions = (decimal)(payroll.SSSContribution + payroll.PagIbigContribution + payroll.PhilHealthContribution);
                 decimal grossPay = (decimal)(totalHours * payroll.SalaryRate);
-                decimal netPay = grossPay - totalDeductions - totalContributions + (decimal)payroll.HolidayPay;
+                decimal netPay = grossPay - totalDeductions - totalContributions + (decimal)payroll.HolidayPay + (decimal)payroll.OvertimePay;
 
                 return netPay;
 
@@ -413,30 +464,5 @@ namespace SalCentral.Api.Logics
             }
             
         }
-
-        //public async Task<User> EditUser([FromBody] UserDTO payload)
-        //{
-        //    try
-        //    {
-        //        var user = await _context.User.Where(u => u.UserId == payload.UserId).FirstOrDefaultAsync();
-
-        //        user.FirstName = payload.FirstName;
-        //        user.LastName = payload.LastName;
-        //        user.Email = payload.Email;
-        //        user.ContactNo = payload.ContactNo;
-        //        user.Password = HashingLogic.HashData(payload.Password);
-        //        user.RoleId = (Guid)payload.RoleId;
-
-        //        _context.User.Update(user);
-        //        await _context.SaveChangesAsync();
-
-        //        return user;
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception(ex.Message);
-        //    }
-        //}
     }
 }
