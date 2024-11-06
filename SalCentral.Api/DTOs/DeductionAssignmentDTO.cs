@@ -18,6 +18,7 @@
         public string? SSS { get; set; }
         public string? PagIbig { get; set; }
         public string? PhilHealth { get; set; }
+        public string? Type { get; set; }
     }
     public class DeductionAssignmentUserList
     {

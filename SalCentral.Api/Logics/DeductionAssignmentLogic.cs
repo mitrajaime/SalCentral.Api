@@ -35,7 +35,8 @@ namespace SalCentral.Api.Logics
                                                                UserId = u.UserId,
                                                                FullName = u.FirstName + " " + u.LastName,
                                                                smEmployeeId = u.SMEmployeeID,
-                                                               DeductionId = da.DeductionId
+                                                               DeductionId = da.DeductionId,
+                                                               Type = d.Type,
                                                            };
 
                 if (query == null) throw new Exception("No deductions found.");
@@ -77,6 +78,7 @@ namespace SalCentral.Api.Logics
                                                                FullName = u.FirstName + " " + u.LastName,
                                                                smEmployeeId = u.SMEmployeeID,
                                                                DeductionId = da.DeductionId,
+                                                               Type = d.Type,
                                                                SSS = _context.User.Where(u => u.UserId == UserId).Select(u => u.SSS).FirstOrDefault(),
                                                                PagIbig = _context.User.Where(u => u.UserId == UserId).Select(u => u.PagIbig).FirstOrDefault(),
                                                                PhilHealth = _context.User.Where(u => u.UserId == UserId).Select(u => u.PhilHealth).FirstOrDefault(),

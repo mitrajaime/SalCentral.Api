@@ -11,5 +11,6 @@ namespace SalCentral.Api.Models
         public decimal Amount { get; set; }
         public DateTime Date { get; set; }
         public bool? IsMandatory { get; set; }
+        public string? Type { get; set; }
     }
 }
