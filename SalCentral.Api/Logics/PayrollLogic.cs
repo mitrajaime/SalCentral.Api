@@ -117,6 +117,7 @@ namespace SalCentral.Api.Logics
                                                                                                   a.Date <= p.EndDate)
                                                                                            .Select(a => a.HoursRendered)
                                                                                            .Sum(),
+                                                   Tax = pd.Tax,
                                                    PagIbigContribution = pd.PagIbigContribution,
                                                    PhilHealthContribution = pd.PhilHealthContribution,
                                                    SSSContribution = pd.SSSContribution,
@@ -213,17 +214,68 @@ namespace SalCentral.Api.Logics
             }
         }
 
+        public async Task<decimal> CalculateTaxableIncome(PayrollFields payroll)
+        {
+            try
+            {
+                decimal tax = 0;
+                var salaryRate = await _context.User.Where(u => u.UserId == payroll.UserId).Select(u => u.SalaryRate).FirstOrDefaultAsync();
+                decimal annualTaxableIncome = salaryRate * 8 * 6 * 4 * 12;
+
+                if (annualTaxableIncome < 250000)
+                {
+                    // No tax for income below 250,000
+                    tax = 0;
+                    return tax;
+                }
+                else if (annualTaxableIncome >= 250000 && annualTaxableIncome < 400000)
+                {
+                    tax = 0.15M * (annualTaxableIncome - 250000);
+                    return tax;
+                }
+                else if (annualTaxableIncome >= 400000 && annualTaxableIncome < 800000)
+                {
+                    tax = 22500 + (0.20M * (annualTaxableIncome - 400000));
+                    return tax;
+                }
+                else if (annualTaxableIncome >= 800000 && annualTaxableIncome < 2000000)
+                {
+                    tax = 102500 + (0.25M * (annualTaxableIncome - 800000));
+                    return tax;
+                }
+                else if (annualTaxableIncome >= 2000000 && annualTaxableIncome < 8000000)
+                {
+                    tax = 402500 + (0.30M * (annualTaxableIncome - 2000000));
+                    return tax;
+                }
+                else if (annualTaxableIncome >= 8000000)
+                {
+                    tax = 2202500 + (0.35M * (annualTaxableIncome - 8000000));
+                    return tax;
+                }
+                return tax;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
         public async Task<PayrollDetails> CreatePayrollDetail(PayrollDetailsDTO payload)
         {
             try
             {
-                var holidayPay = await CalculateHolidayPay(new PayrollFields
+                var tax = await CalculateTaxableIncome(new PayrollFields
                 {
-                    holidayList = payload.holidayList
+                    UserId = payload.UserId,
                 });
 
-                var overtimePay = await CalculateHolidayPay(new PayrollFields
+                var holidayPay = await CalculateHolidayPay(new PayrollFields
+                {
+                    holidayList = payload.holidayList,
+                });
+
+                var overtimePay = await CalculateOvertimePay(new PayrollFields
                 {
                     StartDate = (DateTime)payload.StartDate,
                     EndDate = (DateTime)payload.EndDate,
@@ -236,7 +288,7 @@ namespace SalCentral.Api.Logics
                     PayrollDetailsId = new Guid(),
                     PayrollId = (Guid)payload.PayrollId,
                     UserId = (Guid)payload.UserId,
-                    DeductedAmount = await CalculateDeductions(new PayrollFields
+                    DeductedAmount = await CalculateTotalDeductions(new PayrollFields
                     {
                         SSSContribution = payload.SSSContribution,
                         PagIbigContribution = payload.PagIbigContribution,
@@ -264,6 +316,7 @@ namespace SalCentral.Api.Logics
                     }),
                     HolidayPay = holidayPay,
                     OvertimePay = overtimePay,
+                    Tax = tax,
                     IsPaid = false,
                     SSSContribution = (decimal)payload.SSSContribution,
                     PagIbigContribution = (decimal)payload.PagIbigContribution,
@@ -285,7 +338,7 @@ namespace SalCentral.Api.Logics
             try
             {
                 var totalAttendance = await _context.Attendance
-                    .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId)
+                    .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId && payroll.holidayList.Contains(a.Date.Date))
                     .ToListAsync();
 
                 var holidayPay = totalAttendance.Count * 500;
@@ -298,7 +351,7 @@ namespace SalCentral.Api.Logics
             }
         }
 
-        public async Task<decimal> CalculateDeductions(PayrollFields payroll)
+        public async Task<decimal> CalculateTotalDeductions(PayrollFields payroll)
         {
             try
             {
@@ -379,7 +432,7 @@ namespace SalCentral.Api.Logics
                     .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId)
                     .SumAsync(a => a.HoursRendered);
 
-                // for mandatory and non-mandatory deductions
+                // for mandatory and non-mandatory deductions of user
                 var deductions = await _context.Deduction
                     .Join(_context.DeductionAssignment,
                           d => d.DeductionId,
@@ -388,7 +441,7 @@ namespace SalCentral.Api.Logics
                     .Where(x => x.DeductionAssignment.UserId == payroll.UserId)
                     .ToListAsync();
 
-                // getting the sum of mandatory and non-mandatory deductions
+                // getting the sum of mandatory and non-mandatory deductions of user
                 var mandatoryDeductions = deductions
                     .Where(x => x.Deduction.IsMandatory == true)
                     .Sum(x => x.Deduction.Amount);
@@ -432,7 +485,6 @@ namespace SalCentral.Api.Logics
             {
                 throw new Exception("Failed to compute for gross salary: " + ex.Message);
             }
-            
         }
 
         public async Task<decimal> CalculateTotalAmount(Guid PayrollId)
@@ -458,11 +510,132 @@ namespace SalCentral.Api.Logics
 
                 return payroll.TotalAmount;
 
-            } catch (Exception ex) 
+            } 
+            catch (Exception ex) 
             {
                 throw new Exception("Failed to compute for total amount: " + ex.Message);
             }
-            
         }
+
+        public async Task<decimal> GenerateServicesDeductionAmount(PayrollFields payroll)
+        {
+            // for mandatory and non-mandatory deductions of user
+            var deductions = await _context.Deduction
+                .Join(_context.DeductionAssignment,
+                      d => d.DeductionId,
+                      da => da.DeductionId,
+                      (d, da) => new { Deduction = d, DeductionAssignment = da })
+                .Where(x => x.DeductionAssignment.UserId == payroll.UserId)
+                .ToListAsync();
+
+            // getting the sum of non-mandatory deductions (under the type 'Service') of user
+            var nonMandatoryDeductions = deductions
+                .Where(x => x.Deduction.IsMandatory != true &&
+                            x.Deduction.Type == "Service" &&
+                            x.Deduction.Date >= payroll.StartDate &&
+                            x.Deduction.Date <= payroll.EndDate)
+                .Sum(x => x.Deduction.Amount);
+
+            return nonMandatoryDeductions;
+        }
+
+        public async Task<decimal> GenerateProductsDeductionAmount(PayrollFields payroll)
+        {
+            // for mandatory and non-mandatory deductions of user
+            var deductions = await _context.Deduction
+                .Join(_context.DeductionAssignment,
+                      d => d.DeductionId,
+                      da => da.DeductionId,
+                      (d, da) => new { Deduction = d, DeductionAssignment = da })
+                .Where(x => x.DeductionAssignment.UserId == payroll.UserId)
+                .ToListAsync();
+
+            // getting the sum of non-mandatory deductions (under the type 'Service') of user
+            var nonMandatoryDeductions = deductions
+                .Where(x => x.Deduction.IsMandatory != true &&
+                            x.Deduction.Type == "Product" &&
+                            x.Deduction.Date >= payroll.StartDate &&
+                            x.Deduction.Date <= payroll.EndDate)
+                .Sum(x => x.Deduction.Amount);
+
+            return nonMandatoryDeductions;
+        }
+
+        public async Task<object> GeneratePayslip(Guid UserId, Guid PayrollId)
+        {
+            try
+            {
+                var userFields = await (from u in _context.User
+                                        join b in _context.Branch on u.BranchId equals b.BranchId
+                                        join pd in _context.PayrollDetails on u.UserId equals pd.UserId
+                                        join p in _context.Payroll on pd.PayrollId equals p.PayrollId
+                                        join r in _context.Role on u.RoleId equals r.RoleId
+                                        where u.UserId == UserId && p.PayrollId == PayrollId && pd.PayrollId == PayrollId
+                                        select new
+                                        {
+                                            BranchName = b.BranchName,
+                                            FullName = u.FirstName + " " + u.LastName,
+                                            RoleName = r.RoleName,
+                                            Address = b.BranchName,
+                                            CurrentSalaryRate = pd.CurrentSalaryRate,
+                                            OvertimePay = pd.OvertimePay,
+                                            Holiday = pd.HolidayPay,
+                                            GrossSalary = pd.GrossSalary,
+                                            PayrollName = p.PayrollName,
+                                            Tax = pd.Tax,
+                                            SMEmployeeId = u.SMEmployeeID,
+                                            NetSalary = pd.NetPay,
+                                            ClaimedBy = u.FirstName + " " + u.LastName,
+                                            PreparedBy = p.GeneratedBy,
+                                            TotalDeductionAmount = pd.DeductedAmount,
+                                            StartDate = p.StartDate,
+                                            EndDate = p.EndDate,
+                                        }).FirstOrDefaultAsync();
+
+                if (userFields == null)
+                {
+                    throw new Exception("User or payroll details not found.");
+                }
+
+                var deductions = await _context.Deduction
+                    .Join(_context.DeductionAssignment,
+                          d => d.DeductionId,
+                          da => da.DeductionId,
+                          (d, da) => new { Deduction = d, DeductionAssignment = da })
+                    .Where(x => x.DeductionAssignment.UserId == UserId)
+                    .ToListAsync();
+
+                // Getting the sum of mandatory and non-mandatory deductions of the user
+                var mandatoryDeductions = deductions
+                    .Where(x => x.Deduction.IsMandatory == true);
+
+                var payslip = new
+                {
+                    userFields,
+                    SSS = mandatoryDeductions.Where(d => d.Deduction.DeductionName == "SSS").FirstOrDefault(),
+                    Pagibig = mandatoryDeductions.Where(d => d.Deduction.DeductionName == "Pagibig").FirstOrDefault(),
+                    PhilHealth = mandatoryDeductions.Where(d => d.Deduction.DeductionName == "PhilHealth").FirstOrDefault(),
+                    ServicesDeductionAmount = await GenerateServicesDeductionAmount(new PayrollFields
+                    {
+                        UserId = UserId,
+                        StartDate = userFields.StartDate,
+                        EndDate = userFields.EndDate,
+                    }),
+                    ProductsDeductionAmount = await GenerateProductsDeductionAmount(new PayrollFields
+                    {
+                        UserId = UserId,
+                        StartDate = userFields.StartDate,
+                        EndDate = userFields.EndDate,
+                    })
+                };
+
+                return payslip;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to generate payslip: " + ex.Message);
+            }
+        }
+
     }
 }
