@@ -153,12 +153,7 @@ namespace SalCentral.Api.Logics
                                   join u in _context.User on pd.UserId equals u.UserId
                                   join b in _context.Branch on u.BranchId equals b.BranchId
                                   where u.BranchId == payload.BranchId && p.StartDate <= (DateTime)payload.StartDate
-                                  select p).CountAsync() + 1;
-
-                if(payload.BranchId == null)
-                {
-
-                }
+                                  select p).CountAsync();
 
                 // Create the payroll
                 var payroll = new Payroll()
@@ -229,26 +224,31 @@ namespace SalCentral.Api.Logics
                 else if (annualTaxableIncome >= 250000 && annualTaxableIncome < 400000)
                 {
                     tax = 0.15M * (annualTaxableIncome - 250000);
+                    tax = (tax / 12 )/ 4;
                     return tax;
                 }
                 else if (annualTaxableIncome >= 400000 && annualTaxableIncome < 800000)
                 {
                     tax = 22500 + (0.20M * (annualTaxableIncome - 400000));
+                    tax = (tax / 12) / 4;
                     return tax;
                 }
                 else if (annualTaxableIncome >= 800000 && annualTaxableIncome < 2000000)
                 {
                     tax = 102500 + (0.25M * (annualTaxableIncome - 800000));
+                    tax = (tax / 12) / 4;
                     return tax;
                 }
                 else if (annualTaxableIncome >= 2000000 && annualTaxableIncome < 8000000)
                 {
                     tax = 402500 + (0.30M * (annualTaxableIncome - 2000000));
+                    tax = (tax / 12) / 4;
                     return tax;
                 }
                 else if (annualTaxableIncome >= 8000000)
                 {
                     tax = 2202500 + (0.35M * (annualTaxableIncome - 8000000));
+                    tax = (tax / 12) / 4;
                     return tax;
                 }
                 return tax;
@@ -271,6 +271,9 @@ namespace SalCentral.Api.Logics
                 var holidayPay = await CalculateHolidayPay(new PayrollFields
                 {
                     holidayList = payload.holidayList,
+                    StartDate = (DateTime)payload.StartDate,
+                    EndDate = (DateTime)payload.EndDate,
+                    UserId = payload.UserId,
                 });
 
                 var overtimePay = await CalculateOvertimePay(new PayrollFields
@@ -283,6 +286,8 @@ namespace SalCentral.Api.Logics
 
                 var totalDeductions = await CalculateTotalDeductions(new PayrollFields
                 {
+                    StartDate = (DateTime)payload.StartDate,
+                    EndDate = (DateTime)payload.EndDate,
                     UserId = (Guid)payload.UserId
                 });
 
@@ -349,7 +354,7 @@ namespace SalCentral.Api.Logics
             try
             {
                 var totalAttendance = await _context.Attendance
-                    .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId && payroll.holidayList.Select(d => d.Date).Contains(a.Date))
+                    .Where(a => a.Date.Date >= payroll.StartDate && a.Date.Date <= payroll.EndDate && a.UserId == payroll.UserId && payroll.holidayList.Select(d => d.Date.Date).Contains(a.Date.Date))
                     .ToListAsync();
 
                 var holidayPay = totalAttendance.Count * 500;
@@ -383,8 +388,8 @@ namespace SalCentral.Api.Logics
                 // Sum up the amounts of non-mandatory deductions within the specified date range
                 var nonMandatoryDeductions = deductions
                     .Where(x => x.Deduction.IsMandatory != true &&
-                                x.Deduction.Date >= payroll.StartDate &&
-                                x.Deduction.Date <= payroll.EndDate)
+                                x.Deduction.Date.Date >= payroll.StartDate &&
+                                x.Deduction.Date.Date <= payroll.EndDate && x.Deduction.Type != null)
                     .Sum(x => x.Deduction.Amount);
 
                 // Calculate total deductions
@@ -469,7 +474,7 @@ namespace SalCentral.Api.Logics
             {
                 var totalHours = await _context.Attendance
                     .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId)
-                    .SumAsync(a => a.HoursRendered);
+                    .SumAsync(a => a.HoursRendered);    
 
                 decimal grossSalary = (decimal)(totalHours * payroll.SalaryRate);
 

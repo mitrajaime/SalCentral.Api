@@ -65,7 +65,7 @@ namespace SalCentral.Api.Controllers
                     return NotFound();
                 }
                 
-                 var createSchedule = await _scheduleLogic.CreateSchedule(payload.Schedule);
+                var createSchedule = await _scheduleLogic.CreateSchedule(payload.Schedule);
 
                 await _context.SaveChangesAsync();
                 return Ok(result);
