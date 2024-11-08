@@ -51,5 +51,19 @@ namespace SalCentral.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet("Payslip")]
+        public async Task<IActionResult> GetPayslip(Guid UserId, Guid PayrollId)
+        {
+            try
+            {
+                var result = await _payrollLogic.GeneratePayslip(UserId, PayrollId);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

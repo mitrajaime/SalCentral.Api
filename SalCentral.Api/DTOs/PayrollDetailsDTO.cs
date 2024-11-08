@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SalCentral.Api.DTOs.PayrollDTO;
+using System.ComponentModel.DataAnnotations;
 
 namespace SalCentral.Api.DTOs
 {
@@ -30,6 +31,6 @@ namespace SalCentral.Api.DTOs
 
         public double? TotalHoursRendered { get; set; }
 
-        public List<DateTime>? holidayList { get; set; }
+        public List<holidayList>? holidayList { get; set; }
     }
 }

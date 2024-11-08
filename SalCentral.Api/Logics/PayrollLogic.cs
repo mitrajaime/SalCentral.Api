@@ -4,6 +4,7 @@ using SalCentral.Api.DbContext;
 using SalCentral.Api.DTOs;
 using SalCentral.Api.DTOs.PayrollDTO;
 using SalCentral.Api.DTOs.UserDTO;
+using SalCentral.Api.Migrations;
 using SalCentral.Api.Models;
 using System.Linq;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -121,7 +122,7 @@ namespace SalCentral.Api.Logics
                                                    PagIbigContribution = pd.PagIbigContribution,
                                                    PhilHealthContribution = pd.PhilHealthContribution,
                                                    SSSContribution = pd.SSSContribution,
-                                                   CurrentSalaryRate = u.SalaryRate
+                                                   CurrentSalaryRate = pd.CurrentSalaryRate
                                                };
 
                 if (query == null) throw new Exception("No payroll found for this user");
@@ -188,9 +189,6 @@ namespace SalCentral.Api.Logics
                         PayrollId = payroll.PayrollId,
                         BranchId = payload.BranchId,
                         UserId = user.UserId,
-                        SSSContribution = payload.SSSContribution,
-                        PhilHealthContribution = payload.PhilHealthContribution,
-                        PagIbigContribution = payload.PagIbigContribution,
                         StartDate = payload.StartDate,
                         EndDate = payload.EndDate,
                         CurrentSalaryRate = user.SalaryRate,
@@ -283,28 +281,37 @@ namespace SalCentral.Api.Logics
                     //SalaryRate = payload.CurrentSalaryRate
                 });
 
+                var totalDeductions = await CalculateTotalDeductions(new PayrollFields
+                {
+                    UserId = (Guid)payload.UserId
+                });
+
+                var deductions = await _context.Deduction
+                    .Join(_context.DeductionAssignment,
+                          d => d.DeductionId,
+                          da => da.DeductionId,
+                          (d, da) => new { Deduction = d, DeductionAssignment = da })
+                    .Where(x => x.DeductionAssignment.UserId == payload.UserId)
+                    .ToListAsync();
+
+                // Getting the sum of mandatory and non-mandatory deductions of the user
+                var mandatoryDeductions = deductions
+                    .Where(x => x.Deduction.IsMandatory == true);
+
                 var payrollDetails = new PayrollDetails()
                 {
                     PayrollDetailsId = new Guid(),
                     PayrollId = (Guid)payload.PayrollId,
                     UserId = (Guid)payload.UserId,
-                    DeductedAmount = await CalculateTotalDeductions(new PayrollFields
-                    {
-                        SSSContribution = payload.SSSContribution,
-                        PagIbigContribution = payload.PagIbigContribution,
-                        PhilHealthContribution = payload.PhilHealthContribution,
-                        SalaryRate = payload.CurrentSalaryRate
-                    }),
+                    DeductedAmount = totalDeductions,
                     NetPay = await CalculateNetPay(new PayrollFields
                     {
                         StartDate = (DateTime)payload.StartDate,
                         EndDate = (DateTime)payload.EndDate,
                         UserId = (Guid)payload.UserId,
-                        SSSContribution = payload.SSSContribution,
-                        PagIbigContribution = payload.PagIbigContribution,
-                        PhilHealthContribution = payload.PhilHealthContribution,
                         SalaryRate = payload.CurrentSalaryRate,
                         HolidayPay = holidayPay,
+                        TotalDeductions = totalDeductions,
                         OvertimePay = overtimePay,
                     }),
                     GrossSalary = await CalculateGrossSalary(new PayrollFields
@@ -314,13 +321,17 @@ namespace SalCentral.Api.Logics
                         UserId = (Guid)payload.UserId,
                         SalaryRate = payload.CurrentSalaryRate
                     }),
+                    CurrentSalaryRate = (decimal)payload.CurrentSalaryRate,
                     HolidayPay = holidayPay,
                     OvertimePay = overtimePay,
                     Tax = tax,
                     IsPaid = false,
-                    SSSContribution = (decimal)payload.SSSContribution,
-                    PagIbigContribution = (decimal)payload.PagIbigContribution,
-                    PhilHealthContribution = (decimal)payload.PhilHealthContribution
+                    SSSContribution = (decimal)mandatoryDeductions
+                                        .Where(d => d.Deduction.DeductionName == "SSS").Select(d => d.Deduction.Amount).FirstOrDefault(),
+                    PagIbigContribution = (decimal)mandatoryDeductions
+                                        .Where(d => d.Deduction.DeductionName == "Pagibig").Select(d => d.Deduction.Amount).FirstOrDefault(),
+                    PhilHealthContribution = (decimal)mandatoryDeductions
+                                        .Where(d => d.Deduction.DeductionName == "PhilHealth").Select(d => d.Deduction.Amount).FirstOrDefault(),
                 };
 
                 await _context.PayrollDetails.AddAsync(payrollDetails);
@@ -338,7 +349,7 @@ namespace SalCentral.Api.Logics
             try
             {
                 var totalAttendance = await _context.Attendance
-                    .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId && payroll.holidayList.Contains(a.Date.Date))
+                    .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId && payroll.holidayList.Select(d => d.Date).Contains(a.Date))
                     .ToListAsync();
 
                 var holidayPay = totalAttendance.Count * 500;
@@ -355,23 +366,29 @@ namespace SalCentral.Api.Logics
         {
             try
             {
-                var deductionAssignments = await _context.DeductionAssignment
-                    .Where(d => d.UserId == payroll.UserId)
-                    .Select(d => d.DeductionId)
-                    .ToListAsync();
-
+                // Get all deductions associated with the user
                 var deductions = await _context.Deduction
-                    .Where(d => deductionAssignments.Contains(d.DeductionId))
-                    .SumAsync(d => d.Amount);
+                     .Join(_context.DeductionAssignment,
+                           d => d.DeductionId,
+                           da => da.DeductionId,
+                           (d, da) => new { Deduction = d, DeductionAssignment = da })
+                     .Where(x => x.DeductionAssignment.UserId == payroll.UserId)
+                     .ToListAsync();
 
-                if (!deductionAssignments.Any())
-                {
-                    deductions = 0;
-                }
+                // Sum up the amounts of mandatory deductions
+                var mandatoryDeductions = deductions
+                    .Where(x => x.Deduction.IsMandatory == true)
+                    .Sum(x => x.Deduction.Amount);
 
-                decimal totalContributions = (decimal)(payroll.SSSContribution + payroll.PagIbigContribution + payroll.PhilHealthContribution);
+                // Sum up the amounts of non-mandatory deductions within the specified date range
+                var nonMandatoryDeductions = deductions
+                    .Where(x => x.Deduction.IsMandatory != true &&
+                                x.Deduction.Date >= payroll.StartDate &&
+                                x.Deduction.Date <= payroll.EndDate)
+                    .Sum(x => x.Deduction.Amount);
 
-                decimal totalDeductions = (decimal)deductions + totalContributions;
+                // Calculate total deductions
+                var totalDeductions = mandatoryDeductions + nonMandatoryDeductions;
 
                 return totalDeductions;
             }
@@ -379,8 +396,8 @@ namespace SalCentral.Api.Logics
             {
                 throw new Exception("Failed to calculate deductions: " + ex.Message);
             }
-
         }
+
 
         public async Task<decimal> CalculateOvertimePay(PayrollFields payroll)
         {
@@ -432,31 +449,8 @@ namespace SalCentral.Api.Logics
                     .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.UserId == payroll.UserId)
                     .SumAsync(a => a.HoursRendered);
 
-                // for mandatory and non-mandatory deductions of user
-                var deductions = await _context.Deduction
-                    .Join(_context.DeductionAssignment,
-                          d => d.DeductionId,
-                          da => da.DeductionId,
-                          (d, da) => new { Deduction = d, DeductionAssignment = da })
-                    .Where(x => x.DeductionAssignment.UserId == payroll.UserId)
-                    .ToListAsync();
-
-                // getting the sum of mandatory and non-mandatory deductions of user
-                var mandatoryDeductions = deductions
-                    .Where(x => x.Deduction.IsMandatory == true)
-                    .Sum(x => x.Deduction.Amount);
-
-                var nonMandatoryDeductions = deductions
-                    .Where(x => x.Deduction.IsMandatory != true &&
-                                x.Deduction.Date >= payroll.StartDate &&
-                                x.Deduction.Date <= payroll.EndDate)
-                    .Sum(x => x.Deduction.Amount);
-
-                var totalDeductions = mandatoryDeductions + nonMandatoryDeductions;
-
-                decimal totalContributions = (decimal)(payroll.SSSContribution + payroll.PagIbigContribution + payroll.PhilHealthContribution);
                 decimal grossPay = (decimal)(totalHours * payroll.SalaryRate);
-                decimal netPay = grossPay - totalDeductions - totalContributions + (decimal)payroll.HolidayPay + (decimal)payroll.OvertimePay;
+                decimal netPay = grossPay - (decimal)payroll.TotalDeductions + (decimal)payroll.HolidayPay + (decimal)payroll.OvertimePay;
 
                 return netPay;
 
@@ -576,7 +570,7 @@ namespace SalCentral.Api.Logics
                                             BranchName = b.BranchName,
                                             FullName = u.FirstName + " " + u.LastName,
                                             RoleName = r.RoleName,
-                                            Address = b.BranchName,
+                                            Address = b.Address,
                                             CurrentSalaryRate = pd.CurrentSalaryRate,
                                             OvertimePay = pd.OvertimePay,
                                             Holiday = pd.HolidayPay,
@@ -586,7 +580,10 @@ namespace SalCentral.Api.Logics
                                             SMEmployeeId = u.SMEmployeeID,
                                             NetSalary = pd.NetPay,
                                             ClaimedBy = u.FirstName + " " + u.LastName,
-                                            PreparedBy = p.GeneratedBy,
+                                            PreparedBy = _context.User
+                                                        .Where(u => u.UserId == p.GeneratedBy)
+                                                        .Select(u => u.FirstName + " " + u.LastName)
+                                                        .FirstOrDefault(),
                                             TotalDeductionAmount = pd.DeductedAmount,
                                             StartDate = p.StartDate,
                                             EndDate = p.EndDate,
@@ -612,9 +609,9 @@ namespace SalCentral.Api.Logics
                 var payslip = new
                 {
                     userFields,
-                    SSS = mandatoryDeductions.Where(d => d.Deduction.DeductionName == "SSS").FirstOrDefault(),
-                    Pagibig = mandatoryDeductions.Where(d => d.Deduction.DeductionName == "Pagibig").FirstOrDefault(),
-                    PhilHealth = mandatoryDeductions.Where(d => d.Deduction.DeductionName == "PhilHealth").FirstOrDefault(),
+                    SSS = mandatoryDeductions.Where(d => d.Deduction.DeductionName == "SSS").Select(d => d.Deduction.Amount).FirstOrDefault(),
+                    Pagibig = mandatoryDeductions.Where(d => d.Deduction.DeductionName == "Pagibig").Select(d => d.Deduction.Amount).FirstOrDefault(),
+                    PhilHealth = mandatoryDeductions.Where(d => d.Deduction.DeductionName == "PhilHealth").Select(d => d.Deduction.Amount).FirstOrDefault(),
                     ServicesDeductionAmount = await GenerateServicesDeductionAmount(new PayrollFields
                     {
                         UserId = UserId,

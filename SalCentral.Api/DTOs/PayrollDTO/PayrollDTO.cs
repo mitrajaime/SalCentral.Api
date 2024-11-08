@@ -18,11 +18,11 @@ namespace SalCentral.Api.DTOs.PayrollDTO
         public Guid? BranchId { get; set; }
         public Guid? UserId { get; set; }
 
-        public decimal? SSSContribution { get; set; }
-        public decimal? PagIbigContribution { get; set; }
-        public decimal? PhilHealthContribution { get; set; }
-
         public List<PayrollDetailsDTO>? PayrollDetailsList { get; set; }
-        public List<DateTime>? holidayList { get; set; }
+        public List<holidayList>? holidayList { get; set; }
+    }
+    public class holidayList
+    {
+        public DateTime Date { get; set; }
     }
 }
