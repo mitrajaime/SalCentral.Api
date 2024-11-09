@@ -116,31 +116,18 @@ namespace SalCentral.Api.Logics
 
                 if (query == null) throw new Exception("No users found.");
 
+                // Apply searchKeyword filter
+                if (!string.IsNullOrWhiteSpace(userFilter.SearchKeyword))
+                {
+                    string searchQuery = userFilter.SearchKeyword.Trim().ToLower();
+                    query = query.Where(i => i.FirstName.ToLower().Contains(searchQuery)
+                                          || i.LastName.ToLower().Contains(searchQuery)
+                                          || i.SMEmployeeID.ToLower().Contains(searchQuery));
+                }
+
                 if (userFilter.BranchId.HasValue)
                 {
                     query = query.Where(i => i.BranchId.ToString().Contains(userFilter.BranchId.ToString()));
-                }
-
-                if (!string.IsNullOrWhiteSpace(userFilter.FullName))
-                {
-                    string SearchQuery = userFilter.FullName.Trim().ToLower();
-                    query = query.Where(i => (i.FirstName + " " + i.LastName).ToLower().Contains(SearchQuery));
-                }
-
-                if (!string.IsNullOrWhiteSpace(userFilter.FirstName))
-                {
-                    string SearchQuery = userFilter.FirstName.Trim();
-                    query = query.Where(i => i.FirstName.Contains(SearchQuery));
-                }
-                if (!string.IsNullOrWhiteSpace(userFilter.LastName))
-                {
-                    string SearchQuery = userFilter.LastName.Trim();
-                    query = query.Where(i => i.LastName.Contains(SearchQuery));
-                }
-                if (!string.IsNullOrWhiteSpace(userFilter.SMEmployeeId))
-                {
-                    string SearchQuery = userFilter.SMEmployeeId.Trim();
-                    query = query.Where(i => i.SMEmployeeID.Contains(SearchQuery));
                 }
 
                 var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
@@ -153,12 +140,12 @@ namespace SalCentral.Api.Logics
 
                 return null;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-            
         }
+
 
         public async Task<object> GetUserById([FromQuery] PaginationRequest paginationRequest, Guid UserId)
         {
@@ -254,17 +241,17 @@ namespace SalCentral.Api.Logics
             {
                 var user = await _context.User.Where(u => u.UserId == payload.UserId).FirstOrDefaultAsync();
 
-                user.FirstName = payload.FirstName;
-                user.LastName = payload.LastName;
-                user.Email = payload.Email;
-                user.ContactNo = payload.ContactNo;
-                user.Password = HashingLogic.HashData(payload.Password);
-                user.BranchId = (Guid)payload.BranchId;
-                user.RoleId = (Guid)payload.RoleId;
-                user.SalaryRate = (decimal)payload.SalaryRate;
-                user.SSS = payload.SSS == null ? null : payload.SSS;
-                user.PagIbig = payload.PagIbig == null ? null : payload.PagIbig;
-                user.PhilHealth = payload.PhilHealth == null ? null : payload.PhilHealth;
+                if (!string.IsNullOrEmpty(payload.FirstName)) user.FirstName = payload.FirstName;
+                if (!string.IsNullOrEmpty(payload.LastName)) user.LastName = payload.LastName;
+                if (!string.IsNullOrEmpty(payload.Email)) user.Email = payload.Email;
+                if (!string.IsNullOrEmpty(payload.ContactNo)) user.ContactNo = payload.ContactNo;
+                if (!string.IsNullOrEmpty(payload.Password)) user.Password = HashingLogic.HashData(payload.Password);
+                if (payload.BranchId.HasValue) user.BranchId = payload.BranchId.Value;
+                if (payload.RoleId.HasValue) user.RoleId = payload.RoleId.Value;
+                if (payload.SalaryRate.HasValue) user.SalaryRate = payload.SalaryRate.Value;
+                if (payload.SSS != null) user.SSS = payload.SSS;
+                if (payload.PagIbig != null) user.PagIbig = payload.PagIbig;
+                if (payload.PhilHealth != null) user.PhilHealth = payload.PhilHealth;
 
                 _context.User.Update(user);
                 await _context.SaveChangesAsync();

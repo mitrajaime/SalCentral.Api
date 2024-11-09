@@ -15,7 +15,7 @@ namespace SalCentral.Api.Models
         public bool Friday { get; set; } = false;
         public bool? Saturday { get; set; }
         public bool? Sunday { get; set; }
-        public string ExpectedTimeIn { get; set; } = string.Empty;
-        public string ExpectedTimeOut { get; set; } = string.Empty;
+        public TimeSpan ExpectedTimeIn { get; set; }
+        public TimeSpan ExpectedTimeOut { get; set; }
     }
 }

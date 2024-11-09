@@ -85,7 +85,7 @@ namespace SalCentral.Api.Controllers
                 var user = _context.User.Where(u => u.UserId == UserId).FirstOrDefault();
                 if(user == null) { return NotFound(); }
 
-                _context.User.Remove(user);
+                _context.User.Remove(user); 
                 _context.SaveChanges();
 
                 return Ok();

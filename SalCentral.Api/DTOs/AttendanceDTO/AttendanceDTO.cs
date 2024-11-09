@@ -15,6 +15,7 @@
         public int? AllowedOvertimeHours { get; set; }
 
         public List<userList>? userList { get; set; }
+        public bool IsDayOff { get; set; }
     }
     public class userList
     {

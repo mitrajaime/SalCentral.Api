@@ -43,8 +43,8 @@ namespace SalCentral.Api.Logics
                                 Friday = q.Friday,
                                 Saturday = q.Saturday,
                                 Sunday = q.Sunday,
-                                ExpectedTimeIn = q.ExpectedTimeIn,
-                                ExpectedTimeOut = q.ExpectedTimeOut,
+                                ExpectedTimeIn = q.ExpectedTimeIn.ToString(),
+                                ExpectedTimeOut = q.ExpectedTimeOut.ToString(),
                             };
 
                 if (query == null) throw new Exception("No Schedules found.");
@@ -107,8 +107,8 @@ namespace SalCentral.Api.Logics
                                 Friday = q.Friday,
                                 Saturday = q.Saturday,
                                 Sunday = q.Sunday,
-                                ExpectedTimeIn = q.ExpectedTimeIn,
-                                ExpectedTimeOut = q.ExpectedTimeOut,
+                                ExpectedTimeIn = q.ExpectedTimeIn.ToString(),
+                                ExpectedTimeOut = q.ExpectedTimeOut.ToString(),
                             };
 
                 if (query == null) throw new Exception("No Schedules found.");
@@ -150,8 +150,8 @@ namespace SalCentral.Api.Logics
         {
             try
             {
-                //Click n Print 
-                if(payload.BranchId.ToString() == "cfdee1be-1b99-47a7-f410-08dcbd238cc1") 
+                // Click n Print
+                if (payload.BranchId.ToString() == "ee6eaf8e-bd49-480d-f411-08dcbd238cc1")
                 {
                     var cnpSchedule = new Schedule()
                     {
@@ -164,22 +164,21 @@ namespace SalCentral.Api.Logics
                         Friday = true,
                         Saturday = false,
                         Sunday = false,
-                        ExpectedTimeIn = "01/01/0001 9:00 AM",
-                        ExpectedTimeOut = "01/01/0001 7:00 PM",
+                        ExpectedTimeIn = new TimeSpan(9, 0, 0),  // 9:00 AM
+                        ExpectedTimeOut = new TimeSpan(19, 0, 0), // 7:00 PM
                     };
 
-                    var cnpScheduleExists = _context.Schedule.Where(b => b.UserId == payload.UserId && b.BranchId == payload.BranchId).Any();
+                    var cnpScheduleExists = _context.Schedule.Any(b => b.UserId == payload.UserId && b.BranchId == payload.BranchId);
                     if (cnpScheduleExists)
                     {
-                        throw new Exception("Schedule for Click n Print already exists for this user: ");
+                        throw new Exception("Schedule for Click n Print already exists for this user.");
                     }
 
                     await _context.Schedule.AddAsync(cnpSchedule);
                     return cnpSchedule;
                 }
 
-
-                var Schedule = new Schedule()
+                var schedule = new Schedule()
                 {
                     UserId = (Guid)payload.UserId,
                     BranchId = (Guid)payload.BranchId,
@@ -190,25 +189,25 @@ namespace SalCentral.Api.Logics
                     Friday = (bool)payload.Friday,
                     Saturday = (bool)payload.Saturday,
                     Sunday = (bool)payload.Sunday,
-                    ExpectedTimeIn = "01/01/0001 10:00 AM",
-                    ExpectedTimeOut = "01/01/0001 10:00 PM",
+                    ExpectedTimeIn = new TimeSpan(10, 0, 0), // 10:00 AM
+                    ExpectedTimeOut = new TimeSpan(22, 0, 0) // 10:00 PM
                 };
 
-                //Mitsubishi Photo
-                if (payload.BranchId.ToString() == "ee6eaf8e-bd49-480d-f411-08dcbd238cc1")
+                // Mitsubishi Photo
+                if (payload.BranchId.ToString() == "cfdee1be-1b99-47a7-f410-08dcbd238cc1")
                 {
-                    // checks payload if it has more than one field(MTWTF) with false
+                    // checks payload if it has more than one field (MTWTF) with false
                     var daysOfWeek = new[]
                     {
-                        Schedule.Monday,
-                        Schedule.Tuesday,
-                        Schedule.Wednesday,
-                        Schedule.Thursday,
-                        Schedule.Friday,
-                        Schedule.Saturday,
-                        Schedule.Sunday
+                        schedule.Monday,
+                        schedule.Tuesday,
+                        schedule.Wednesday,
+                        schedule.Thursday,
+                        schedule.Friday,
+                        schedule.Saturday,
+                        schedule.Sunday
                     };
-                     
+
                     int daysOffCount = daysOfWeek.Count(day => (bool)!day);
 
                     if (daysOffCount > 1)
@@ -217,21 +216,21 @@ namespace SalCentral.Api.Logics
                     }
                 }
 
-                var exists = _context.Schedule.Where(b => b.UserId == payload.UserId).Any();
+                var exists = _context.Schedule.Any(b => b.UserId == payload.UserId);
                 if (exists)
                 {
                     throw new Exception("Schedule for Mitsubishi Photo already exists.");
                 }
 
-                await _context.Schedule.AddAsync(Schedule);
-                return Schedule;
+                await _context.Schedule.AddAsync(schedule);
+                return schedule;
 
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
         }
-
         public async Task<Schedule> EditSchedule([FromBody] ScheduleDTO payload)
         {
             try

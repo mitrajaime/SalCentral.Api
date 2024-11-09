@@ -60,16 +60,26 @@ namespace SalCentral.Api.Logics
             }
         }
 
-        public async Task<object> GetAttendanceOfEmployee([FromQuery] PaginationRequest paginationRequest, [FromQuery] AttendanceFilter attendanceFilter) 
+        public async Task<object> GetAttendanceOfEmployee([FromQuery] PaginationRequest paginationRequest, [FromQuery] AttendanceFilter attendanceFilter)
         {
             try
             {
+                var schedule = await _context.Schedule.FirstOrDefaultAsync(s => s.UserId == attendanceFilter.UserId);
+
+                if (schedule == null)
+                {
+                    throw new Exception("No schedule found for the specified user.");
+                }
+
                 IQueryable<AttendanceDTO> query = from q in _context.Attendance
                                                   join u in _context.User on q.UserId equals u.UserId
                                                   join b in _context.Branch on u.BranchId equals b.BranchId
-                                                  where q.UserId == attendanceFilter.UserId && b.BranchId == attendanceFilter.BranchId
+                                                  where q.UserId == attendanceFilter.UserId
+                                                        && b.BranchId == attendanceFilter.BranchId
+                                                        && q.Date.Date >= attendanceFilter.StartDate.Value.Date
+                                                        && q.Date.Date <= attendanceFilter.EndDate.Value.Date
                                                   orderby q.Date.Date descending
-                                                  select new AttendanceDTO()
+                                                  select new AttendanceDTO
                                                   {
                                                       AttendanceId = q.AttendanceId,
                                                       BranchId = b.BranchId,
@@ -82,24 +92,114 @@ namespace SalCentral.Api.Logics
                                                       HoursRendered = q.HoursRendered,
                                                       OverTimeHours = q.OverTimeHours,
                                                       AllowedOvertimeHours = q.AllowedOvertimeHours,
+                                                      IsDayOff = q.IsDayOff
                                                   };
 
-                var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
-                var attendance = responsewrapper.Results;
+                var attendanceList = await query.ToListAsync();
+                var existingDates = attendanceList.Select(a => a.Date.Value.Date).ToHashSet();
 
-                if (attendance.Any())
+                var currentDate = attendanceFilter.StartDate.Value.Date;
+                var newAttendanceRecords = new List<Attendance>();
+
+                while (currentDate <= attendanceFilter.EndDate.Value.Date)
+                {
+                    // Check if attendance already exists for this date or if it's already a day off
+                    if (!existingDates.Contains(currentDate) || attendanceList.Any(a => a.Date.Value.Date == currentDate && a.IsDayOff))
+                    {
+                        bool isScheduledDay = (currentDate.DayOfWeek == DayOfWeek.Monday && schedule.Monday) ||
+                                              (currentDate.DayOfWeek == DayOfWeek.Tuesday && schedule.Tuesday) ||
+                                              (currentDate.DayOfWeek == DayOfWeek.Wednesday && schedule.Wednesday) ||
+                                              (currentDate.DayOfWeek == DayOfWeek.Thursday && schedule.Thursday) ||
+                                              (currentDate.DayOfWeek == DayOfWeek.Friday && schedule.Friday) ||
+                                              (currentDate.DayOfWeek == DayOfWeek.Saturday && schedule.Saturday == true) ||
+                                              (currentDate.DayOfWeek == DayOfWeek.Sunday && schedule.Sunday == true);
+
+                        // Prevent creating a day-off record if it already exists for the current date
+                        if (!attendanceList.Any(a => a.Date.Value.Date == currentDate && a.IsDayOff))
+                        {
+                            var newAttendance = new Attendance
+                            {
+                                AttendanceId = Guid.NewGuid(),
+                                UserId = schedule.UserId,
+                                Date = currentDate,
+                                TimeIn = DateTime.MinValue,
+                                TimeOut = DateTime.MinValue,
+                                HoursRendered = 0,
+                                OverTimeHours = 0,
+                                AllowedOvertimeHours = 0,
+                                IsDayOff = !isScheduledDay
+                            };
+
+                            newAttendanceRecords.Add(newAttendance);
+                        }
+                    }
+
+                    currentDate = currentDate.AddDays(1);
+                }
+
+                if (newAttendanceRecords.Any())
+                {
+                    await _context.Attendance.AddRangeAsync(newAttendanceRecords);
+                    await _context.SaveChangesAsync();
+                }
+
+                attendanceList.AddRange(newAttendanceRecords.Select(a => new AttendanceDTO
+                {
+                    AttendanceId = a.AttendanceId,
+                    BranchId = schedule.BranchId,
+                    UserId = a.UserId,
+                    User = _context.User.Where(u => u.UserId == a.UserId).Select(u => u.FirstName).FirstOrDefault() + ' ' + _context.User.Where(u => u.UserId == a.UserId).Select(u => u.LastName).FirstOrDefault(),
+                    SMEmployeeId = _context.User.Where(u => u.UserId == a.UserId).Select(u => u.SMEmployeeID).FirstOrDefault(),
+                    Date = a.Date,
+                    TimeIn = null,
+                    TimeOut = null,
+                    HoursRendered = 0,
+                    OverTimeHours = 0,
+                    AllowedOvertimeHours = 0,
+                    IsDayOff = a.IsDayOff
+                }));
+
+                IQueryable<AttendanceDTO> queryAfterChecking = from q in _context.Attendance
+                                                               join u in _context.User on q.UserId equals u.UserId
+                                                               join b in _context.Branch on u.BranchId equals b.BranchId
+                                                               where q.UserId == attendanceFilter.UserId
+                                                                     && b.BranchId == attendanceFilter.BranchId
+                                                                     && q.Date.Date >= attendanceFilter.StartDate.Value.Date
+                                                                     && q.Date.Date <= attendanceFilter.EndDate.Value.Date
+                                                               orderby q.Date.Date descending
+                                                               select new AttendanceDTO()
+                                                               {
+                                                                   AttendanceId = q.AttendanceId,
+                                                                   BranchId = b.BranchId,
+                                                                   UserId = q.UserId,
+                                                                   User = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.FirstName).FirstOrDefault() + ' ' + _context.User.Where(u => u.UserId == q.UserId).Select(u => u.LastName).FirstOrDefault(),
+                                                                   SMEmployeeId = _context.User.Where(u => u.UserId == q.UserId).Select(u => u.SMEmployeeID).FirstOrDefault(),
+                                                                   Date = q.Date,
+                                                                   TimeIn = q.TimeIn,
+                                                                   TimeOut = q.TimeOut,
+                                                                   HoursRendered = q.HoursRendered,
+                                                                   OverTimeHours = q.OverTimeHours,
+                                                                   AllowedOvertimeHours = q.AllowedOvertimeHours,
+                                                                   IsDayOff = q.IsDayOff
+                                                               };
+
+                var responsewrapper = await PaginationLogic.PaginateData(queryAfterChecking, paginationRequest);
+
+                if (responsewrapper.Results.Any())
                 {
                     return responsewrapper;
                 }
 
                 throw new Exception("No attendance found for user.");
-
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
         }
+
+
+
 
         public async Task<object> GetEmployeeAttendanceToday([FromQuery] PaginationRequest paginationRequest, [FromQuery] AttendanceFilter attendanceFilter)
         {
@@ -122,6 +222,7 @@ namespace SalCentral.Api.Logics
                                                       TimeOut = q.TimeOut,
                                                       HoursRendered = q.HoursRendered,
                                                       OverTimeHours = q.OverTimeHours,
+                                                      IsDayOff = q.IsDayOff
                                                   };
 
                 var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
@@ -158,6 +259,7 @@ namespace SalCentral.Api.Logics
                 {
                     Date = new DateTime(2024, 11, 5, 8, 0, 0),
                     TimeIn = new DateTime(2024, 11, 5, 8, 0, 0),
+                    IsDayOff = false,
                     UserId = (Guid)payload.UserId,
                 };
 
