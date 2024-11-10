@@ -67,7 +67,7 @@ namespace SalCentral.Api.Controllers
                 {
                     return NotFound();
                 }
-
+                _context.SaveChanges();
                 return Ok(result);
 
             }

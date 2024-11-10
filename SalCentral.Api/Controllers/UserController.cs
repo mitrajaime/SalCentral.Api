@@ -17,13 +17,15 @@ namespace SalCentral.Api.Controllers
         private readonly UserLogic _userLogic;
         private readonly BranchLogic _branchLogic;
         private readonly ScheduleLogic _scheduleLogic;
+        private readonly DeductionLogic _deductionLogic;
 
-        public UserController(ApiDbContext context, UserLogic userLogic, BranchLogic branchLogic, ScheduleLogic scheduleLogic)
+        public UserController(ApiDbContext context, UserLogic userLogic, BranchLogic branchLogic, ScheduleLogic scheduleLogic, DeductionLogic deductionLogic)
         {
             _userLogic = userLogic;
             _context = context;
             _branchLogic = branchLogic;
             _scheduleLogic = scheduleLogic;
+            _deductionLogic = deductionLogic;
         }
 
         [HttpGet]
@@ -39,6 +41,22 @@ namespace SalCentral.Api.Controllers
                 return BadRequest(ex.Message);
             }
             
+        }
+
+        [HttpGet("Schedule")]
+        public async Task<IActionResult> GetUsersWithSchedule([FromQuery] PaginationRequest paginationRequest, [FromQuery] UserFilter userFilter)
+        {
+            try
+            {
+                var result = await _userLogic.GetUsersWithSchedule(paginationRequest, userFilter);
+                return Ok(result);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
 
         [HttpGet("{UserId}")]
@@ -65,8 +83,16 @@ namespace SalCentral.Api.Controllers
                 {
                     return NotFound();
                 }
-                
+                await _context.SaveChangesAsync();
                 var createSchedule = await _scheduleLogic.CreateSchedule(payload.Schedule);
+                var addDeduction = await _deductionLogic.CreateDeduction(new DeductionDTO
+                {
+                    UserId = result.UserId,
+                    deductionList = payload.deductionList,
+                    SSS = payload.SSS,
+                    PhilHealth = payload.PhilHealth,
+                    PagIbig = payload.PagIbig,
+                });
 
                 await _context.SaveChangesAsync();
                 return Ok(result);
@@ -78,6 +104,7 @@ namespace SalCentral.Api.Controllers
             }
 
         }
+
         [HttpDelete]
         public async Task<ActionResult> DeleteUser(Guid UserId)
         {

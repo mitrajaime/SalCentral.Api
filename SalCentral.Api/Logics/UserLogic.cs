@@ -111,6 +111,7 @@ namespace SalCentral.Api.Logics
                                                 AuthorizationKey = u.AuthorizationKey,
                                                 SSS = u.SSS,
                                                 PagIbig = u.PagIbig,
+                                                TIN = u.TIN,
                                                 PhilHealth = u.PhilHealth,
                                             };
 
@@ -172,6 +173,7 @@ namespace SalCentral.Api.Logics
                                                                .FirstOrDefault(),
                                                 SalaryRate = u.SalaryRate,
                                                 BranchId = u.BranchId,
+                                                TIN = u.TIN,
                                                 SSS = u.SSS,
                                                 PagIbig = u.PagIbig,
                                                 PhilHealth = u.PhilHealth,
@@ -288,6 +290,75 @@ namespace SalCentral.Api.Logics
         public static string GetRandomlyGenerateBase64String(int count)
         {
             return Convert.ToBase64String(RandomNumberGenerator.GetBytes(count));
+        }
+
+        public async Task<object> GetUsersWithSchedule(PaginationRequest paginationRequest, UserFilter userFilter)
+        {
+            try
+            {
+                IQueryable<UserDTO> query = from u in _context.User
+                                            select new UserDTO()
+                                            {
+                                                UserId = u.UserId,
+                                                FullName = u.FirstName + ' ' + u.LastName,
+                                                FirstName = u.FirstName,
+                                                LastName = u.LastName,
+                                                Email = u.Email,
+                                                ContactNo = u.ContactNo,
+                                                SMEmployeeID = u.SMEmployeeID,
+                                                HireDate = u.HireDate,
+                                                Password = u.Password,
+                                                RoleId = u.RoleId,
+                                                RoleName = _context.Role
+                                                               .Where(r => r.RoleId == u.RoleId)
+                                                               .Select(r => r.RoleName)
+                                                               .FirstOrDefault(),
+                                                BranchId = u.BranchId,
+                                                BranchName = _context.Branch
+                                                                .Where(b => b.BranchId == u.BranchId)
+                                                                .Select(b => b.BranchName)
+                                                                .FirstOrDefault(),
+                                                SalaryRate = u.SalaryRate,
+                                                AuthorizationKey = u.AuthorizationKey,
+                                                SSS = u.SSS,
+                                                PagIbig = u.PagIbig,
+                                                PhilHealth = u.PhilHealth,
+                                                Schedule = _context.Schedule
+                                                               .Where(s => s.UserId == u.UserId)
+                                                               .FirstOrDefault(),
+                  
+                                            };
+
+                if (query == null) throw new Exception("No users found.");
+
+                // Apply searchKeyword filter
+                if (!string.IsNullOrWhiteSpace(userFilter.SearchKeyword))
+                {
+                    string searchQuery = userFilter.SearchKeyword.Trim().ToLower();
+                    query = query.Where(i => i.FirstName.ToLower().Contains(searchQuery)
+                                          || i.LastName.ToLower().Contains(searchQuery)
+                                          || i.SMEmployeeID.ToLower().Contains(searchQuery));
+                }
+
+                if (userFilter.BranchId.HasValue)
+                {
+                    query = query.Where(i => i.BranchId.ToString().Contains(userFilter.BranchId.ToString()));
+                }
+
+                var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
+                var users = responsewrapper.Results;
+
+                if (users.Any())
+                {
+                    return responsewrapper;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }
