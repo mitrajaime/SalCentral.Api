@@ -23,6 +23,7 @@ namespace SalCentral.Api.DTOs.UserDTO
         public string? SSS { get; set; }
         public string? PagIbig { get; set; }
         public string? PhilHealth { get; set; }
+        public string? TIN { get; set; }
         public Schedule? Schedule { get; set; }
     }
 }

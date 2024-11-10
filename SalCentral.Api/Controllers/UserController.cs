@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SalCentral.Api.DbContext;
 using SalCentral.Api.DTOs;
 using SalCentral.Api.DTOs.UserDTO;
@@ -85,8 +86,7 @@ namespace SalCentral.Api.Controllers
                 var user = _context.User.Where(u => u.UserId == UserId).FirstOrDefault();
                 if(user == null) { return NotFound(); }
 
-                _context.User.Remove(user); 
-                _context.SaveChanges();
+                _context.User.Remove(user);
 
                 return Ok();
             }

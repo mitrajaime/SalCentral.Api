@@ -216,6 +216,7 @@ namespace SalCentral.Api.Logics
                     SSS = payload.SSS == null ? null : payload.SSS,
                     PagIbig = payload.PagIbig == null ? null : payload.PagIbig,
                     PhilHealth = payload.PhilHealth == null ? null : payload.PhilHealth,
+                    TIN = payload.TIN == null ? null : payload.TIN,
                 };
 
                 var exists = _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID).Any();
@@ -252,6 +253,7 @@ namespace SalCentral.Api.Logics
                 if (payload.SSS != null) user.SSS = payload.SSS;
                 if (payload.PagIbig != null) user.PagIbig = payload.PagIbig;
                 if (payload.PhilHealth != null) user.PhilHealth = payload.PhilHealth;
+                if (payload.TIN != null) user.TIN = payload.TIN;
 
                 _context.User.Update(user);
                 await _context.SaveChangesAsync();

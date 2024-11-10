@@ -211,6 +211,9 @@ namespace SalCentral.Api.Logics
         {
             try
             {
+                var hasTIN = await _context.User.Where(u => u.UserId == payroll.UserId).Select(u => u.TIN).FirstOrDefaultAsync();
+                if (hasTIN == null) { return 0; }
+
                 decimal tax = 0;
                 var salaryRate = await _context.User.Where(u => u.UserId == payroll.UserId).Select(u => u.SalaryRate).FirstOrDefaultAsync();
                 decimal annualTaxableIncome = salaryRate * 8 * 6 * 4 * 12;
