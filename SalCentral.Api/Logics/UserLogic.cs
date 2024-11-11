@@ -320,6 +320,7 @@ namespace SalCentral.Api.Logics
                 if (!string.IsNullOrEmpty(payload.LastName)) user.LastName = payload.LastName;
                 if (!string.IsNullOrEmpty(payload.Email)) user.Email = payload.Email;
                 if (!string.IsNullOrEmpty(payload.ContactNo)) user.ContactNo = payload.ContactNo;
+                if (!string.IsNullOrEmpty(payload.SMEmployeeID)) user.SMEmployeeID = payload.SMEmployeeID;
                 if (!string.IsNullOrEmpty(payload.Password)) user.Password = HashingLogic.HashData(payload.Password);
                 if (payload.BranchId.HasValue) user.BranchId = payload.BranchId.Value;
                 if (payload.RoleId.HasValue) user.RoleId = payload.RoleId.Value;

@@ -304,8 +304,8 @@ namespace SalCentral.Api.Logics
                 // for debugging
                 var timeIn = new Attendance()
                 {
-                    Date = new DateTime(2024, 11, 5, 8, 0, 0),
-                    TimeIn = new DateTime(2024, 11, 5, 8, 0, 0),
+                    Date = DateTime.Now,
+                    TimeIn = DateTime.Now,
                     IsDayOff = false,
                     UserId = (Guid)payload.UserId,
                 };
