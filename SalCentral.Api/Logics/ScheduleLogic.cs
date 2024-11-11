@@ -168,12 +168,6 @@ namespace SalCentral.Api.Logics
                         ExpectedTimeOut = new TimeSpan(19, 0, 0), // 7:00 PM
                     };
 
-                    var cnpScheduleExists = _context.Schedule.Any(b => b.UserId == payload.UserId && b.BranchId == payload.BranchId);
-                    if (cnpScheduleExists)
-                    {
-                        throw new Exception("Schedule for Click n Print already exists for this user.");
-                    }
-
                     await _context.Schedule.AddAsync(cnpSchedule);
                     return cnpSchedule;
                 }
