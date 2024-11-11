@@ -334,7 +334,7 @@ namespace SalCentral.Api.Logics
                                         orderby a.Date descending
                                         select a).FirstOrDefaultAsync();
 
-                attendance.TimeOut = new DateTime(2024, 11, 5, 20, 0, 0);
+                attendance.TimeOut = DateTime.Now;
                 TimeSpan timeRendered = attendance.TimeOut - attendance.TimeIn;
                 attendance.HoursRendered = (int)timeRendered.TotalHours - 1;
 
