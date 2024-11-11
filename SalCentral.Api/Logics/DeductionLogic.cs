@@ -27,7 +27,7 @@ namespace SalCentral.Api.Logics
                 var query = from d in _context.Deduction
                             join da in _context.DeductionAssignment on d.DeductionId equals da.DeductionId
                             join u in _context.User on da.UserId equals u.UserId
-                            where u.BranchId == payload.BranchId
+                            where u.BranchId == payload.BranchId && d.IsDeleted == false
                             group d by new
                             {
                                 d.DeductionId,
@@ -36,7 +36,7 @@ namespace SalCentral.Api.Logics
                                 d.IsMandatory,
                                 d.Amount,
                                 d.Date,
-                                d.Type
+                                d.Type,
                             } into g
                             select new DeductionDTO
                             {
@@ -104,6 +104,7 @@ namespace SalCentral.Api.Logics
                         DeductionDescription = d.DeductionDescription,
                         Type = d.Type,
                         Date = DateTime.Now,
+                        IsDeleted = false,
                     };
 
                     await _context.Deduction.AddAsync(deduction);
@@ -155,7 +156,7 @@ namespace SalCentral.Api.Logics
                 var deductionIds = payload.deductionList.Select(d => d.DeductionId).ToList();
 
                 var deductionAssignmentsOfUser = await _context.DeductionAssignment.Where(u => u.UserId == user.UserId).ToListAsync();
-                var mandatoryDeductionsFromDB = await _context.Deduction.Where(d => d.IsMandatory == true).Select(d => d.DeductionId).ToListAsync();
+                var mandatoryDeductionsFromDB = await _context.Deduction.Where(d => d.IsMandatory == true && d.IsDeleted == false).Select(d => d.DeductionId).ToListAsync();
 
                 var filteredDeductionAssignments = deductionAssignmentsOfUser.Where(d => mandatoryDeductionsFromDB.Contains(d.DeductionId)).ToList();
 
@@ -204,6 +205,7 @@ namespace SalCentral.Api.Logics
                         DeductionDescription = deductionDTO.DeductionName,
                         Amount = (decimal)deductionDTO.Amount,
                         IsMandatory = deductionDTO.IsMandatory,
+                        IsDeleted = false,
                         Type = "Contribution",
                         Date = DateTime.Now,
                     };
@@ -298,11 +300,9 @@ namespace SalCentral.Api.Logics
                 
                 if (deduction == null) { return "Deduction does not exist"; }
 
-                var deductionAssignments = await _context.DeductionAssignment.Where(d => d.DeductionId == DeductionId).ToListAsync();
+                deduction.IsDeleted = false;
 
-                if(deductionAssignments.Any()) { _context.DeductionAssignment.RemoveRange(deductionAssignments); }
-
-                _context.Deduction.Remove(deduction);
+                _context.Deduction.Update(deduction);
                 _context.SaveChanges();
 
                 return "Deduction deleted successfully";

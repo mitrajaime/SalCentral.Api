@@ -4,5 +4,6 @@
     {
         public string? SearchKeyword { get; set; }
         public Guid? BranchId { get; set; }
+        public bool? retriveAllUsers { get; set; }
     }
 }

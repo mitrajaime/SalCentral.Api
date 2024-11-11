@@ -12,5 +12,6 @@ namespace SalCentral.Api.Models
         public DateTime Date { get; set; }
         public bool? IsMandatory { get; set; }
         public string? Type { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

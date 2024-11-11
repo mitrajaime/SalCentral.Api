@@ -33,6 +33,11 @@ namespace SalCentral.Api.Controllers
         {
             try
             {
+                if(userFilter.retriveAllUsers != null)
+                {
+                    var allresult = await _userLogic.GetAllUsers(paginationRequest, userFilter);
+                    return Ok(allresult);
+                }
                 var result = await _userLogic.GetUsers(paginationRequest, userFilter);
                 return Ok(result);
 
@@ -110,10 +115,12 @@ namespace SalCentral.Api.Controllers
         {
             try
             {
-                var user = _context.User.Where(u => u.UserId == UserId).FirstOrDefault();
+                var user = await _context.User.Where(u => u.UserId == UserId).FirstOrDefaultAsync();
                 if(user == null) { return NotFound(); }
 
-                _context.User.Remove(user);
+                user.IsDeleted = !user.IsDeleted;
+                _context.User.Update(user);
+                await _context.SaveChangesAsync();
 
                 return Ok();
             }
@@ -156,6 +163,12 @@ namespace SalCentral.Api.Controllers
         {
             try
             {
+                var user = await _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID && u.IsDeleted == false).FirstOrDefaultAsync();
+                if(user == null)
+                {
+                    throw new Exception("Login failed. Check your account details or contact the administrator for more information.");
+                }
+
                 if(adminLogin == true)
                 {
                     var adminResult = await _userLogic.AuthenticateAdmin(payload);

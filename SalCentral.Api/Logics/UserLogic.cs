@@ -86,6 +86,7 @@ namespace SalCentral.Api.Logics
             try
             {
                 IQueryable<UserDTO> query = from u in _context.User
+                                            where u.IsDeleted == false
                                             select new UserDTO()
                                             {
                                                 UserId = u.UserId,
@@ -113,7 +114,9 @@ namespace SalCentral.Api.Logics
                                                 PagIbig = u.PagIbig,
                                                 TIN = u.TIN,
                                                 PhilHealth = u.PhilHealth,
+                                                IsDeleted = u.IsDeleted,
                                             };
+                
 
                 if (query == null) throw new Exception("No users found.");
 
@@ -147,6 +150,73 @@ namespace SalCentral.Api.Logics
             }
         }
 
+        public async Task<object> GetAllUsers([FromQuery] PaginationRequest paginationRequest, [FromQuery] UserFilter userFilter)
+        {
+            try
+            {
+                IQueryable<UserDTO> query = from u in _context.User
+                                            select new UserDTO()
+                                            {
+                                                UserId = u.UserId,
+                                                FullName = u.FirstName + ' ' + u.LastName,
+                                                FirstName = u.FirstName,
+                                                LastName = u.LastName,
+                                                Email = u.Email,
+                                                ContactNo = u.ContactNo,
+                                                SMEmployeeID = u.SMEmployeeID,
+                                                HireDate = u.HireDate,
+                                                Password = u.Password,
+                                                RoleId = u.RoleId,
+                                                RoleName = _context.Role
+                                                               .Where(r => r.RoleId == u.RoleId)
+                                                               .Select(r => r.RoleName)
+                                                               .FirstOrDefault(),
+                                                BranchId = u.BranchId,
+                                                BranchName = _context.Branch
+                                                                .Where(b => b.BranchId == u.BranchId)
+                                                                .Select(b => b.BranchName)
+                                                                .FirstOrDefault(),
+                                                SalaryRate = u.SalaryRate,
+                                                AuthorizationKey = u.AuthorizationKey,
+                                                SSS = u.SSS,
+                                                PagIbig = u.PagIbig,
+                                                TIN = u.TIN,
+                                                PhilHealth = u.PhilHealth,
+                                                IsDeleted = u.IsDeleted,
+                                            };
+
+
+                if (query == null) throw new Exception("No users found.");
+
+                // Apply searchKeyword filter
+                if (!string.IsNullOrWhiteSpace(userFilter.SearchKeyword))
+                {
+                    string searchQuery = userFilter.SearchKeyword.Trim().ToLower();
+                    query = query.Where(i => i.FirstName.ToLower().Contains(searchQuery)
+                                          || i.LastName.ToLower().Contains(searchQuery)
+                                          || i.SMEmployeeID.ToLower().Contains(searchQuery));
+                }
+
+                if (userFilter.BranchId.HasValue)
+                {
+                    query = query.Where(i => i.BranchId.ToString().Contains(userFilter.BranchId.ToString()));
+                }
+
+                var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
+                var users = responsewrapper.Results;
+
+                if (users.Any())
+                {
+                    return responsewrapper;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
         public async Task<object> GetUserById([FromQuery] PaginationRequest paginationRequest, Guid UserId)
         {
@@ -154,7 +224,7 @@ namespace SalCentral.Api.Logics
             {
 
                 IQueryable<UserDTO> query = from u in _context.User
-                                            where u.UserId == UserId
+                                            where u.UserId == UserId && u.IsDeleted == false
                                             select new UserDTO()
                                             {
                                                 UserId = u.UserId,
@@ -177,6 +247,7 @@ namespace SalCentral.Api.Logics
                                                 SSS = u.SSS,
                                                 PagIbig = u.PagIbig,
                                                 PhilHealth = u.PhilHealth,
+                                                IsDeleted = u.IsDeleted,
                                             };
 
                 if (query == null) throw new Exception("No users found.");
@@ -219,6 +290,7 @@ namespace SalCentral.Api.Logics
                     PagIbig = payload.PagIbig == null ? null : payload.PagIbig,
                     PhilHealth = payload.PhilHealth == null ? null : payload.PhilHealth,
                     TIN = payload.TIN == null ? null : payload.TIN,
+                    IsDeleted = false,
                 };
 
                 var exists = _context.User.Where(u => u.SMEmployeeID == payload.SMEmployeeID).Any();

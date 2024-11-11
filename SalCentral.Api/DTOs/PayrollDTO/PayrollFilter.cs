@@ -2,8 +2,7 @@
 {
     public class PayrollFilter
     {
-        public string? PayrollName { get; set; }    
-        public string? GeneratedByName { get; set; }
+        public string? SearchKeyword { get; set; }
         public Guid BranchId { get; set; }
     }
 }

@@ -50,7 +50,22 @@ namespace SalCentral.Api.Controllers
             }
         }
 
-        [HttpGet("{UserId}")]
+        [HttpGet("{AttendanceId}")]
+        public async Task<IActionResult> GetAttendanceById([FromQuery] PaginationRequest paginationRequest, Guid AttendanceId)
+        {
+            try
+            {
+                var results = await _attendanceLogic.GetAttendanceById(paginationRequest, AttendanceId);
+
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("Employee/{UserId}")]
         public async Task<IActionResult> GetAttendanceOfEmployee([FromQuery] PaginationRequest paginationRequest, [FromQuery] AttendanceFilter attendanceFilter)
         {
             try
@@ -104,13 +119,28 @@ namespace SalCentral.Api.Controllers
         }
 
         [HttpPut]
+        public async Task<IActionResult> EditAttendance([FromBody] AttendanceDTO payload)
+        {
+            try
+            {
+                var result = await _attendanceLogic.EditAttendance(payload);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Overtime")]
         public async Task<IActionResult> EditOvertimeHours([FromBody] AttendanceDTO payload)
         {
             try
             {
                 var results = await _attendanceLogic.EditAllowedOvertimeHours(payload);
                 return Ok(results);
-            } catch (Exception ex)
+            } 
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

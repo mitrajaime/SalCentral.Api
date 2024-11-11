@@ -24,6 +24,7 @@ namespace SalCentral.Api.DTOs.UserDTO
         public string? PagIbig { get; set; }
         public string? PhilHealth { get; set; }
         public string? TIN { get; set; }
+        public bool? IsDeleted { get; set; }
         public Schedule? Schedule { get; set; }
         public List<DeductionAssignmentDTO>? deductionList { get; set; }
     }

@@ -23,7 +23,7 @@ namespace SalCentral.Api.Logics
                                                            join u in _context.User on da.UserId equals u.UserId
                                                            join b in _context.Branch on u.BranchId equals b.BranchId
                                                            join d in _context.Deduction on da.DeductionId equals d.DeductionId
-                                                           where da.DeductionId == DeductionId
+                                                           where da.DeductionId == DeductionId && d.IsDeleted == false
                                                            select new DeductionAssignmentDTO()
                                                            {
                                                                DeductionAssignmentId = da.DeductionAssignmentId,
@@ -65,7 +65,7 @@ namespace SalCentral.Api.Logics
                                                            join u in _context.User on da.UserId equals u.UserId
                                                            join b in _context.Branch on u.BranchId equals b.BranchId
                                                            join d in _context.Deduction on da.DeductionId equals d.DeductionId
-                                                           where u.UserId == UserId && d.IsMandatory == true
+                                                           where u.UserId == UserId && d.IsMandatory == true && d.IsDeleted == false
                                                            select new DeductionAssignmentDTO()
                                                            {
                                                                DeductionAssignmentId = da.DeductionAssignmentId,

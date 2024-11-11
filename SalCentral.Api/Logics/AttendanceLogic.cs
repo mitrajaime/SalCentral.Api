@@ -60,6 +60,26 @@ namespace SalCentral.Api.Logics
             }
         }
 
+        public async Task<object> GetAttendanceById([FromQuery] PaginationRequest paginationRequest, Guid AttendanceId)
+        {
+            try
+            {
+                var attendance = await _context.Attendance.FirstOrDefaultAsync(a => a.AttendanceId == AttendanceId);
+
+                if(attendance == null)
+                {
+                    throw new Exception("No attendance found");
+                }
+
+                return attendance;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         public async Task<object> GetAttendanceOfEmployee([FromQuery] PaginationRequest paginationRequest, [FromQuery] AttendanceFilter attendanceFilter)
         {
             try
@@ -198,7 +218,34 @@ namespace SalCentral.Api.Logics
             }
         }
 
+        public async Task<object> EditAttendance([FromBody] AttendanceDTO payload)
+        {
+            try
+            {
+                var attendance = await _context.Attendance.Where(a => a.AttendanceId == payload.AttendanceId).FirstOrDefaultAsync();
 
+                if (payload.TimeIn != null) attendance.TimeIn = (DateTime)payload.TimeIn;
+                if (payload.TimeOut != null) attendance.TimeOut = (DateTime)payload.TimeOut;
+
+                TimeSpan timeRendered = attendance.TimeOut - attendance.TimeIn;
+                attendance.HoursRendered = (int)timeRendered.TotalHours - 1;
+
+                if (attendance.HoursRendered > 8)
+                {
+                    attendance.OverTimeHours = attendance.HoursRendered - 8;
+                    attendance.HoursRendered = 8;
+                }
+
+                _context.Attendance.Update(attendance);
+                await _context.SaveChangesAsync();
+
+                return attendance;
+            } 
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
 
         public async Task<object> GetEmployeeAttendanceToday([FromQuery] PaginationRequest paginationRequest, [FromQuery] AttendanceFilter attendanceFilter)

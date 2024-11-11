@@ -61,15 +61,11 @@ namespace SalCentral.Api.Logics
 
                 if (query == null) throw new Exception("No payroll found in this branch.");
 
-                if (!string.IsNullOrWhiteSpace(payrollFilter.PayrollName))
+                if (!string.IsNullOrWhiteSpace(payrollFilter.SearchKeyword))
                 {
-                    string SearchQuery = payrollFilter.PayrollName.Trim();
-                    query = query.Where(i => i.PayrollName.Contains(SearchQuery));
-                }
-                if (!string.IsNullOrWhiteSpace(payrollFilter.GeneratedByName))
-                {
-                    string generatedByQuery = payrollFilter.GeneratedByName.Trim();
-                    query = query.Where(i => i.GeneratedByName.Contains(generatedByQuery));
+                    string searchQuery = payrollFilter.SearchKeyword.Trim().ToLower();
+                    query = query.Where(i => i.PayrollName.ToLower().Contains(searchQuery)
+                                          || i.GeneratedByName.ToLower().Contains(searchQuery));
                 }
 
                 var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
@@ -134,6 +130,26 @@ namespace SalCentral.Api.Logics
                 {
                     return responsewrapper;
                 }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+        }
+
+        public async Task<object> EditPayrollDetail(Guid PayrollDetailsId)
+        {
+            try
+            {
+                var payrollDetail = await _context.PayrollDetails.Where(p => p.PayrollDetailsId == PayrollDetailsId).FirstOrDefaultAsync();
+
+                payrollDetail.IsPaid = !payrollDetail.IsPaid;
+
+                _context.PayrollDetails.Update(payrollDetail);
+                _context.SaveChangesAsync();
 
                 return null;
             }
@@ -527,7 +543,7 @@ namespace SalCentral.Api.Logics
                       d => d.DeductionId,
                       da => da.DeductionId,
                       (d, da) => new { Deduction = d, DeductionAssignment = da })
-                .Where(x => x.DeductionAssignment.UserId == payroll.UserId)
+                .Where(x => x.DeductionAssignment.UserId == payroll.UserId && x.Deduction.IsDeleted == false)
                 .ToListAsync();
 
             // getting the sum of non-mandatory deductions (under the type 'Service') of user
@@ -549,7 +565,7 @@ namespace SalCentral.Api.Logics
                       d => d.DeductionId,
                       da => da.DeductionId,
                       (d, da) => new { Deduction = d, DeductionAssignment = da })
-                .Where(x => x.DeductionAssignment.UserId == payroll.UserId)
+                .Where(x => x.DeductionAssignment.UserId == payroll.UserId && x.Deduction.IsDeleted == false)
                 .ToListAsync();
 
             // getting the sum of non-mandatory deductions (under the type 'Service') of user

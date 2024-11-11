@@ -66,6 +66,8 @@ namespace SalCentral.Api.Controllers
             {
                 var result = await _deductionLogic.DeleteDeduction(DeductionId);
 
+
+
                 return Ok(result);
             }
             catch (Exception ex)
