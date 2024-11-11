@@ -216,12 +216,6 @@ namespace SalCentral.Api.Logics
                     }
                 }
 
-                var exists = _context.Schedule.Any(b => b.UserId == payload.UserId);
-                if (exists)
-                {
-                    throw new Exception("Schedule for Mitsubishi Photo already exists.");
-                }
-
                 await _context.Schedule.AddAsync(schedule);
                 return schedule;
 
