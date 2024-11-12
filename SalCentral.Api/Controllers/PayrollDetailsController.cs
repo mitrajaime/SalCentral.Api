@@ -53,11 +53,11 @@ namespace SalCentral.Api.Controllers
         }
 
         [HttpPut("{PayrollId}")]
-        public async Task<IActionResult> EditPayrollDetail([FromBody] PayrollDetailsDTO payload)
+        public async Task<IActionResult> EditPayrollDetail(Guid PayrollDetailsId)
         {
             try
             {
-                var result = await _payrollLogic.EditPayrollDetail(payload);
+                var result = await _payrollLogic.EditPayrollDetail(PayrollDetailsId);
 
 
                 return Ok(result);

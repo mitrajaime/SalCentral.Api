@@ -149,7 +149,7 @@ namespace SalCentral.Api.Logics
                 payrollDetail.IsPaid = !payrollDetail.IsPaid;
 
                 _context.PayrollDetails.Update(payrollDetail);
-                _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
                 return null;
             }
