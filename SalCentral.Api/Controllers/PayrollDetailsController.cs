@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SalCentral.Api.DbContext;
+using SalCentral.Api.DTOs;
 using SalCentral.Api.DTOs.PayrollDTO;
 using SalCentral.Api.Logics;
 using SalCentral.Api.Models;
@@ -44,6 +45,22 @@ namespace SalCentral.Api.Controllers
 
                 return Ok(result);
 
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("{PayrollId}")]
+        public async Task<IActionResult> EditPayrollDetail([FromBody] PayrollDetailsDTO payload)
+        {
+            try
+            {
+                var result = await _payrollLogic.EditPayrollDetail(payload);
+
+
+                return Ok(result);
             }
             catch (Exception ex)
             {

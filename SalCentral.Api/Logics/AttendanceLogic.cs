@@ -340,7 +340,11 @@ namespace SalCentral.Api.Logics
 
                 attendance.TimeOut = DateTime.Now;
                 TimeSpan timeRendered = attendance.TimeOut - attendance.TimeIn;
-                attendance.HoursRendered = (int)timeRendered.TotalHours - 1;
+                
+                if(attendance.HoursRendered > 4)
+                {
+                    attendance.HoursRendered = (int)timeRendered.TotalHours - 1;
+                }
 
                 if(attendance.HoursRendered > 8)
                 {
