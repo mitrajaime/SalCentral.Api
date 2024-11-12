@@ -52,7 +52,7 @@ namespace SalCentral.Api.Controllers
             }
         }
 
-        [HttpPut("{PayrollId}")]
+        [HttpPut]
         public async Task<IActionResult> EditPayrollDetail(Guid PayrollDetailsId)
         {
             try
