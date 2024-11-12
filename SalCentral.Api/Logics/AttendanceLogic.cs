@@ -235,6 +235,10 @@ namespace SalCentral.Api.Logics
                     attendance.OverTimeHours = attendance.HoursRendered - 8;
                     attendance.HoursRendered = 8;
                 }
+                else
+                {
+                    attendance.OverTimeHours = 0;
+                }
 
                 _context.Attendance.Update(attendance);
                 await _context.SaveChangesAsync();
