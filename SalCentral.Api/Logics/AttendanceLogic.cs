@@ -230,6 +230,11 @@ namespace SalCentral.Api.Logics
                 TimeSpan timeRendered = attendance.TimeOut - attendance.TimeIn;
                 attendance.HoursRendered = (int)timeRendered.TotalHours - 1;
 
+                if (attendance.HoursRendered > 4)
+                {
+                    attendance.HoursRendered = (int)timeRendered.TotalHours - 1;
+                }
+
                 if (attendance.HoursRendered > 8)
                 {
                     attendance.OverTimeHours = attendance.HoursRendered - 8;
@@ -297,15 +302,6 @@ namespace SalCentral.Api.Logics
         {
             try
             {
-                //var timeIn = new Attendance()
-                //{
-                //    Date = DateTime.Now,
-                //    TimeIn = DateTime.Now,
-                //    BranchId = (Guid)payload.BranchId,
-                //    UserId = (Guid)payload.UserId,
-                //};
-
-                // for debugging
                 var timeIn = new Attendance()
                 {
                     Date = DateTime.Now,
