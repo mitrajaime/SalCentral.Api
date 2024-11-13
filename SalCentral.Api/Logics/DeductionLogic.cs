@@ -300,7 +300,7 @@ namespace SalCentral.Api.Logics
                 
                 if (deduction == null) { return "Deduction does not exist"; }
 
-                deduction.IsDeleted = false;
+                deduction.IsDeleted = true;
 
                 _context.Deduction.Update(deduction);
                 _context.SaveChanges();

@@ -89,7 +89,7 @@ namespace SalCentral.Api.Controllers
                     return NotFound();
                 }
                 await _context.SaveChangesAsync();
-                var createSchedule = await _scheduleLogic.CreateSchedule(payload.Schedule);
+                var createSchedule = await _scheduleLogic.CreateSchedule(payload.Schedule, result.UserId);
                 var addDeduction = await _deductionLogic.CreateDeduction(new DeductionDTO
                 {
                     UserId = result.UserId,

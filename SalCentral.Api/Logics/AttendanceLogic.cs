@@ -98,7 +98,7 @@ namespace SalCentral.Api.Logics
                                                         && b.BranchId == attendanceFilter.BranchId
                                                         && q.Date.Date >= attendanceFilter.StartDate.Value.Date
                                                         && q.Date.Date <= attendanceFilter.EndDate.Value.Date
-                                                  orderby q.Date.Date descending
+                                                  orderby q.Date.Date ascending
                                                   select new AttendanceDTO
                                                   {
                                                       AttendanceId = q.AttendanceId,

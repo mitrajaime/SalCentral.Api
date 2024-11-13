@@ -146,7 +146,7 @@ namespace SalCentral.Api.Logics
         }
 
 
-        public async Task<object> CreateSchedule([FromBody] Schedule payload)
+        public async Task<object> CreateSchedule([FromBody] Schedule payload, Guid UserId)
         {
             try
             {
@@ -155,7 +155,7 @@ namespace SalCentral.Api.Logics
                 {
                     var cnpSchedule = new Schedule()
                     {
-                        UserId = (Guid)payload.UserId,
+                        UserId = UserId,
                         BranchId = (Guid)payload.BranchId,
                         Monday = true,
                         Tuesday = true,
@@ -174,7 +174,7 @@ namespace SalCentral.Api.Logics
 
                 var schedule = new Schedule()
                 {
-                    UserId = (Guid)payload.UserId,
+                    UserId = UserId,
                     BranchId = (Guid)payload.BranchId,
                     Monday = (bool)payload.Monday,
                     Tuesday = (bool)payload.Tuesday,

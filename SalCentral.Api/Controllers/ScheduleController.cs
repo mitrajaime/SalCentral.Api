@@ -57,27 +57,6 @@ namespace SalCentral.Api.Controllers
 
         }
 
-        [HttpPost]
-        public async Task<ActionResult> PostSchedule([FromBody] Schedule payload)
-        {
-            try
-            {
-                var result = await _ScheduleLogic.CreateSchedule(payload);
-                if (result == null)
-                {
-                    return NotFound();
-                }
-                _context.SaveChanges();
-                return Ok(result);
-
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
-        }
-
         [HttpDelete]
         public async Task<ActionResult> DeleteSchedule(Guid ScheduleId)
         {

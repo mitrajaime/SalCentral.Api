@@ -476,6 +476,11 @@ namespace SalCentral.Api.Logics
                 decimal grossPay = (decimal)(totalHours * payroll.SalaryRate);
                 decimal netPay = grossPay - (decimal)payroll.TotalDeductions + (decimal)payroll.HolidayPay + (decimal)payroll.OvertimePay;
 
+                if(netPay < 0)
+                {
+                    netPay = 0;
+                }
+
                 return netPay;
 
             }
