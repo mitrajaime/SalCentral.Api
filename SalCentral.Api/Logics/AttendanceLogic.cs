@@ -230,11 +230,13 @@ namespace SalCentral.Api.Logics
                 TimeSpan timeRendered = attendance.TimeOut - attendance.TimeIn;
                 attendance.HoursRendered = (int)timeRendered.TotalHours - 1;
 
+                if(attendance.HoursRendered < 0) {
+                    attendance.HoursRendered = 0;
+                }
                 if (attendance.HoursRendered > 4)
                 {
                     attendance.HoursRendered = (int)timeRendered.TotalHours - 1;
                 }
-
                 if (attendance.HoursRendered > 8)
                 {
                     attendance.OverTimeHours = attendance.HoursRendered - 8;
@@ -281,6 +283,13 @@ namespace SalCentral.Api.Logics
                                                       IsDayOff = q.IsDayOff
                                                   };
 
+                var attendanceList = await query.ToListAsync();
+                var invalidAttendance = attendanceList.FirstOrDefault(a => a.TimeIn == DateTime.MinValue);
+                if (invalidAttendance != null)
+                {
+                    throw new Exception("No attendance found for user on: " + DateTime.Today.ToString("d"));
+                }
+
                 var responsewrapper = await PaginationLogic.PaginateData(query, paginationRequest);
                 var attendance = responsewrapper.Results;
 
@@ -310,6 +319,12 @@ namespace SalCentral.Api.Logics
                     UserId = (Guid)payload.UserId,
                 };
 
+                var attendanceExists = await _context.Attendance.Where(d => d.Date.Date == timeIn.Date.Date).FirstOrDefaultAsync();
+                if(attendanceExists != null)
+                {
+                    _context.Remove(attendanceExists);
+                }
+
                 _context.Add(timeIn);
                 await _context.SaveChangesAsync();
 
@@ -334,10 +349,17 @@ namespace SalCentral.Api.Logics
                                         orderby a.Date descending
                                         select a).FirstOrDefaultAsync();
 
+                
+
                 attendance.TimeOut = DateTime.Now;
                 TimeSpan timeRendered = attendance.TimeOut - attendance.TimeIn;
-                
-                if(attendance.HoursRendered > 4)
+
+                if (attendance.HoursRendered < 0)
+                {
+                    attendance.HoursRendered = 0;
+                }
+
+                if (attendance.HoursRendered > 4)
                 {
                     attendance.HoursRendered = (int)timeRendered.TotalHours - 1;
                 }
