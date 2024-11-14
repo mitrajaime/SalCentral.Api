@@ -372,9 +372,13 @@ namespace SalCentral.Api.Logics
         {
             try
             {
+                if (payroll.holidayList == null) { return 0; }
+
                 var totalAttendance = await _context.Attendance
                     .Where(a => a.Date.Date >= payroll.StartDate && a.Date.Date <= payroll.EndDate && a.UserId == payroll.UserId && payroll.holidayList.Select(d => d.Date.Date).Contains(a.Date.Date))
                     .ToListAsync();
+
+
 
                 var holidayPay = totalAttendance.Count * 500;
 
