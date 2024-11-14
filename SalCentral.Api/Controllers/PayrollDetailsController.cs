@@ -67,5 +67,20 @@ namespace SalCentral.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPut("IsPaid/{PayrollId}")]
+        public async Task<IActionResult> EditPayrollDetailIsPaid(Guid PayrollId)
+        {
+            try
+            {
+                var result = await _payrollLogic.UpdateIsPaidStatusOfPayroll(PayrollId);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

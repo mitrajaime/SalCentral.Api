@@ -168,8 +168,8 @@ namespace SalCentral.Api.Logics
                                   join pd in _context.PayrollDetails on p.PayrollId equals pd.PayrollId
                                   join u in _context.User on pd.UserId equals u.UserId
                                   join b in _context.Branch on u.BranchId equals b.BranchId
-                                  where u.BranchId == payload.BranchId && p.StartDate <= (DateTime)payload.StartDate
-                                  select p).CountAsync();
+                                  where u.BranchId == payload.BranchId
+                                  select p).CountAsync() + 1;
 
                 // Create the payroll
                 var payroll = new Payroll()
@@ -187,7 +187,7 @@ namespace SalCentral.Api.Logics
 
                 // Fetch all users with attendance within the date range and for the specified branch
                 var usersWithAttendance = await _context.Attendance
-                    .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate)
+                    .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.HoursRendered > 0)
                     .Join(_context.User, attendance => attendance.UserId, user => user.UserId, (attendance, user) => user)
                     .Where(user => user.BranchId == payload.BranchId)
                     .Distinct()
@@ -664,6 +664,27 @@ namespace SalCentral.Api.Logics
             catch (Exception ex)
             {
                 throw new Exception("Failed to generate payslip: " + ex.Message);
+            }
+        }
+
+        public async Task<object> UpdateIsPaidStatusOfPayroll(Guid PayrollId)
+        {
+            try
+            {
+                var payrollDetails = await _context.PayrollDetails
+                    .Where(p => p.PayrollId == PayrollId)
+                    .ToListAsync();
+
+                payrollDetails.ForEach(p => { p.IsPaid = true; });
+
+                
+                await _context.SaveChangesAsync();
+
+                return payrollDetails;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message); 
             }
         }
 
