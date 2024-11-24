@@ -164,14 +164,26 @@ namespace SalCentral.Api.Logics
         {
             try
             {
-                var weekNumber = await (from p in _context.Payroll
-                                  join pd in _context.PayrollDetails on p.PayrollId equals pd.PayrollId
-                                  join u in _context.User on pd.UserId equals u.UserId
-                                  join b in _context.Branch on u.BranchId equals b.BranchId
-                                  where u.BranchId == payload.BranchId
-                                  select p).CountAsync() + 1;
+                // Fetch all users with attendance within the date range and for the specified branch
+                var usersWithAttendance = await _context.Attendance
+                    .Where(a => a.Date >= payload.StartDate && a.Date <= payload.EndDate && a.HoursRendered > 0)
+                    .Join(_context.User, attendance => attendance.UserId, user => user.UserId, (attendance, user) => user)
+                    .Where(user => user.BranchId == payload.BranchId)
+                    .Distinct()
+                    .ToListAsync();
 
-                // Create the payroll
+                if (!usersWithAttendance.Any())
+                {
+                    throw new Exception("No users with attendance in the specified date range.");
+                }
+
+                var weekNumber = await (from p in _context.Payroll
+                                        join pd in _context.PayrollDetails on p.PayrollId equals pd.PayrollId
+                                        join u in _context.User on pd.UserId equals u.UserId
+                                        join b in _context.Branch on u.BranchId equals b.BranchId
+                                        where u.BranchId == payload.BranchId
+                                        select p).CountAsync() + 1;
+
                 var payroll = new Payroll()
                 {
                     PayrollId = Guid.NewGuid(),
@@ -184,14 +196,6 @@ namespace SalCentral.Api.Logics
                 };
 
                 await _context.Payroll.AddAsync(payroll);
-
-                // Fetch all users with attendance within the date range and for the specified branch
-                var usersWithAttendance = await _context.Attendance
-                    .Where(a => a.Date >= payroll.StartDate && a.Date <= payroll.EndDate && a.HoursRendered > 0)
-                    .Join(_context.User, attendance => attendance.UserId, user => user.UserId, (attendance, user) => user)
-                    .Where(user => user.BranchId == payload.BranchId)
-                    .Distinct()
-                    .ToListAsync();
 
                 foreach (var user in usersWithAttendance)
                 {
@@ -222,6 +226,7 @@ namespace SalCentral.Api.Logics
                 throw new Exception(ex.Message);
             }
         }
+
 
         public async Task<decimal> CalculateTaxableIncome(PayrollFields payroll)
         {
