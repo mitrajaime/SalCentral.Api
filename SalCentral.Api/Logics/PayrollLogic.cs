@@ -165,11 +165,11 @@ namespace SalCentral.Api.Logics
             try
             {
                 var weekNumber = await (from p in _context.Payroll
-                                  join pd in _context.PayrollDetails on p.PayrollId equals pd.PayrollId
-                                  join u in _context.User on pd.UserId equals u.UserId
-                                  join b in _context.Branch on u.BranchId equals b.BranchId
-                                  where u.BranchId == payload.BranchId
-                                  select p).CountAsync() + 1;
+                                        join pd in _context.PayrollDetails on p.PayrollId equals pd.PayrollId
+                                        join u in _context.User on pd.UserId equals u.UserId
+                                        join b in _context.Branch on u.BranchId equals b.BranchId
+                                        where u.BranchId == payload.BranchId
+                                        select p.PayrollId).Distinct().CountAsync() + 1;
 
                 // Create the payroll
                 var payroll = new Payroll()
